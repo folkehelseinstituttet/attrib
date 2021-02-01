@@ -42,6 +42,7 @@ sim <- function(
     stop("Fit is missing attribute fit_fix and possibly not computed by fit_attrib") # Maybe a different message, you decide :)
   }
 
+
   col_names <- colnames(data)
 
   fix_eff <- attr(fit, "fit_fix")
@@ -51,7 +52,7 @@ sim <- function(
 
   # get the design matrix for the fixed effects
   data_fix <- stats::model.frame(fix_eff, data = data)
-  data_fix_copy <- as.data.table(data_fix)
+  data_fix_copy <- data.table::as.data.table(data_fix)
   data_fix_copy[, (response) := NULL]
 
   x_fix <- as.data.frame(as.matrix(x@fixef))

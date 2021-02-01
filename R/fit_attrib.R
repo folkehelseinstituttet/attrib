@@ -34,7 +34,9 @@ fit_attrib <- function(
                        fixef,
                        ranef,
                        offset = NULL) {
-  is_data_table(data)
+  if (data.table::is.data.table(data) == FALSE) {
+    stop("The dataset is not a data table")
+  }
 
   # fix this with offset
   if (is.null(offset)) {
