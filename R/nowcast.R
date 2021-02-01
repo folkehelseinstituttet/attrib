@@ -55,7 +55,7 @@ nowcast_correction_fn_expanded <- function(data, n_week_adjusting){
 
   fit_vec <- vector(mode = "list", length = (n_week_adjusting+1))
   for ( i in 0:n_week_adjusting){
-    print(i)
+   # print(i)
 
     formula <- paste0("n_death", "~sin(2 * pi * (week - 1) / 52) + cos(2 * pi * (week - 1) / 52)+ year +", glue::glue("n0_{i}_lag1"), "+",  glue::glue("n0_{i}"))
 
@@ -79,6 +79,7 @@ nowcast_correction_fn_expanded <- function(data, n_week_adjusting){
 
   retval <- vector("list")
   retval$data<- data
+  retval$n_week_adjusting <- n_week_adjusting
   retval$fit <- fit_vec
 
   return(retval)
@@ -94,7 +95,6 @@ nowcast_correction_fn_expanded <- function(data, n_week_adjusting){
 #' @param n_sim Number of simulations
 nowcast_correction_sim <- function(nowcast_correction_object, n_sim = 500){
 
-  n_week_adjusting <- NULL
   n_death <- NULL
   sim_value <- NULL
 
@@ -104,11 +104,11 @@ nowcast_correction_sim <- function(nowcast_correction_object, n_sim = 500){
    # data<- as.data.table(data_fake_nowcasting_aggregated)
    # n_week_adjusting <- 8
    # n_sim <- 500
+   # nowcast_correction_object<- nowcast_correction_fn_expanded(data, n_week_adjusting)
 
-
-   nowcast_correction_object<- nowcast_correction_fn_expanded(data, n_week_adjusting)
    fit_vec <- nowcast_correction_object$fit
    data <- nowcast_correction_object$data
+   n_week_adjusting <- nowcast_correction_object$n_week_adjusting[[1]]
 
   ##########simmuleringer ----
   cut_doe_vec <- data[(nrow(data)-n_week_adjusting):nrow(data)]$cut_doe
@@ -142,7 +142,7 @@ nowcast_correction_sim <- function(nowcast_correction_object, n_sim = 500){
       sim_value = exp(as.numeric(expected[1:500])),
       cut_doe = cut_doe_cur
     )
-    print(cut_doe_cur)
+    #print(cut_doe_cur)
     expected_sim[, sim_value:= round(as.numeric(sim_value), 2)]
     sim_val_vec[[i +1]]<- expected_sim
 
@@ -250,7 +250,7 @@ nowcast <- function(
   col_order_sim <- c(c("yrwk", "n_death", "sim_value"), colnames(data_sim_clean)[which(!colnames(data_sim_clean) %in% c("yrwk", "n_death", "sim_value"))])
   setcolorder(data_sim_clean, col_order_sim)
 
-  data_sim_clean <- subset(data_sim_clean, select = c("yrwk", "n_death", "sim_value", "cut_doe", "ncor"))
+  data_sim_clean <- subset(data_sim_clean, select = c("yrwk", "n_death", "sim_value", "cut_doe"))
 
   retval <- vector("list")
   retval$data <- data
