@@ -43,11 +43,11 @@ nowcast_eval <- function(nowcast_object, n_week_adjusting){
 
 
   # for developint
-  data_aggregated <- as.data.table(data_fake_nowcasting_aggregated)
-  n_week_training <- 50
-  n_week_adjusting <- 8
-  nowcast_object <- nowcast(data_aggregated= data_aggregated, n_week_training = 50, n_week_adjusting = 8)
-
+  # data_aggregated <- as.data.table(data_fake_nowcasting_aggregated)
+  # n_week_training <- 50
+  # n_week_adjusting <- 8
+  # nowcast_object <- nowcast(data_aggregated= data_aggregated, n_week_training = 50, n_week_adjusting = 8)
+  #
 
 
   data <- nowcast_object$data
@@ -114,13 +114,13 @@ nowcast_eval <- function(nowcast_object, n_week_adjusting){
                                  by = eval(data.table::key(data_sim)),
                                  .SDcols = c("sim_value")]
 
-  q <- ggplot(aggregated_data_sim,
-              aes(x = yrwk, y = median.sim_value))
-  q <- q + geom_errorbar(aes(ymin=q05.sim_value, ymax=q95.sim_value), colour="blue", width=.1)
-  q <- q + geom_point( size=3)
-  q <- q + ggtitle("Estimated mortality with 90 percent credible intervals")
-  q <- q +  scale_y_continuous("N corrected")
-  q <- q +  theme(axis.text.x = element_text(angle = 90),axis.title.x=element_blank())
+  q <- ggplot2::ggplot(aggregated_data_sim,
+                       ggplot2::aes(x = yrwk, y = median.sim_value))
+  q <- q + ggplot2::geom_errorbar(ggplot2::aes(ymin=q05.sim_value, ymax=q95.sim_value), colour="blue", width=.1)
+  q <- q + ggplot2::geom_point( size=3)
+  q <- q + ggplot2::ggtitle("Estimated mortality with 90 percent credible intervals")
+  q <- q +  ggplot2::scale_y_continuous("N corrected")
+  q <- q + ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90),axis.title.x=ggplot2::element_blank())
   #q <- q +  labs(caption = glue::glue(""))
   q
 
