@@ -3,3 +3,5 @@
 export(est_attrib)
 export(fit_attrib)
 export(sim)
+import(data.table)
+importFrom(magrittr,"%>%")
