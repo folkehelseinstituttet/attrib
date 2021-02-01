@@ -119,7 +119,7 @@ nowcast_eval <- function(nowcast_object, n_week_adjusting){
   q <- q + geom_errorbar(aes(ymin=q05.sim_value, ymax=q95.sim_value), colour="blue", width=.1)
   q <- q + geom_point( size=3)
   q <- q + ggtitle("Estimated mortality with 90 percent credible intervals")
-  q <- q +  scale_y_continuous("Estimated mortality")
+  q <- q +  scale_y_continuous("N corrected")
   q <- q +  theme(axis.text.x = element_text(angle = 90),axis.title.x=element_blank())
   #q <- q +  labs(caption = glue::glue(""))
   q
