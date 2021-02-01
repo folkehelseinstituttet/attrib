@@ -9,7 +9,8 @@ nowcast(
   data_aggregated,
   n_week_adjusting,
   n_week_training,
-  nowcast_correction_fn = nowcast_correction_fn_expanded
+  nowcast_correction_fn = nowcast_correction_fn_expanded,
+  nowcast_correction_sim_fn = nowcast_correction_sim
 )
 }
 \arguments{
@@ -20,6 +21,8 @@ nowcast(
 \item{n_week_training}{Number of weeks to train on}
 
 \item{nowcast_correction_fn}{Correction function. Must return a table with columnames ncor0_i for i in 0:n_week and cut_doe. The default uses "n_death ~ n0_i" for all i in 0:n_week.}
+
+\item{nowcast_correction_sim_fn}{Simmulatoin function. Must return a datatable with the following collumns  "n_death", "sim_value", "cut_doe", "ncor" and simmulations for equally many weeks as n_week_adjust.}
 }
 \value{
 Dataset including the corrected values for n_death

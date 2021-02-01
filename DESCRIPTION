@@ -1,6 +1,6 @@
 Package: attrib
 Title: Attributable Burden of Disease
-Version: 2020.9.1
+Version: 2021.1.2
 Authors@R: c(
   person(c("Richard","Aubrey"), "White", email = "hello@rwhite.no", role = c("aut", "cre"),
     comment = c(ORCID = "0000-0002-6747-1726")
@@ -9,7 +9,7 @@ Authors@R: c(
   )
 Description: Provides functions for estimating the attributable burden of disease due to risk factors. The posterior simulation is performed using arm::sim as described in Gelman, Hill (2012) <doi:10.1017/CBO9780511790942> and the attributable burden method is based on Nielsen, Krause, Molbak <doi:10.1111/irv.12564>.
 Depends: R (>= 3.5.0)
-License: MIT
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Imports: data.table,

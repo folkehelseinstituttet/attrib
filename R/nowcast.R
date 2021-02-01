@@ -1,10 +1,12 @@
+
+
+### nowcast_correction_fn_simple ----
+
 #' For more details see the help vignette:
 #' \code{vignette("intro", package="attrib")}
 #'
 #' @param data cleaned data to perform correction formula on
 #' @param n_week_adjusting Number of weeks to correct
-#'
-
 
 nowcast_correction_fn_simple <- function(data, n_week_adjusting){
   for ( i in 0:n_week_adjusting){
@@ -17,14 +19,21 @@ nowcast_correction_fn_simple <- function(data, n_week_adjusting){
   return(data)
 }
 
+
+
+### nowcast_correction_fn_expanded ----
+
 #' For more details see the help vignette:
 #' \code{vignette("intro", package="attrib")}
 #'
 #' @param data cleaned data to perform correction formula on
 #' @param n_week_adjusting Number of weeks to correct
-#'
 
 nowcast_correction_fn_expanded <- function(data, n_week_adjusting){
+
+  temp_variable_n <- NULL
+  cut_doe <- NULL
+
 
   # for developping
   # data<- as.data.table(data_fake_nowcasting_aggregated)
@@ -76,14 +85,25 @@ nowcast_correction_fn_expanded <- function(data, n_week_adjusting){
   #return(data)
 }
 
+### nowcast_correction_sim ----
 
+#' For more details see the help vignette:
+#' \code{vignette("intro", package="attrib")}
+#'
+#' @param nowcast_correction_object object returned from function nowcast_correction_fn_expanded
+#' @param n_sim Number of simulations
 nowcast_correction_sim <- function(nowcast_correction_object, n_sim = 500){
+
+  n_week_adjusting <- NULL
+  n_death <- NULL
+  sim_value <- NULL
+
+
+
   # for developping
    # data<- as.data.table(data_fake_nowcasting_aggregated)
    # n_week_adjusting <- 8
    # n_sim <- 500
-
-
 
 
    nowcast_correction_object<- nowcast_correction_fn_expanded(data, n_week_adjusting)
@@ -144,6 +164,7 @@ nowcast_correction_sim <- function(nowcast_correction_object, n_sim = 500){
 #' @param n_week_adjusting Number of weeks to correct
 #' @param n_week_training Number of weeks to train on
 #' @param nowcast_correction_fn Correction function. Must return a table with columnames ncor0_i for i in 0:n_week and cut_doe. The default uses "n_death ~ n0_i" for all i in 0:n_week.
+#' @param nowcast_correction_sim_fn Simmulatoin function. Must return a datatable with the following collumns  "n_death", "sim_value", "cut_doe", "ncor" and simmulations for equally many weeks as n_week_adjust.
 #' @examples
 #' \dontrun{
 #'
