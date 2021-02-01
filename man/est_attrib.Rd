@@ -32,7 +32,7 @@ For more details see the help vignette:
 \code{vignette("intro", package="attrib")}
 }
 \examples{
-\dontrun{
+
 response <- "deaths"
 fixef <- "pr100_ili_lag_1 + sin(2 * pi * (week - 1) / 52) + cos(2 * pi * (week - 1) / 52)"
 ranef <- " (pr100_ili_lag_1| season)"
@@ -45,5 +45,5 @@ exposures <- c(pr100_ili_lag_1 = 0)
 n_sim <- 5
 new_data <- est_attrib(fit, data, exposures, n_sim)
 new_data[]
-}
+
 }
