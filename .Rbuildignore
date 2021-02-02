@@ -5,3 +5,4 @@ Jenkinsfile
 Makefile
 cran-comments.md
 ^LICENSE\.md$
+^CRAN-RELEASE$
