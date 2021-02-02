@@ -3,7 +3,9 @@
 #' For each exposure the dataset is copied and the original value replaced by the reference value.
 #' Then the sim function is used to generate 500 simulations of expected responses for each row.
 #' Finally the dataset is transformed to obtain expected response for original and reference values
-#'  of the given exposures for each original row of the dataset.
+#' of the given exposures for each original row of the dataset.
+#'
+#' The burden method is based on Nielsen, Krause, Molbak <doi:10.1111/irv.12564>.
 #'
 #' For more details see the help vignette:
 #' \code{vignette("intro", package="attrib")}

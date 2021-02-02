@@ -17,7 +17,7 @@ sim(fit, data, n_sim)
 A dataset with 500 simulations of the expected response for each row in the original dataset.
 }
 \description{
-With the given fit from fit_attrib the function sim, from package arm, is used to generate 500 simulations
+With the given fit from fit_attrib the function sim, from package arm as described in Gelman, Hill (2012) <doi:10.1017/CBO9780511790942>, is used to generate 500 simulations
 of all the coefficients, from there respective posterior distributions.
 This is then used to compute the expected response for all simulations and rows in the input dataset.
 }

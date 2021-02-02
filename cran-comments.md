@@ -13,19 +13,15 @@ Maintainer: ‘Richard White <hello@rwhite.no>’
 
 Resubmission
 
-* checking re-building of vignette outputs ... [509s] OK
+* Please unwrap the examples if they are executable in < 5 sec, or replace
+\dontrun{} with \donttest{}.
 
-Can this be halved? e.g. by using few iterations, toy data, or providing
-pre computed resuls of lengthy parts? Otherwise we cannot check the
-vignette on CRAN.
+These examples are now simplified and run quickly. \dontrun{} is removed.
 
-This is now solved by the argument "n_sim" that is set to 20 simulations (instead of the previous default of 500).
+* Please always add all authors, contributors and copyright holders in the
+Authors@R field with the appropriate roles.
 
-
-Is there some reference about the method you can add in the Description
-field in the form Authors (year) <doi:.....>?
-
-This is now added.
+This is done.
 
 ## Downstream dependencies
 
