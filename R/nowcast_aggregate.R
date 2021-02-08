@@ -49,7 +49,7 @@
 #' @param n_week Number of weeks to calculate the percentage of the total registraations. Must be larger og equal to 2 amd smaller than the total number of weeks in the dataset.
 #' @examples
 #'
-#' data <- attrib::data_fake_death
+#' data <- attrib::data_fake_nowcasting_raw
 #' aggregation_date <- as.Date("2020-01-01")
 #' n_week <- 52
 #'
@@ -161,7 +161,7 @@ nowcast_aggregate <- function(
 
   # insert NA where we do not have data
 
-  d_corrected <- d_within_week[, .(cut_doe, n_death, n0_0)]
+  d_corrected <- d_within_week[, .(cut_doe, n_death, n0_0, p0_0)]
   for ( i in 2:n_week){
 
     week_n <- paste0("n0_",(i-1))
@@ -183,7 +183,7 @@ nowcast_aggregate <- function(
 
 
     # data_fake_nowcasting_aggregated <- d_corrected
-    # save(data_fake_nowcasting_aggregated, file = "data/data_fake_nowcasting_aggregated.rda", compress = "bzip2")L
+    # save(data_fake_nowcasting_aggregated, file = "data/data_fake_nowcasting_aggregated.rda", compress = "bzip2")
 
 
   retval <- d_corrected

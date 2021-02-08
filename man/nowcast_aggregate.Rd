@@ -23,7 +23,7 @@ For more details see the help vignette:
 }
 \examples{
 
-data <- attrib::data_fake_death
+data <- attrib::data_fake_nowcasting_raw
 aggregation_date <- as.Date("2020-01-01")
 n_week <- 52
 

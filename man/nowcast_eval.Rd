@@ -21,7 +21,10 @@ For more details see the help vignette:
 }
 \examples{
 
-data <- attrib::data_fake_nowcasting_aggregated
-n_week_adjusting <- 8
-data_correct <- nowcast_eval(data, n_week_adjusting )
+ data_aggregated <- data.table::as.data.table(attrib::data_fake_nowcasting_aggregated)
+ n_week_training <- 50
+ n_week_adjusting <- 8
+ nowcast_object <- nowcast(data_aggregated= data_aggregated,
+   n_week_training = 50, n_week_adjusting = 8)
+ nowcast_eval_object <- nowcast_eval(nowcast_object, n_week_adjusting)
 }

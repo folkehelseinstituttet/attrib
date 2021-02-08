@@ -23,7 +23,7 @@ For more details see the help vignette:
 data <- attrib::data_fake_nowcasting_aggregated
 n_week_adjusting <- 8
 n_week_train <- 52
-n_week_start <- n_week_adjusing + n_week_train
+n_week_start <- n_week_adjusting + n_week_train
 date_0 <- data[nrow(data),]$cut_doe #last date in the dataset, assume the dataset is ordered.
 data <- data[cut_doe >= (date_0 - n_week_start*7 + 1), ]
 nowcast_correction_object <- nowcast_correction_fn_expanded(data, n_week_adjusting )

@@ -5,9 +5,12 @@
 #' @param n_week_adjusting Number of weeks to adjust
 #' @examples
 #'
-#' data <- attrib::data_fake_nowcasting_aggregated
-#' n_week_adjusting <- 8
-#' data_correct <- nowcast_eval(data, n_week_adjusting )
+#'  data_aggregated <- data.table::as.data.table(attrib::data_fake_nowcasting_aggregated)
+#'  n_week_training <- 50
+#'  n_week_adjusting <- 8
+#'  nowcast_object <- nowcast(data_aggregated= data_aggregated,
+#'    n_week_training = 50, n_week_adjusting = 8)
+#'  nowcast_eval_object <- nowcast_eval(nowcast_object, n_week_adjusting)
 #' @return Residualplots for all ncor_i and some evaluationmetrixs for each of them as well as a plot containing credible intervals using the simulations
 #' @export
 #'
@@ -22,6 +25,15 @@ nowcast_eval <- function(nowcast_object, n_week_adjusting){
   na.omit <- NULL
   data_fake_nowcasting_aggregated <- NULL
   diff_n_death_mean <- NULL
+  q05 <- NULL
+  q95 <- NULL
+  . <- NULL
+  median <- NULL
+  yrwk <- NULL
+  median.sim_value <- NULL
+  q05.sim_value <- NULL
+  q95.sim_value <- NULL
+
 
 
 
@@ -44,7 +56,7 @@ nowcast_eval <- function(nowcast_object, n_week_adjusting){
   # n_week_training <- 50
   # n_week_adjusting <- 8
   # nowcast_object <- nowcast(data_aggregated= data_aggregated, n_week_training = 50, n_week_adjusting = 8)
-  #
+
 
 
   data <- nowcast_object$data
@@ -95,10 +107,10 @@ nowcast_eval <- function(nowcast_object, n_week_adjusting){
   }
 
   q05 <- function(x){
-    return(quantile(x, 0.05))
+    return(stats::quantile(x, 0.05))
   }
   q95 <- function(x){
-    return(quantile(x, 0.95))
+    return(stats::quantile(x, 0.95))
   }
 
 
@@ -106,7 +118,7 @@ nowcast_eval <- function(nowcast_object, n_week_adjusting){
   data.table::setkeyv(data_sim,
                       col_names[!col_names %in% c("sim_value")])
 
-  aggregated_data_sim<- data_sim[, unlist(recursive = FALSE, lapply(.(median = median, q05 = q05, q95 = q95),
+  aggregated_data_sim<- data_sim[, unlist(recursive = FALSE, lapply(.(median = stats::median, q05 = q05, q95 = q95),
                                                                     function(f) lapply(.SD, f))),
                                  by = eval(data.table::key(data_sim)),
                                  .SDcols = c("sim_value")]
