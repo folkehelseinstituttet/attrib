@@ -112,6 +112,7 @@ nowcast_correction_fn_expanded <- function(data, n_week_adjusting){
   #return(data)
 }
 
+#### nowcast_correction_fn_crude ----
 nowcast_correction_fn_crude <- function(data, n_week_adjusting){
 
   temp_variable_n <- NULL
