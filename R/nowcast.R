@@ -5,30 +5,53 @@
 #' For more details see the help vignette:
 #' \code{vignette("intro", package="attrib")}
 #'
-#' @param data cleaned data to perform correction formula on
+#' @param data Data generated with nowcast_aggregate containing the part of the dataset that the model should train on.
 #' @param n_week_adjusting Number of weeks to correct
-
+#' @return nowcast_correction_object including corrected data for all weeks in n_wwk_adjust and the model fits for all weeks
+#' @examples
+#' data <- attrib::data_fake_nowcasting_aggregated
+#' n_week_adjusting <- 8
+#' n_week_train <- 52
+#' n_week_start <- n_week_adjusing + n_week_train
+#' date_0 <- data[nrow(data),]$cut_doe #last date in the dataset, assume the dataset is ordered.
+#' data <- data[cut_doe >= (date_0 - n_week_start*7 + 1), ]
+#' nowcast_correction_object <- nowcast_correction_fn_simple(data, n_week_adjusting )
+#' @export
 nowcast_correction_fn_simple <- function(data, n_week_adjusting){
+  fit_vec<- vector(mode = "list", length = (n_week_adjusting+1))
   for ( i in 0:n_week_adjusting){
 
     fit <- stats::glm(stats::as.formula(paste0("n_death", "~",  glue::glue("n0_{i}"))), family = "quasipoisson", data = data[1:(nrow(data)-n_week_adjusting)])
     n_cor <- round(stats::predict(fit, newdata = data, type = "response")) ###SHOULD THIS BE ROUNDED?
     data[, glue::glue("ncor0_{i}"):= n_cor]
 
+    fit_vec[[i+1]]$fit<- fit
+    fit_vec[[i+1]]$formula<- stats::as.formula(paste0("n_death", "~",  glue::glue("n0_{i}")))
   }
-  return(data)
+
+  retval <- vector("list")
+  retval$data<- data
+  retval$n_week_adjusting <- n_week_adjusting
+  retval$fit <- fit_vec
+  return(retval)
 }
 
 
 
 ### nowcast_correction_fn_expanded ----
 
-#' For more details see the help vignette:
-#' \code{vignette("intro", package="attrib")}
-#'
-#' @param data cleaned data to perform correction formula on
+#' @param data Data generated with nowcast_aggregate containing the part of the dataset that the model should train on.
 #' @param n_week_adjusting Number of weeks to correct
-
+#' @return nowcast_correction_object including corrected data for all weeks in n_wwk_adjust and the model fits for all weeks
+#' @examples
+#' data <- attrib::data_fake_nowcasting_aggregated
+#' n_week_adjusting <- 8
+#' n_week_train <- 52
+#' n_week_start <- n_week_adjusing + n_week_train
+#' date_0 <- data[nrow(data),]$cut_doe #last date in the dataset, assume the dataset is ordered.
+#' data <- data[cut_doe >= (date_0 - n_week_start*7 + 1), ]
+#' nowcast_correction_object <- nowcast_correction_fn_expanded(data, n_week_adjusting )
+#' @export
 nowcast_correction_fn_expanded <- function(data, n_week_adjusting){
 
   temp_variable_n <- NULL
@@ -86,6 +109,7 @@ nowcast_correction_fn_expanded <- function(data, n_week_adjusting){
   #return(data)
 }
 
+
 ### nowcast_correction_sim ----
 
 #' For more details see the help vignette:
@@ -93,6 +117,17 @@ nowcast_correction_fn_expanded <- function(data, n_week_adjusting){
 #'
 #' @param nowcast_correction_object object returned from function nowcast_correction_fn_expanded
 #' @param n_sim Number of simulations
+#' @return simulations of the estimate made by the fitted models in nowcast_correction_fn
+#' @examples
+#' data <- attrib::data_fake_nowcasting_aggregated
+#' n_week_adjusting <- 8
+#' n_week_train <- 52
+#' n_week_start <- n_week_adjusing + n_week_train
+#' date_0 <- data[nrow(data),]$cut_doe #last date in the dataset, assume the dataset is ordered.
+#' data <- data[cut_doe >= (date_0 - n_week_start*7 + 1), ]
+#' nowcast_correction_object <- nowcast_correction_fn_expanded(data, n_week_adjusting )
+#' nowcast_sim <- nowcast_correction_sim(nowcast_correction_object)
+#' @export
 nowcast_correction_sim <- function(nowcast_correction_object, n_sim = 500){
 
   n_death <- NULL
@@ -166,13 +201,11 @@ nowcast_correction_sim <- function(nowcast_correction_object, n_sim = 500){
 #' @param nowcast_correction_fn Correction function. Must return a table with columnames ncor0_i for i in 0:n_week and cut_doe. The default uses "n_death ~ n0_i" for all i in 0:n_week.
 #' @param nowcast_correction_sim_fn Simmulatoin function. Must return a datatable with the following collumns  "n_death", "sim_value", "cut_doe", "ncor" and simmulations for equally many weeks as n_week_adjust.
 #' @examples
-#' \dontrun{
 #'
 #' data <- attrib::data_fake_nowcasting_aggregated
 #' n_week_adjusting <- 8
 #' n_week_training <- 12
 #' data_correct <- nowcast(data, n_week_adjusting,n_week_training )
-#' }
 #' @return Dataset including the corrected values for n_death
 #'
 #' @export
@@ -196,6 +229,7 @@ nowcast <- function(
   # n_week_training <- 50
   # n_week_adjusting <- 8
   # nowcast_correction_fn<- nowcast_correction_fn_expanded
+  # #nowcast_correction_fn<- nowcast_correction_fn_simple
   # nowcast_correction_sim_fn = nowcast_correction_sim
 
 
