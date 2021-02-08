@@ -120,7 +120,8 @@ nowcast_eval <- function(nowcast_object, n_week_adjusting){
   q <- q + ggplot2::geom_point( size=3)
   q <- q + ggplot2::ggtitle("Estimated mortality with 90 percent credible intervals")
   q <- q +  ggplot2::scale_y_continuous("N corrected")
-  q <- q + ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90),axis.title.x=ggplot2::element_blank())
+  q <- q + ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, hjust = 1, vjust = 0.5),
+                          axis.title.x=ggplot2::element_blank())
   #q <- q +  labs(caption = glue::glue(""))
   q
 
