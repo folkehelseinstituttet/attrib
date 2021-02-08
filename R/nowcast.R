@@ -40,6 +40,9 @@ nowcast_correction_fn_simple <- function(data, n_week_adjusting){
 
 ### nowcast_correction_fn_expanded ----
 
+#' For more details see the help vignette:
+#' \code{vignette("intro", package="attrib")}
+#'
 #' @param data Data generated with nowcast_aggregate containing the part of the dataset that the model should train on.
 #' @param n_week_adjusting Number of weeks to correct
 #' @return nowcast_correction_object including corrected data for all weeks in n_wwk_adjust and the model fits for all weeks

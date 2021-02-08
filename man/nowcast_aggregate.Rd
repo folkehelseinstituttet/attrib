@@ -15,19 +15,17 @@ nowcast_aggregate(data, aggregation_date, n_week)
 \item{n_week}{Number of weeks to calculate the percentage of the total registraations. Must be larger og equal to 2 amd smaller than the total number of weeks in the dataset.}
 }
 \value{
-Cleaned dataset with the percentiles of registered events within the last 52 weeks
+Aggregated dataset with the percentiles of registered events within the last 52 weeks
 }
 \description{
 For more details see the help vignette:
 \code{vignette("intro", package="attrib")}
 }
 \examples{
-\dontrun{
 
 data <- attrib::data_fake_death
 aggregation_date <- as.Date("2020-01-01")
 n_week <- 52
 
-clean_data <- nowcast_clean(data, aggregation_date, n_week)
-}
+data_aggregated <- nowcast_aggregate(data, aggregation_date, n_week)
 }

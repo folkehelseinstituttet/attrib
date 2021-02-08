@@ -47,17 +47,14 @@
 #' @param data Dataset containing doe (Date of event) and dor (Date of registation). The columns must have these exact names.
 #' @param aggregation_date Date of aggregation
 #' @param n_week Number of weeks to calculate the percentage of the total registraations. Must be larger og equal to 2 amd smaller than the total number of weeks in the dataset.
-#'
 #' @examples
-#' \dontrun{
 #'
 #' data <- attrib::data_fake_death
 #' aggregation_date <- as.Date("2020-01-01")
 #' n_week <- 52
 #'
-#' clean_data <- nowcast_clean(data, aggregation_date, n_week)
-#' }
-#' @return Cleaned dataset with the percentiles of registered events within the last 52 weeks
+#' data_aggregated <- nowcast_aggregate(data, aggregation_date, n_week)
+#' @return Aggregated dataset with the percentiles of registered events within the last 52 weeks
 #'
 #' @export
 nowcast_aggregate <- function(

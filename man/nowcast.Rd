@@ -32,11 +32,9 @@ For more details see the help vignette:
 \code{vignette("intro", package="attrib")}
 }
 \examples{
-\dontrun{
 
 data <- attrib::data_fake_nowcasting_aggregated
 n_week_adjusting <- 8
 n_week_training <- 12
 data_correct <- nowcast(data, n_week_adjusting,n_week_training )
-}
 }

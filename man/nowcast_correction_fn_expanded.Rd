@@ -8,11 +8,23 @@
 nowcast_correction_fn_expanded(data, n_week_adjusting)
 }
 \arguments{
-\item{data}{cleaned data to perform correction formula on}
+\item{data}{Data generated with nowcast_aggregate containing the part of the dataset that the model should train on.}
 
 \item{n_week_adjusting}{Number of weeks to correct}
+}
+\value{
+nowcast_correction_object including corrected data for all weeks in n_wwk_adjust and the model fits for all weeks
 }
 \description{
 For more details see the help vignette:
 \code{vignette("intro", package="attrib")}
+}
+\examples{
+data <- attrib::data_fake_nowcasting_aggregated
+n_week_adjusting <- 8
+n_week_train <- 52
+n_week_start <- n_week_adjusing + n_week_train
+date_0 <- data[nrow(data),]$cut_doe #last date in the dataset, assume the dataset is ordered.
+data <- data[cut_doe >= (date_0 - n_week_start*7 + 1), ]
+nowcast_correction_object <- nowcast_correction_fn_expanded(data, n_week_adjusting )
 }

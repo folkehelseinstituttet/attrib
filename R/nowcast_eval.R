@@ -3,15 +3,12 @@
 #'
 #' @param nowcast_object Object from the function nowcast
 #' @param n_week_adjusting Number of weeks to adjust
-#'
 #' @examples
-#' \dontrun{
 #'
 #' data <- attrib::data_fake_nowcasting_aggregated
 #' n_week_adjusting <- 8
 #' data_correct <- nowcast_eval(data, n_week_adjusting )
-#' }
-#' @return Residualplots for all ncor_i and some evaluationmetrixs for each of them
+#' @return Residualplots for all ncor_i and some evaluationmetrixs for each of them as well as a plot containing credible intervals using the simulations
 #' @export
 #'
 nowcast_eval <- function(nowcast_object, n_week_adjusting){

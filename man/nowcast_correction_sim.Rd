@@ -12,7 +12,20 @@ nowcast_correction_sim(nowcast_correction_object, n_sim = 500)
 
 \item{n_sim}{Number of simulations}
 }
+\value{
+simulations of the estimate made by the fitted models in nowcast_correction_fn
+}
 \description{
 For more details see the help vignette:
 \code{vignette("intro", package="attrib")}
+}
+\examples{
+data <- attrib::data_fake_nowcasting_aggregated
+n_week_adjusting <- 8
+n_week_train <- 52
+n_week_start <- n_week_adjusing + n_week_train
+date_0 <- data[nrow(data),]$cut_doe #last date in the dataset, assume the dataset is ordered.
+data <- data[cut_doe >= (date_0 - n_week_start*7 + 1), ]
+nowcast_correction_object <- nowcast_correction_fn_expanded(data, n_week_adjusting )
+nowcast_sim <- nowcast_correction_sim(nowcast_correction_object)
 }
