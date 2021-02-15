@@ -234,8 +234,8 @@ nowcast_correction_sim <- function(nowcast_correction_object, n_sim = 500){
 
       expected <- as.matrix(sim_models) %*%  rbind(as.matrix(t(data_x)))
       expected_sim <-data.table(
-        sim_id = 1:500,
-        sim_value = exp(as.numeric(expected[1:500])),
+        sim_id = 1:n_sim,
+        sim_value = exp(as.numeric(expected[1:n_sim])),
         cut_doe = cut_doe_cur
       )
       #print(cut_doe_cur)
@@ -250,8 +250,8 @@ nowcast_correction_sim <- function(nowcast_correction_object, n_sim = 500){
 
       expected <- as.matrix(sim_models) %*%  rbind(1, as.matrix(t(data_x)))
       expected_sim <-data.table(
-        sim_id = 1:500,
-        sim_value = exp(as.numeric(expected[1:500])),
+        sim_id = 1:n_sim,
+        sim_value = exp(as.numeric(expected[1:n_sim])),
         cut_doe = cut_doe_cur
       )
       #print(cut_doe_cur)
