@@ -1,8 +1,11 @@
 #' For more details see the help vignette:
 #' \code{vignette("intro", package="attrib")}
 #'
-#' @param nowcast_object Object from the function nowcast
-#' @param n_week_adjusting Number of weeks to adjust
+#' @param data_train Data to train on.
+#' @param data_predict Data to predict on
+#' @param n_sim number of simulations to preform. Default setting is n_sim = 1000
+#' @param formula Formula to model
+#' @param offset True or False depending on whetehr there is an offset in the formula or not.
 #' @examples
 #'
 #'  data_aggregated <- data.table::as.data.table(attrib::data_fake_nowcasting_aggregated)
@@ -15,13 +18,13 @@
 #'
 #'
 
-baseline_est <- function(data_train, data_predict, n_sim = 1000){
+baseline_est <- function(data_train, data_predict, n_sim = 1000, formula, offset ){
 
   #for developping
 
-  data <- data_fake_nowcasting_aggregated
-  data[, year := isoyear_n(cut_doe)]
-  data[, week := isoweek(cut_doe)]
+  data_train <- data_fake_nowcasting_aggregated
+  data_train[, year := isoyear_n(cut_doe)]
+  data_train[, week := isoweek(cut_doe)]
   n_sim <- 1000
 
   pop_data<- as.data.table(fhidata::norway_population_b2020)[ location_code == "norge"]
@@ -32,70 +35,52 @@ baseline_est <- function(data_train, data_predict, n_sim = 1000){
     year
   )]
 
-  data[pop_tot, pop := pop, on = "year"]
-  col_names <- colnames(data)
-
+  data_train[pop_tot, pop := pop, on = "year"]
   formula <- paste0("n_death", "~sin(2 * pi * (week) / 53) + cos(2 * pi * (week ) / 53) + year + offset(log(pop))")
-  fit <- stats::glm(stats::as.formula(formula), family = "quasipoisson", data = data)
+  data_predict <- data_train
+  offsett <- TRUE
+
+
+  col_names <- colnames(data_train)
+  fit <- stats::glm(stats::as.formula(formula), family = "quasipoisson", data = data_train)
 
 
   x<- arm::sim(fit, n_sim)
   sim_models <- as.data.frame(x@coef)
-  data_x <- as.data.table(copy(stats::model.frame(formula, data = data)))
+  data_x <- as.data.table(copy(stats::model.frame(formula, data = data_predict)))
   data_x[, n_death:= NULL]
 
   col_names_sim<-  colnames(sim_models)
-  col_names_rel <- col_names[which(col_names != "(Intercept)")]
+  #col_names_rel <- col_names[which(col_names != "(Intercept)")]
   if (!"(Intercept)" %in% colnames(sim_models) ){
-    dim(cbind(as.matrix( sim_models),1))
-    dim( rbind(as.matrix(t(data_x))))
-
-    colnames(cbind(cbind(sim_models,1)))
-    rownames(rbind(as.matrix(t(data_x))))
-
-    expected_fix <- cbind(as.matrix( sim_models),1) %*%  rbind(as.matrix(t(data_x)))
-
-    expected <- as.data.table(exp(expected_fix))
-
-    expected_t <- data.table::transpose(expected)
-    expected_t$id_row <- 1:nrow(data)
-    data$id_row <- 1:nrow(data)
-
-    new_data <- merge(data, expected_t, by = "id_row", all = TRUE)
-
-    new_data <- data.table::melt(new_data, id.vars = c(col_names, "id_row"))
-
-
-    setnames(new_data, "variable", "sim_id")
-    new_data$sim_id <- as.numeric(as.factor(new_data$sim_id))
-    setnames(new_data, "value", "sim_value")
+    if (offsett == TRUE){
+      expected_fix <- cbind(as.matrix( sim_models),1) %*%  rbind(as.matrix(t(data_x)))
+    }else{
+      expected_fix <- cbind(as.matrix( sim_models)) %*%  rbind(as.matrix(t(data_x)))
+    }
 
   } else{
-    dim(cbind(as.matrix( sim_models),1))
-    dim( rbind(1, as.matrix(t(data_x))))
-
-    colnames(cbind(cbind(sim_models,1)))
-    rownames(rbind(1, as.matrix(t(data_x))))
-
-    expected_fix <- cbind(as.matrix( sim_models),1) %*%  rbind(1, as.matrix(t(data_x)))
-
-    expected <- as.data.table(exp(expected_fix))
-
-    expected_t <- data.table::transpose(expected)
-    expected_t$id_row <- 1:nrow(data)
-    data$id_row <- 1:nrow(data)
-
-    new_data <- merge(data, expected_t, by = "id_row", all = TRUE)
-
-    new_data <- data.table::melt(new_data, id.vars = c(col_names, "id_row"))
-
-
-    setnames(new_data, "variable", "sim_id")
-    new_data$sim_id <- as.numeric(as.factor(new_data$sim_id))
-    setnames(new_data, "value", "sim_value")
-
+    if (offsett == TRUE){
+      expected_fix <- cbind(as.matrix( sim_models),1) %*%  rbind(1, as.matrix(t(data_x)))
+    }else{
+      expected_fix <- cbind(as.matrix( sim_models)) %*%  rbind(1, as.matrix(t(data_x)))
+    }
   }
 
+  expected <- as.data.table(exp(expected_fix))
+
+  expected_t <- data.table::transpose(expected)
+  expected_t$id_row <- 1:nrow(data_predict)
+  data_predict$id_row <- 1:nrow(data_predict)
+
+  new_data <- merge(data_predict, expected_t, by = "id_row", all = TRUE)
+
+  new_data <- data.table::melt(new_data, id.vars = c(col_names, "id_row"))
+
+
+  setnames(new_data, "variable", "sim_id")
+  new_data$sim_id <- as.numeric(as.factor(new_data$sim_id))
+  setnames(new_data, "value", "sim_value")
 
 
   q05 <- function(x){
