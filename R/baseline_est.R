@@ -18,27 +18,34 @@
 #'
 #'
 
-baseline_est <- function(data_train, data_predict, n_sim = 1000, formula, offset ){
+baseline_est <- function(data_train, data_predict, n_sim = 1000, formula, offsett ){
+
+  cut_doe <- NULL
+  location_code <- NULL
+  . <- NULL
+  pop <- NULL
+  n_death <- NULL
+
 
   #for developping
 
-  data_train <- data_fake_nowcasting_aggregated
-  data_train[, year := isoyear_n(cut_doe)]
-  data_train[, week := isoweek(cut_doe)]
-  n_sim <- 1000
-
-  pop_data<- as.data.table(fhidata::norway_population_b2020)[ location_code == "norge"]
-
-  pop_tot <-pop_data[, .(
-    "pop" = sum(pop)
-  ), keyby = .(
-    year
-  )]
-
-  data_train[pop_tot, pop := pop, on = "year"]
-  formula <- paste0("n_death", "~sin(2 * pi * (week) / 53) + cos(2 * pi * (week ) / 53) + year + offset(log(pop))")
-  data_predict <- data_train
-  offsett <- TRUE
+  # data_train <- data_fake_nowcasting_aggregated
+  # data_train[, year := isoyear_n(cut_doe)]
+  # data_train[, week := isoweek(cut_doe)]
+  # n_sim <- 1000
+  #
+  # pop_data<- as.data.table(fhidata::norway_population_b2020)[ location_code == "norge"]
+  #
+  # pop_tot <-pop_data[, .(
+  #   "pop" = sum(pop)
+  # ), keyby = .(
+  #   year
+  # )]
+  #
+  # data_train[pop_tot, pop := pop, on = "year"]
+  # formula <- paste0("n_death", "~sin(2 * pi * (week) / 53) + cos(2 * pi * (week ) / 53) + year + offset(log(pop))")
+  # data_predict <- data_train
+  # offsett <- TRUE
 
 
   col_names <- colnames(data_train)
@@ -84,10 +91,10 @@ baseline_est <- function(data_train, data_predict, n_sim = 1000, formula, offset
 
 
   q05 <- function(x){
-    return(quantile(x, 0.05))
+    return(stats::quantile(x, 0.05))
   }
   q95 <- function(x){
-    return(quantile(x, 0.95))
+    return(stats::quantile(x, 0.95))
   }
 
   col_names_new <- colnames(new_data)
@@ -97,7 +104,7 @@ baseline_est <- function(data_train, data_predict, n_sim = 1000, formula, offset
                                                   )])
 
   aggregated_sim<- new_data[,unlist(recursive = FALSE,
-                                    lapply(.(median = median, q05 = q05, q95 = q95),
+                                    lapply(.(median = stats::median, q05 = q05, q95 = q95),
                                            function(f) lapply(.SD, f))),
                             by = eval(data.table::key(new_data)),.SDcols = c("sim_value")]
 
