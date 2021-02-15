@@ -103,7 +103,7 @@ baseline_est <- function(data_train, data_predict, n_sim = 1000, formula, offset
                                            function(f) lapply(.SD, f))),
                             by = eval(data.table::key(new_data)),.SDcols = c("sim_value")]
 
-
+# library(ggplot2)
 # q <- ggplot(aggregated_sim,
 #             aes(x = week,
 #                 y = median.sim_value,
