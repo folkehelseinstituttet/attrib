@@ -38,35 +38,43 @@ baseline_est <- function(data_train, data_predict, n_sim = 1000){
   formula <- paste0("n_death", "~sin(2 * pi * (week) / 53) + cos(2 * pi * (week ) / 53) + year + offset(log(pop))")
   fit <- stats::glm(stats::as.formula(formula), family = "quasipoisson", data = data)
 
+
   x<- arm::sim(fit, n_sim)
   sim_models <- as.data.frame(x@coef)
   data_x <- as.data.table(copy(stats::model.frame(formula, data = data)))
   data_x[, n_death:= NULL]
 
-  col_names<-  colnames(sim_models)
+  col_names_sim<-  colnames(sim_models)
   col_names_rel <- col_names[which(col_names != "(Intercept)")]
   if (!"(Intercept)" %in% colnames(sim_models) ){
-    print("ehi")
-    dim(cbind(sim_models))
-    dim(rbind( as.matrix(t(data_x))))
+    dim(cbind(as.matrix( sim_models),1))
+    dim( rbind(as.matrix(t(data_x))))
 
-    colnames(cbind(cbind(sim_models)))
-    rownames(rbind(1, as.matrix(t(data_x))))
+    colnames(cbind(cbind(sim_models,1)))
+    rownames(rbind(as.matrix(t(data_x))))
 
-    expected <- as.matrix(sim_models) %*%  rbind(as.matrix(t(data_x)))
-    expected_sim <-data.table(
-      sim_id = 1:500,
-      sim_value = exp(as.numeric(expected[1:500])),
-      cut_doe = cut_doe_cur
-    )
-    #print(cut_doe_cur)
-    expected_sim[, sim_value:= round(as.numeric(sim_value), 2)]
-    sim_val_vec[[i +1]]<- expected_sim
+    expected_fix <- cbind(as.matrix( sim_models),1) %*%  rbind(as.matrix(t(data_x)))
+
+    expected <- as.data.table(exp(expected_fix))
+
+    expected_t <- data.table::transpose(expected)
+    expected_t$id_row <- 1:nrow(data)
+    data$id_row <- 1:nrow(data)
+
+    new_data <- merge(data, expected_t, by = "id_row", all = TRUE)
+
+    new_data <- data.table::melt(new_data, id.vars = c(col_names, "id_row"))
+
+
+    setnames(new_data, "variable", "sim_id")
+    new_data$sim_id <- as.numeric(as.factor(new_data$sim_id))
+    setnames(new_data, "value", "sim_value")
+
   } else{
     dim(cbind(as.matrix( sim_models),1))
     dim( rbind(1, as.matrix(t(data_x))))
 
-    colnames(cbind(cbind(sim_models)))
+    colnames(cbind(cbind(sim_models,1)))
     rownames(rbind(1, as.matrix(t(data_x))))
 
     expected_fix <- cbind(as.matrix( sim_models),1) %*%  rbind(1, as.matrix(t(data_x)))
@@ -86,17 +94,7 @@ baseline_est <- function(data_train, data_predict, n_sim = 1000){
     new_data$sim_id <- as.numeric(as.factor(new_data$sim_id))
     setnames(new_data, "value", "sim_value")
 
-
-
-    expected_sim <-data.table(
-      sim_id = 1:500,
-      sim_value = exp(as.numeric(expected[1:500])),
-      cut_doe = cut_doe_cur
-    )
-    #print(cut_doe_cur)
-    expected_sim[, sim_value:= round(as.numeric(sim_value), 2)]
-    sim_val_vec[[i +1]]<- expected_sim
   }
-
+return(new_data)
 
 }
