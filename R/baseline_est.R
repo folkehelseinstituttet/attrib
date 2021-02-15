@@ -95,6 +95,44 @@ baseline_est <- function(data_train, data_predict, n_sim = 1000){
     setnames(new_data, "value", "sim_value")
 
   }
-return(new_data)
+
+
+
+  q05 <- function(x){
+    return(quantile(x, 0.05))
+  }
+  q95 <- function(x){
+    return(quantile(x, 0.95))
+  }
+
+  col_names_new <- colnames(new_data)
+  data.table::setkeyv(new_data,
+                      col_names_new[!col_names_new %in% c("sim_value",
+                                                  "sim_id"
+                                                  )])
+
+  aggregated_sim<- new_data[,unlist(recursive = FALSE,
+                                    lapply(.(median = median, q05 = q05, q95 = q95),
+                                           function(f) lapply(.SD, f))),
+                            by = eval(data.table::key(new_data)),.SDcols = c("sim_value")]
+
+
+  # q <- ggplot(aggregated_sim,
+  #             aes(x = week,
+  #                 y = median.sim_value,
+  #                 group = as.factor(year),
+  #                 colour = as.factor(year)))
+  # q <- q + geom_line()
+  # geom_ribbon(aes(x=x,ymin=y3,ymax=y4,fill='blue'),
+  #             alpha=0.5)
+  # q <- q + geom_ribbon(aes(x = week, ymin=q05.sim_value,
+  #                          ymax=q95.sim_value, fill = year),
+  #                      alpha=0.5)
+  #
+  # q
+  retval <- vector(mode = "list")
+  retval$simulations <- new_data
+  retval$aggregated <- aggregated_sim
+return(retval )
 
 }
