@@ -5,15 +5,8 @@
 #' @param data_predict Data to predict on
 #' @param n_sim number of simulations to preform. Default setting is n_sim = 1000
 #' @param formula Formula to model
-#' @param offset True or False depending on whetehr there is an offset in the formula or not.
+#' @param offsett True or False depending on whetehr there is an offset in the formula or not.
 #' @examples
-#'
-#'  data_aggregated <- data.table::as.data.table(attrib::data_fake_nowcasting_aggregated)
-#'  n_week_training <- 50
-#'  n_week_adjusting <- 8
-#'  nowcast_object <- nowcast(data_aggregated= data_aggregated,
-#'    n_week_training = 50, n_week_adjusting = 8)
-#'  nowcast_eval_object <- nowcast_eval(nowcast_object, n_week_adjusting)
 #' @return Residualplots for all ncor_i and some evaluationmetrixs for each of them as well as a plot containing credible intervals using the simulation
 #'
 #'
@@ -27,11 +20,12 @@ baseline_est <- function(data_train, data_predict, n_sim = 1000, formula, offset
   n_death <- NULL
 
 
+
   #for developping
 
-  # data_train <- data_fake_nowcasting_aggregated
-  # data_train[, year := isoyear_n(cut_doe)]
-  # data_train[, week := isoweek(cut_doe)]
+  # data <- as.data.table(data_fake_nowcasting_aggregated)
+  # data[, year := isoyear_n(cut_doe)]
+  # data[, week := isoweek(cut_doe)]
   # n_sim <- 1000
   #
   # pop_data<- as.data.table(fhidata::norway_population_b2020)[ location_code == "norge"]
@@ -42,9 +36,10 @@ baseline_est <- function(data_train, data_predict, n_sim = 1000, formula, offset
   #   year
   # )]
   #
-  # data_train[pop_tot, pop := pop, on = "year"]
+  # data[pop_tot, pop := pop, on = "year"]
   # formula <- paste0("n_death", "~sin(2 * pi * (week) / 53) + cos(2 * pi * (week ) / 53) + year + offset(log(pop))")
-  # data_predict <- data_train
+  # data_train <- data[cut_doe< "2019-06-30"]
+  # data_predict <- data
   # offsett <- TRUE
 
 
@@ -53,7 +48,7 @@ baseline_est <- function(data_train, data_predict, n_sim = 1000, formula, offset
 
 
   x<- arm::sim(fit, n_sim)
-  sim_models <- as.data.frame(x@coef)
+  sim_models <- as.data.frame(as.matrix(x@coef))
   data_x <- as.data.table(copy(stats::model.frame(formula, data = data_predict)))
   data_x[, n_death:= NULL]
 
@@ -109,19 +104,18 @@ baseline_est <- function(data_train, data_predict, n_sim = 1000, formula, offset
                             by = eval(data.table::key(new_data)),.SDcols = c("sim_value")]
 
 
-  # q <- ggplot(aggregated_sim,
-  #             aes(x = week,
-  #                 y = median.sim_value,
-  #                 group = as.factor(year),
-  #                 colour = as.factor(year)))
-  # q <- q + geom_line()
-  # geom_ribbon(aes(x=x,ymin=y3,ymax=y4,fill='blue'),
-  #             alpha=0.5)
-  # q <- q + geom_ribbon(aes(x = week, ymin=q05.sim_value,
-  #                          ymax=q95.sim_value, fill = year),
-  #                      alpha=0.5)
-  #
-  # q
+# q <- ggplot(aggregated_sim,
+#             aes(x = week,
+#                 y = median.sim_value,
+#                 group = as.factor(year),
+#                 colour = as.factor(year)))
+# q <- q + geom_line()
+# q <-q + geom_line(aes(y = n_death))
+# q <- q + geom_ribbon(aes(x = week, ymin=q05.sim_value,
+#                          ymax=q95.sim_value, fill = year),
+#                      alpha=0.5)
+#
+# q
   retval <- vector(mode = "list")
   retval$simulations <- new_data
   retval$aggregated <- aggregated_sim

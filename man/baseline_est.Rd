@@ -16,7 +16,7 @@ baseline_est(data_train, data_predict, n_sim = 1000, formula, offsett)
 
 \item{formula}{Formula to model}
 
-\item{offset}{True or False depending on whetehr there is an offset in the formula or not.}
+\item{offsett}{True or False depending on whetehr there is an offset in the formula or not.}
 }
 \value{
 Residualplots for all ncor_i and some evaluationmetrixs for each of them as well as a plot containing credible intervals using the simulation
@@ -24,13 +24,4 @@ Residualplots for all ncor_i and some evaluationmetrixs for each of them as well
 \description{
 For more details see the help vignette:
 \code{vignette("intro", package="attrib")}
-}
-\examples{
-
- data_aggregated <- data.table::as.data.table(attrib::data_fake_nowcasting_aggregated)
- n_week_training <- 50
- n_week_adjusting <- 8
- nowcast_object <- nowcast(data_aggregated= data_aggregated,
-   n_week_training = 50, n_week_adjusting = 8)
- nowcast_eval_object <- nowcast_eval(nowcast_object, n_week_adjusting)
 }
