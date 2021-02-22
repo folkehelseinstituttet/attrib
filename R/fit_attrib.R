@@ -69,7 +69,7 @@ fit_attrib <- function(
   }
 
 
-  fit <- lme4::glmer(stats::as.formula(formula), family = "poisson", data = data)
+  fit <- lme4::glmer(stats::as.formula(formula), family = "quasipoisson", data = data)
 
   attr(fit, "fit_fix") <- fit_fix
   attr(fit, "offset") <- offset
