@@ -10,6 +10,7 @@
 #' @param fit A model fit created by fit_attrib
 #' @param data The data with either observed values or reference values.
 #' @param n_sim Number of simulations
+#' @param PI Returns a draw from the quasipoisson distribution with the calculated mean as mean. If false the exponential of the mean is returned.
 #'
 #' @examples
 #'
@@ -29,7 +30,8 @@
 sim <- function(
                 fit,
                 data,
-                n_sim) {
+                n_sim,
+                PI = FALSE) {
   if (length(which(is.na(data))) != 0) {
     stop("The dataset has NA values")
   }
@@ -135,6 +137,12 @@ sim <- function(
   # print("loop over")
   # add together the coefficients for the fixed and random effects
 
+  if(PI == TRUE){
+    dispersion<- summary(fit)$dispersion
+    expected <- (rnbinom(length(expected_fix),mu = exp(expected_fix), size = (exp(expected_fix)/(dispersion-1))))
+    dim(expected)<- dim(expected_fix)
+    expected <- as.data.table(expected)
+    }
 
   expected <- as.data.table(exp(expected_fix + expected_ran))
 
