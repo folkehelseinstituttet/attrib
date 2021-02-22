@@ -31,25 +31,13 @@ baseline_est <- function(data_train, data_predict, n_sim = 1000, formula, offset
 
 
   #for developping
-
-  # data <- as.data.table(data_fake_nowcasting_aggregated)
-  # data[, year := isoyear_n(cut_doe)]
-  # data[, week := isoweek(cut_doe)]
-  # n_sim <- 1000
-  #
-  # pop_data<- as.data.table(fhidata::norway_population_b2020)[ location_code == "norge"]
-  #
-  # pop_tot <-pop_data[, .(
-  #   "pop" = sum(pop)
-  # ), keyby = .(
-  #   year
-  # )]
-  #
-  # data[pop_tot, pop := pop, on = "year"]
-  # formula <- paste0("n_death", "~sin(2 * pi * (week) / 53) + cos(2 * pi * (week ) / 53) + year + offset(log(pop))")
-  # data_train <- data[cut_doe< "2019-06-30"]
-  # data_predict <- data
-  # offsett <- TRUE
+#
+#   data <- as.data.table(data_fake_nowcasting_aggregated)
+#   n_sim <- 1000
+#   formula <- paste0("n_death", "~sin(2 * pi * (week) / 53) + cos(2 * pi * (week ) / 53) + year + offset(log(pop))")
+#   data_train <- data[cut_doe< "2019-06-30"]
+#   data_predict <- data
+#   offsett <- TRUE
 
 
   col_names <- colnames(data_train)
