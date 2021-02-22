@@ -7,8 +7,17 @@
 #' @param formula Formula to model
 #' @param offsett True or False depending on whetehr there is an offset in the formula or not.
 #' @examples
-#' @return Residualplots for all ncor_i and some evaluationmetrixs for each of them as well as a plot containing credible intervals using the simulation
+#' data <- as.data.table(data_fake_nowcasting_aggregated)
+#' data[, year := isoyear_n(cut_doe)]
+#' data[, week := isoweek(cut_doe)]
+#' n_sim <- 1000
+#' formula <- paste0("n_death", "~sin(2 * pi * (week) / 53) + cos(2 * pi * (week ) / 53) + year)")
+#' data_train <- data[cut_doe< "2019-06-30"]
+#' data_predict <- data
+#' offsett <-FALSE
+#' base_line <- baseline_est(ddata_train, data_predict, formula, offsett)
 #'
+#' @return Residualplots for all ncor_i and some evaluationmetrixs for each of them as well as a plot containing credible intervals using the simulation
 #'
 
 baseline_est <- function(data_train, data_predict, n_sim = 1000, formula, offsett ){
@@ -70,7 +79,7 @@ baseline_est <- function(data_train, data_predict, n_sim = 1000, formula, offset
   }
 
 
-  expected <-(rnbinom(length(expected_fix),mu = exp(expected_fix), size = (exp(expected_fix)/(dispersion-1))))
+  expected <-(rnbinom(length(expected_fix),mu = exp(expected_fix), size = (exp(expected_fix)/(dispersion-1)))) #using a neg bin to draw from a quiasipoison
   #expected <-(rpois(length(expected_fix),exp(expected_fix)))
   #expected <-exp(expected_fix)
   dim(expected)<- dim(expected_fix)
