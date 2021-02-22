@@ -45,7 +45,7 @@ baseline_est <- function(data_train, data_predict, n_sim = 1000, formula, offset
 
   col_names <- colnames(data_train)
   fit <- stats::glm(stats::as.formula(formula), family = "quasipoisson", data = data_train)
-
+  dispersion<- summary(fit)$dispersion
 
   x<- arm::sim(fit, n_sim)
   sim_models <- as.data.frame(as.matrix(x@coef))
@@ -69,7 +69,13 @@ baseline_est <- function(data_train, data_predict, n_sim = 1000, formula, offset
     }
   }
 
-  expected <- as.data.table(exp(expected_fix))
+
+  expected <-(rnbinom(length(expected_fix),mu = exp(expected_fix), size = (exp(expected_fix)/(dispersion-1))))
+  #expected <-(rpois(length(expected_fix),exp(expected_fix)))
+  #expected <-exp(expected_fix)
+  dim(expected)<- dim(expected_fix)
+  expected <- as.data.table(expected)
+
 
   expected_t <- data.table::transpose(expected)
   expected_t$id_row <- 1:nrow(data_predict)
@@ -103,7 +109,7 @@ baseline_est <- function(data_train, data_predict, n_sim = 1000, formula, offset
                                            function(f) lapply(.SD, f))),
                             by = eval(data.table::key(new_data)),.SDcols = c("sim_value")]
 
-# library(ggplot2)
+library(ggplot2)
 # q <- ggplot(aggregated_sim,
 #             aes(x = week,
 #                 y = median.sim_value,
