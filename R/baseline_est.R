@@ -7,19 +7,17 @@
 #' @param formula Formula to model
 #' @param offsett True or False depending on whetehr there is an offset in the formula or not.
 #' @examples
-#' data <- as.data.table(data_fake_nowcasting_aggregated)
-#' data[, year := isoyear_n(cut_doe)]
-#' data[, week := isoweek(cut_doe)]
+#' data <- data.table::as.data.table(data_fake_nowcasting_aggregated)
 #' n_sim <- 1000
-#' formula <- paste0("n_death", "~sin(2 * pi * (week) / 53) + cos(2 * pi * (week ) / 53) + year)")
+#' formula <- paste0("n_death", "~sin(2 * pi * (week) / 53) + cos(2 * pi * (week ) / 53) + year")
 #' data_train <- data[cut_doe< "2019-06-30"]
 #' data_predict <- data
 #' offsett <-FALSE
-#' base_line <- baseline_est(ddata_train, data_predict, formula, offsett)
+#' base_line <- baseline_est(data_train, data_predict, formula = formula, offsett = offsett)
 #'
 #' @return Residualplots for all ncor_i and some evaluationmetrixs for each of them as well as a plot containing credible intervals using the simulation
 #'
-
+#'@export
 baseline_est <- function(data_train, data_predict, n_sim = 1000, formula, offsett ){
 
   cut_doe <- NULL
@@ -32,12 +30,12 @@ baseline_est <- function(data_train, data_predict, n_sim = 1000, formula, offset
 
   #for developping
 #
-#   data <- as.data.table(data_fake_nowcasting_aggregated)
-#   n_sim <- 1000
-#   formula <- paste0("n_death", "~sin(2 * pi * (week) / 53) + cos(2 * pi * (week ) / 53) + year + offset(log(pop))")
-#   data_train <- data[cut_doe< "2019-06-30"]
-#   data_predict <- data
-#   offsett <- TRUE
+  # data <- as.data.table(data_fake_nowcasting_aggregated)
+  # n_sim <- 1000
+  # formula <- paste0("n_death", "~sin(2 * pi * (week) / 53) + cos(2 * pi * (week ) / 53) + year + offset(log(pop))")
+  # data_train <- data[cut_doe< "2019-06-30"]
+  # data_predict <- data
+  # offsett <- TRUE
 
 
   col_names <- colnames(data_train)
@@ -67,7 +65,7 @@ baseline_est <- function(data_train, data_predict, n_sim = 1000, formula, offset
   }
 
 
-  expected <-(rnbinom(length(expected_fix),mu = exp(expected_fix), size = (exp(expected_fix)/(dispersion-1)))) #using a neg bin to draw from a quiasipoison
+  expected <-(stats::rnbinom(length(expected_fix),mu = exp(expected_fix), size = (exp(expected_fix)/(dispersion-1)))) #using a neg bin to draw from a quiasipoison
   #expected <-(rpois(length(expected_fix),exp(expected_fix)))
   #expected <-exp(expected_fix)
   dim(expected)<- dim(expected_fix)
@@ -106,7 +104,7 @@ baseline_est <- function(data_train, data_predict, n_sim = 1000, formula, offset
                                            function(f) lapply(.SD, f))),
                             by = eval(data.table::key(new_data)),.SDcols = c("sim_value")]
 
-library(ggplot2)
+#library(ggplot2)
 # q <- ggplot(aggregated_sim,
 #             aes(x = week,
 #                 y = median.sim_value,
