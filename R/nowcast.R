@@ -21,7 +21,8 @@ nowcast_correction_fn_simple <- function(data, n_week_adjusting){
   fit_vec<- vector(mode = "list", length = (n_week_adjusting+1))
   for ( i in 0:n_week_adjusting){
 
-    fit <- stats::glm(stats::as.formula(paste0("n_death", "~",  glue::glue("n0_{i}"))), family = "quasipoisson", data = data[1:(nrow(data)-n_week_adjusting)])
+    fit <- stats::glm(stats::as.formula(paste0("n_death", "~",  glue::glue("n0_{i}"))),
+                      family = "quasipoisson", data = data[1:(nrow(data)-n_week_adjusting)])
     n_cor <- round(stats::predict(fit, newdata = data, type = "response")) ###SHOULD THIS BE ROUNDED?
     data[, glue::glue("ncor0_{i}"):= n_cor]
 
@@ -83,7 +84,8 @@ nowcast_correction_fn_expanded <- function(data, n_week_adjusting){
   for ( i in 0:n_week_adjusting){
    # print(i)
 
-    formula <- paste0("n_death", "~sin(2 * pi * (week - 1) / 52) + cos(2 * pi * (week - 1) / 52)+ year +", glue::glue("n0_{i}_lag1"), "+",  glue::glue("n0_{i}"))
+    formula <- paste0("n_death", "~sin(2 * pi * (week - 1) / 52) + cos(2 * pi * (week - 1) / 52)+ year +",
+                      glue::glue("n0_{i}_lag1"), "+",  glue::glue("n0_{i}"))
 
     if(i>=1){
       for (j in 0:(i-1)){
