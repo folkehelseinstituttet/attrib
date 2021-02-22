@@ -87,7 +87,7 @@ nowcast_aggregate <- function(
   # aggregation_date <- as.Date("2020-01-01")
   # n_week <- 15
 
-  ### check og parameters ----
+  ### check of parameters ----
 
   if (! "doe" %in% colnames(data)){
     stop("The dataset does not have the correct column names")
@@ -180,16 +180,12 @@ nowcast_aggregate <- function(
   }
 
 
-  # pop_data<- as.data.table(fhidata::norway_population_b2020)[ location_code == "norge"]
+  # pop_data<- fhidata::norway_population_by_age_cats(cats = list(c(1:120)))[location_code == "norge"]
   #
-  # pop_tot <-pop_data[, .(
-  #   "pop" = sum(pop)
-  # ), keyby = .(
-  #   year
-  # )]
+
   d_corrected[, week := isoweek(cut_doe)]
   d_corrected[, year := isoyear_n(cut_doe)]
-  #d_corrected[pop_tot, pop := pop, on = "year"]
+  #d_corrected[pop_data, pop := pop, on = "year"]
 
 
     # data_fake_nowcasting_aggregated <- d_corrected
