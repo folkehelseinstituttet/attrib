@@ -139,7 +139,7 @@ sim <- function(
 
   if(PI == TRUE){
     dispersion<- summary(fit)$dispersion
-    expected <- (rnbinom(length(expected_fix),mu = exp(expected_fix), size = (exp(expected_fix)/(dispersion-1))))
+    expected <- (rpois(length(expected_fix),exp(expected_fix)))
     dim(expected)<- dim(expected_fix)
     expected <- as.data.table(expected)
     }
