@@ -25,3 +25,13 @@ Residualplots for all ncor_i and some evaluationmetrixs for each of them as well
 For more details see the help vignette:
 \code{vignette("intro", package="attrib")}
 }
+\examples{
+data <- data.table::as.data.table(data_fake_nowcasting_aggregated)
+n_sim <- 1000
+formula <- paste0("n_death", "~sin(2 * pi * (week) / 53) + cos(2 * pi * (week ) / 53) + year")
+data_train <- data[cut_doe< "2019-06-30"]
+data_predict <- data
+offsett <-FALSE
+base_line <- baseline_est(data_train, data_predict, formula = formula, offsett = offsett)
+
+}
