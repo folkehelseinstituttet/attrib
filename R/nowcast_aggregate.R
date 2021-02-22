@@ -180,6 +180,16 @@ nowcast_aggregate <- function(
   }
 
 
+  # pop_data<- as.data.table(fhidata::norway_population_b2020)[ location_code == "norge"]
+  #
+  # pop_tot <-pop_data[, .(
+  #   "pop" = sum(pop)
+  # ), keyby = .(
+  #   year
+  # )]
+  d_corrected[, week := isoweek(cut_doe)]
+  d_corrected[, year := isoyear_n(cut_doe)]
+  #d_corrected[pop_tot, pop := pop, on = "year"]
 
 
     # data_fake_nowcasting_aggregated <- d_corrected
