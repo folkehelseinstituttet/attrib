@@ -361,7 +361,7 @@ nowcast <- function(
   col_order <- c(c("yrwk", "n_death", "ncor"), colnames(data)[which(!colnames(data) %in% c("yrwk", "n_death", "ncor"))])
   setcolorder(data, col_order)
 
-  date_n_Week_adjusting_start <- date_0 - (n_week_adjusting-1)*7
+  date_n_Week_adjusting_start <- date_0 - (n_week_adjusting)*7
   data_sim_clean <- data_sim[cut_doe >= date_n_Week_adjusting_start]
 
   col_order_sim <- c(c("yrwk", "n_death", "sim_value"), colnames(data_sim_clean)[which(!colnames(data_sim_clean) %in% c("yrwk", "n_death", "sim_value"))])
