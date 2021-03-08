@@ -296,10 +296,9 @@ nowcast_correction_sim <- function(nowcast_correction_object, offset, n_sim = 50
 #' \code{vignette("intro", package="attrib")}
 #'
 #' @param data_aggregated Aggregated dataset from the function npowcast_aggregate
+#' @param offset Boolian variable. Should be true if one wants to have offset(pop) in the formula. Then pop_data must be in the
 #' @param n_week_adjusting Number of weeks to correct
 #' @param n_week_training Number of weeks to train on
-#' @param pop_data, Dataset containing population data on a weekly basis, must contain year so it can be merged with the aggregated data. If the dataset contains week this will also be uusCan be NULL.
-#' @param nowcast_correction_fn Correction function. Must return a table with columnames ncor0_i for i in 0:n_week and cut_doe. The default uses "n_death ~ n0_i" for all i in 0:n_week.
 #' @param nowcast_correction_sim_fn Simmulatoin function. Must return a datatable with the following collumns  "n_death", "sim_value", "cut_doe", "ncor" and simmulations for equally many weeks as n_week_adjust.
 #' @examples
 #'

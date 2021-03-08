@@ -55,7 +55,8 @@ nowcast_eval <- function(nowcast_object, n_week_adjusting){
   # data_aggregated <- as.data.table(data_fake_nowcasting_aggregated)
   # n_week_training <- 50
   # n_week_adjusting <- 8
-  # nowcast_object <- nowcast(data_aggregated= data_aggregated, n_week_training = 50, n_week_adjusting = 8)
+
+  # nowcast_object <- nowcast(data_aggregated= data_aggregated, n_week_training = 50, n_week_adjusting = 8, offset = TRUE)
 
 
 
