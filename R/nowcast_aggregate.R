@@ -47,6 +47,7 @@
 #' @param data Dataset containing doe (Date of event) and dor (Date of registation). The columns must have these exact names.
 #' @param aggregation_date Date of aggregation
 #' @param n_week Number of weeks to calculate the percentage of the total registraations. Must be larger og equal to 2 amd smaller than the total number of weeks in the dataset.
+#' @param pop_data Population data, must contain a column called pop with the population data and a column with year and possibly week.
 #' @examples
 #'
 #' data <- attrib::data_fake_nowcasting_raw
@@ -60,7 +61,8 @@
 nowcast_aggregate <- function(
   data,
   aggregation_date,
-  n_week) {
+  n_week,
+  pop_data = NULL) {
 
   doe <- NULL
   dor <- NULL
@@ -83,10 +85,10 @@ nowcast_aggregate <- function(
 
   ##### for developing
 
-  # data <- gen_fake_death_data()
-  # aggregation_date <- as.Date("2020-01-01")
-  # n_week <- 15
-
+  data <- gen_fake_death_data()
+  aggregation_date <- as.Date("2020-01-01")
+  n_week <- 15
+  pop_data <- fhidata::norway_population_by_age_cats(cats = list(c(1:120)))[location_code == "norge"]
   ### check of parameters ----
 
   if (! "doe" %in% colnames(data)){
@@ -185,7 +187,13 @@ nowcast_aggregate <- function(
 
   d_corrected[, week := isoweek(cut_doe)]
   d_corrected[, year := isoyear_n(cut_doe)]
-  #d_corrected[pop_data, pop := pop, on = "year"]
+  if(!is.null(pop_data)){
+    if ("week" %in% colnames(pop_data)){
+    d_corrected[pop_data, pop := pop, on = c("year", "week")]
+    }else{
+    d_corrected[pop_data, pop := pop, on = c("year")]
+    }
+  }
 
 
     # data_fake_nowcasting_aggregated <- d_corrected
