@@ -85,10 +85,11 @@ nowcast_aggregate <- function(
 
   ##### for developing
 
-  data <- gen_fake_death_data()
-  aggregation_date <- as.Date("2020-01-01")
-  n_week <- 15
-  pop_data <- fhidata::norway_population_by_age_cats(cats = list(c(1:120)))[location_code == "norge"]
+  # data <- gen_fake_death_data()
+  # aggregation_date <- as.Date("2020-01-01")
+  # n_week <- 15
+  # pop_data <- fhidata::norway_population_by_age_cats(cats = list(c(1:120)))[location_code == "norge"]
+
   ### check of parameters ----
 
   if (! "doe" %in% colnames(data)){
