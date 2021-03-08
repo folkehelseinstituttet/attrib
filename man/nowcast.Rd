@@ -3,10 +3,11 @@
 \name{nowcast}
 \alias{nowcast}
 \title{For more details see the help vignette:
-\code{vignette("intro", package="attrib")}}
+\code{vignette("nowcast", package="attrib")}}
 \usage{
 nowcast(
   data_aggregated,
+  offset,
   n_week_adjusting,
   n_week_training,
   nowcast_correction_fn = nowcast_correction_fn_expanded,
@@ -16,11 +17,13 @@ nowcast(
 \arguments{
 \item{data_aggregated}{Aggregated dataset from the function npowcast_aggregate}
 
+\item{offset}{Boolian variable. Should be true if one wants to have offset(pop) in the formula. Then pop_data must be in the}
+
 \item{n_week_adjusting}{Number of weeks to correct}
 
 \item{n_week_training}{Number of weeks to train on}
 
-\item{nowcast_correction_fn}{Correction function. Must return a table with columnames ncor0_i for i in 0:n_week and cut_doe. The default uses "n_death ~ n0_i" for all i in 0:n_week.}
+\item{nowcast_correction_fn}{Correction function. The deafault is nowcast_correction_fn_expanded. Must return the same as this function.}
 
 \item{nowcast_correction_sim_fn}{Simmulatoin function. Must return a datatable with the following collumns  "n_death", "sim_value", "cut_doe", "ncor" and simmulations for equally many weeks as n_week_adjust.}
 }
@@ -29,12 +32,12 @@ Dataset including the corrected values for n_death
 }
 \description{
 For more details see the help vignette:
-\code{vignette("intro", package="attrib")}
+\code{vignette("nowcast", package="attrib")}
 }
 \examples{
 
 data <- attrib::data_fake_nowcasting_aggregated
 n_week_adjusting <- 8
 n_week_training <- 12
-nowcast_object <- nowcast(data, n_week_adjusting,n_week_training )
+nowcast_object <- nowcast(data, n_week_adjusting,n_week_training , offset = TRUE)
 }

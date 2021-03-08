@@ -3,7 +3,7 @@
 \name{nowcast_correction_fn_simple}
 \alias{nowcast_correction_fn_simple}
 \title{For more details see the help vignette:
-\code{vignette("intro", package="attrib")}}
+\code{vignette("nowcast", package="attrib")}}
 \usage{
 nowcast_correction_fn_simple(data, n_week_adjusting)
 }
@@ -17,7 +17,7 @@ nowcast_correction_object including corrected data for all weeks in n_wwk_adjust
 }
 \description{
 For more details see the help vignette:
-\code{vignette("intro", package="attrib")}
+\code{vignette("nowcast", package="attrib")}
 }
 \examples{
 data <- attrib::data_fake_nowcasting_aggregated

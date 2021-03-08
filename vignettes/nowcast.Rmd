@@ -24,6 +24,7 @@ knitr::opts_chunk$set(
 ```{r setup}
 library(attrib)
 library(ggplot2)
+
 ```
 The nowcasting functions in `attrib` are made to correct for delay in registration. This vignette will go through how to use:
 
@@ -49,9 +50,10 @@ As we can see this data set contains only date of registration "doe" and date of
 ```{r}
 aggregation_date <- as.Date("2020-01-01")
 n_week <- 10
+pop_data<- fhidata::norway_population_by_age_cats(cats = list(c(1:120)))[location_code == "norge"]
 mortality_data_aggregated <- nowcast_aggregate(mortality_data_raw,
                                                aggregation_date = aggregation_date, 
-                                               n_week = n_week )
+                                               n_week = n_week, pop_data = pop_data )
 ``` 
 
 
@@ -104,7 +106,7 @@ We use the default functions for "nowcast_correction_fn" and "nowcast_correction
 ```{r}
 n_week_adjusting <- 5
 n_week_training <- 52
-nowcast_object <- nowcast(mortality_data_aggregated, n_week_adjusting,n_week_training )
+nowcast_object <- nowcast(mortality_data_aggregated, n_week_adjusting,n_week_training , offset = TRUE)
 ```
 
 `nowcast` returns two datasets. One beeing the original dataset with the corrected data added and the other containing simulations for the predicted value of ncor so one can make credible intervals. 
@@ -179,11 +181,11 @@ nowcast_sim <- data.table::as.data.table(nowcast_object$data_sim)
 
 ```{r}
 # Quantile functins
-q05 <- function(x){
-  return(quantile(x, 0.05))
+q025 <- function(x){
+  return(quantile(x, 0.025))
 }
-q95 <- function(x){
-  return(quantile(x, 0.95))
+q975 <- function(x){
+  return(quantile(x, 0.975))
 }
 ```
 
@@ -196,7 +198,7 @@ data.table::setkeyv(nowcast_sim,
 
 aggregated_nowcast_sim<- nowcast_sim[,
                                    unlist(recursive = FALSE, 
-                                          lapply(.(median = median, q05 = q05, q95 = q95),
+                                          lapply(.(median = median, q025 = q025, q975 = q975),
                                                                     function(f) lapply(.SD, f)
                                    )), 
                                    by = eval(data.table::key(nowcast_sim)),
@@ -208,11 +210,11 @@ aggregated_nowcast_sim
 
 
 ```{r}
-#nowcast_data[, q05.sim_value := ncor]
-nowcast_data[aggregated_nowcast_sim, on = "cut_doe", q05.sim_value := q05.sim_value]
+#nowcast_data[, q025.sim_value := ncor]
+nowcast_data[aggregated_nowcast_sim, on = "cut_doe", q025.sim_value := q025.sim_value]
 
-#nowcast_data[, q95.sim_value := ncor]
-nowcast_data[aggregated_nowcast_sim, on = "cut_doe", q95.sim_value := q95.sim_value]
+#nowcast_data[, q975.sim_value := ncor]
+nowcast_data[aggregated_nowcast_sim, on = "cut_doe", q975.sim_value := q975.sim_value]
 
 ```
 
@@ -223,18 +225,18 @@ q <- ggplot(base_line$aggregated[year == "2019"],
             aes(x = week,
                 y = median.sim_value))
 q <- q + geom_ribbon(data = base_line$aggregated[year== 2019],
-                     aes(x = week, ymin=q05.sim_value,
-                         ymax=q95.sim_value, 
+                     aes(x = week, ymin=q025.sim_value,
+                         ymax=q925.sim_value, 
                          colour = "Baseline estimate", 
                          fill ="Baseline estimate"),
                      alpha=0.5)
 q <- q + geom_line(data = nowcast_data[year == "2019"], 
                    aes(x = week, y = ncor,  colour = "Number of deaths corrected" ))
 q <- q + geom_line(data = nowcast_data[(nrow(nowcast_data)-n_week_adjusting):nrow(nowcast_data)],
-                   aes(x = week, y = q05.sim_value ,colour = "Credible intervall for n corrected" ),
+                   aes(x = week, y = q025.sim_value ,colour = "Credible intervall for n corrected" ),
                    linetype = "dashed")
 q <- q + geom_line(data = nowcast_data[(nrow(nowcast_data)-n_week_adjusting):nrow(nowcast_data)],
-                   aes(x = week, y = q95.sim_value, colour = "Credible intervall for n corrected" ),
+                   aes(x = week, y = q975.sim_value, colour = "Credible intervall for n corrected" ),
                    linetype = "dashed")
 q <- q + scale_y_continuous(name = "Number of deaths")
 q <- q + guides(fill = FALSE)

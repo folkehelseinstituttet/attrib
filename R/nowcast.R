@@ -3,7 +3,7 @@
 ### nowcast_correction_fn_simple ----
 
 #' For more details see the help vignette:
-#' \code{vignette("intro", package="attrib")}
+#' \code{vignette("nowcast", package="attrib")}
 #'
 #' @param data Data generated with nowcast_aggregate containing the part of the dataset that the model should train on.
 #' @param n_week_adjusting Number of weeks to correct
@@ -42,10 +42,11 @@ nowcast_correction_fn_simple <- function(data, n_week_adjusting){
 ### nowcast_correction_fn_expanded ----
 
 #' For more details see the help vignette:
-#' \code{vignette("intro", package="attrib")}
+#' \code{vignette("nowcast", package="attrib")}
 #'
 #' @param data Data generated with nowcast_aggregate containing the part of the dataset that the model should train on.
 #' @param n_week_adjusting Number of weeks to correct
+#' @param offset Boolian value which is set to true if offset(log(pop)) is a part of the formula
 #' @return nowcast_correction_object including corrected data for all weeks in n_wwk_adjust and the model fits for all weeks
 #' @examples
 #' data <- attrib::data_fake_nowcasting_aggregated
@@ -54,7 +55,7 @@ nowcast_correction_fn_simple <- function(data, n_week_adjusting){
 #' n_week_start <- n_week_adjusting + n_week_train
 #' date_0 <- data[nrow(data),]$cut_doe #last date in the dataset, assume the dataset is ordered.
 #' data <- data[cut_doe >= (date_0 - n_week_start*7 + 1), ]
-#' nowcast_correction_object <- nowcast_correction_fn_expanded(data, n_week_adjusting )
+#' nowcast_correction_object <- nowcast_correction_fn_expanded(data, n_week_adjusting, offset = TRUE )
 #' @export
 nowcast_correction_fn_expanded <- function(data, n_week_adjusting, offset){
 
@@ -179,10 +180,11 @@ nowcast_correction_fn_crude <- function(data, n_week_adjusting){
 ### nowcast_correction_sim ----
 
 #' For more details see the help vignette:
-#' \code{vignette("intro", package="attrib")}
+#' \code{vignette("nowcast", package="attrib")}
 #'
 #' @param nowcast_correction_object object returned from function nowcast_correction_fn_expanded
 #' @param n_sim Number of simulations
+#' @param offset Boolian value which is set to true if offset(log(pop)) is a part of the formula
 #' @return simulations of the estimate made by the fitted models in nowcast_correction_fn
 #' @examples
 #' data <- attrib::data_fake_nowcasting_aggregated
@@ -191,8 +193,8 @@ nowcast_correction_fn_crude <- function(data, n_week_adjusting){
 #' n_week_start <- n_week_adjusting + n_week_train
 #' date_0 <- data[nrow(data),]$cut_doe #last date in the dataset, assume the dataset is ordered.
 #' data <- data[cut_doe >= (date_0 - n_week_start*7 + 1), ]
-#' nowcast_correction_object <- nowcast_correction_fn_expanded(data, n_week_adjusting )
-#' nowcast_sim <- nowcast_correction_sim(nowcast_correction_object)
+#' nowcast_correction_object <- nowcast_correction_fn_expanded(data, n_week_adjusting, offset = TRUE )
+#' nowcast_sim <- nowcast_correction_sim(nowcast_correction_object, offset = TRUE)
 #' @export
 nowcast_correction_sim <- function(nowcast_correction_object, offset, n_sim = 500){
 
@@ -260,7 +262,7 @@ nowcast_correction_sim <- function(nowcast_correction_object, offset, n_sim = 50
     }
 
     dispersion<- summary(fit)$dispersion
-    print(dispersion)
+    #print(dispersion)
     if(dispersion > 1){
       expected_sim <-data.table(
         sim_id = 1:n_sim,
@@ -293,19 +295,20 @@ nowcast_correction_sim <- function(nowcast_correction_object, offset, n_sim = 50
 
 
 #' For more details see the help vignette:
-#' \code{vignette("intro", package="attrib")}
+#' \code{vignette("nowcast", package="attrib")}
 #'
 #' @param data_aggregated Aggregated dataset from the function npowcast_aggregate
 #' @param offset Boolian variable. Should be true if one wants to have offset(pop) in the formula. Then pop_data must be in the
 #' @param n_week_adjusting Number of weeks to correct
 #' @param n_week_training Number of weeks to train on
+#' @param nowcast_correction_fn Correction function. The deafault is nowcast_correction_fn_expanded. Must return the same as this function.
 #' @param nowcast_correction_sim_fn Simmulatoin function. Must return a datatable with the following collumns  "n_death", "sim_value", "cut_doe", "ncor" and simmulations for equally many weeks as n_week_adjust.
 #' @examples
 #'
 #' data <- attrib::data_fake_nowcasting_aggregated
 #' n_week_adjusting <- 8
 #' n_week_training <- 12
-#' nowcast_object <- nowcast(data, n_week_adjusting,n_week_training )
+#' nowcast_object <- nowcast(data, n_week_adjusting,n_week_training , offset = TRUE)
 #' @return Dataset including the corrected values for n_death
 #'
 #' @export
@@ -323,6 +326,7 @@ nowcast <- function(
   temp_variable <- NULL
   yrwk <- NULL
   cut_doe <- NULL
+  . <- NULL
 
 
   ##### for developing
@@ -393,8 +397,29 @@ nowcast <- function(
 
   data_sim_clean <- subset(data_sim_clean, select = c("yrwk", "n_death", "sim_value", "cut_doe", "week", "year"))
 
+
+
+  q025 <- function(x){
+    return(stats::quantile(x, 0.025))
+  }
+  q975 <- function(x){
+    return(stats::quantile(x, 0.975))
+  }
+
+
+  col_names <- colnames(data_sim_clean)
+  data.table::setkeyv(data_sim_clean,
+                      col_names[!col_names %in% c("sim_value")])
+
+  aggregated_data_sim<- data_sim_clean[, unlist(recursive = FALSE, lapply(.(median = stats::median, q025 = q025, q975 = q975),
+                                                                    function(f) lapply(.SD, f))),
+                                 by = eval(data.table::key(data_sim_clean)),
+                                 .SDcols = c("sim_value")]
+
+
   retval <- vector("list")
   retval$data <- data
   retval$data_sim <- data_sim_clean
+  retval$data_sim_aggregated <- aggregated_data_sim
   return (retval)
 }

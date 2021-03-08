@@ -77,6 +77,7 @@ nowcast_aggregate <- function(
   new_value <- NULL
   temp_outcome_n <- NULL
   temp_outcome_p<- NULL
+  pop <- NULL
 
 
   # retur only dataset or graphs as well? ## First only dataset!

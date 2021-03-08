@@ -3,7 +3,7 @@
 \name{nowcast_eval}
 \alias{nowcast_eval}
 \title{For more details see the help vignette:
-\code{vignette("intro", package="attrib")}}
+\code{vignette("nowcast", package="attrib")}}
 \usage{
 nowcast_eval(nowcast_object, n_week_adjusting)
 }
@@ -17,7 +17,7 @@ Residualplots for all ncor_i and some evaluationmetrixs for each of them as well
 }
 \description{
 For more details see the help vignette:
-\code{vignette("intro", package="attrib")}
+\code{vignette("nowcast", package="attrib")}
 }
 \examples{
 
@@ -25,6 +25,6 @@ For more details see the help vignette:
  n_week_training <- 50
  n_week_adjusting <- 8
  nowcast_object <- nowcast(data_aggregated= data_aggregated,
-   n_week_training = 50, n_week_adjusting = 8)
+   n_week_training = 50, n_week_adjusting = 8, offset = TRUE)
  nowcast_eval_object <- nowcast_eval(nowcast_object, n_week_adjusting)
 }

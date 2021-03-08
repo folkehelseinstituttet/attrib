@@ -3,7 +3,7 @@
 \name{baseline_est}
 \alias{baseline_est}
 \title{For more details see the help vignette:
-\code{vignette("intro", package="attrib")}}
+\code{vignette("nowcast", package="attrib")}}
 \usage{
 baseline_est(data_train, data_predict, n_sim = 1000, formula, offsett)
 }
@@ -23,7 +23,7 @@ Residualplots for all ncor_i and some evaluationmetrixs for each of them as well
 }
 \description{
 For more details see the help vignette:
-\code{vignette("intro", package="attrib")}
+\code{vignette("nowcast", package="attrib")}
 }
 \examples{
 data <- data.table::as.data.table(data_fake_nowcasting_aggregated)

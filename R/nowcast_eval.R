@@ -1,5 +1,5 @@
 #' For more details see the help vignette:
-#' \code{vignette("intro", package="attrib")}
+#' \code{vignette("nowcast", package="attrib")}
 #'
 #' @param nowcast_object Object from the function nowcast
 #' @param n_week_adjusting Number of weeks to adjust
@@ -9,7 +9,7 @@
 #'  n_week_training <- 50
 #'  n_week_adjusting <- 8
 #'  nowcast_object <- nowcast(data_aggregated= data_aggregated,
-#'    n_week_training = 50, n_week_adjusting = 8)
+#'    n_week_training = 50, n_week_adjusting = 8, offset = TRUE)
 #'  nowcast_eval_object <- nowcast_eval(nowcast_object, n_week_adjusting)
 #' @return Residualplots for all ncor_i and some evaluationmetrixs for each of them as well as a plot containing credible intervals using the simulations
 #' @export
@@ -31,8 +31,8 @@ nowcast_eval <- function(nowcast_object, n_week_adjusting){
   median <- NULL
   yrwk <- NULL
   median.sim_value <- NULL
-  q05.sim_value <- NULL
-  q95.sim_value <- NULL
+  q025.sim_value <- NULL
+  q975.sim_value <- NULL
 
 
 
@@ -55,7 +55,6 @@ nowcast_eval <- function(nowcast_object, n_week_adjusting){
   # data_aggregated <- as.data.table(data_fake_nowcasting_aggregated)
   # n_week_training <- 50
   # n_week_adjusting <- 8
-
   # nowcast_object <- nowcast(data_aggregated= data_aggregated, n_week_training = 50, n_week_adjusting = 8, offset = TRUE)
 
 
@@ -107,11 +106,11 @@ nowcast_eval <- function(nowcast_object, n_week_adjusting){
     retval[[i +1]] <- temp_retval
   }
 
-  q05 <- function(x){
-    return(stats::quantile(x, 0.05))
+  q025 <- function(x){
+    return(stats::quantile(x, 0.025))
   }
-  q95 <- function(x){
-    return(stats::quantile(x, 0.95))
+  q975 <- function(x){
+    return(stats::quantile(x, 0.975))
   }
 
 
@@ -119,14 +118,14 @@ nowcast_eval <- function(nowcast_object, n_week_adjusting){
   data.table::setkeyv(data_sim,
                       col_names[!col_names %in% c("sim_value")])
 
-  aggregated_data_sim<- data_sim[, unlist(recursive = FALSE, lapply(.(median = stats::median, q05 = q05, q95 = q95),
+  aggregated_data_sim<- data_sim[, unlist(recursive = FALSE, lapply(.(median = stats::median, q025 = q025, q975 = q975),
                                                                     function(f) lapply(.SD, f))),
                                  by = eval(data.table::key(data_sim)),
                                  .SDcols = c("sim_value")]
 
   q <- ggplot2::ggplot(aggregated_data_sim,
                        ggplot2::aes(x = yrwk, y = median.sim_value))
-  q <- q + ggplot2::geom_errorbar(ggplot2::aes(ymin=q05.sim_value, ymax=q95.sim_value), colour="blue", width=.1)
+  q <- q + ggplot2::geom_errorbar(ggplot2::aes(ymin=q025.sim_value, ymax=q975.sim_value), colour="blue", width=.1)
   q <- q + ggplot2::geom_point( size=3)
   q <- q + ggplot2::ggtitle("Estimated mortality with 90 percent credible intervals")
   q <- q +  ggplot2::scale_y_continuous("N corrected")

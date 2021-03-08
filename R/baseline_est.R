@@ -1,5 +1,5 @@
 #' For more details see the help vignette:
-#' \code{vignette("intro", package="attrib")}
+#' \code{vignette("nowcast", package="attrib")}
 #'
 #' @param data_train Data to train on.
 #' @param data_predict Data to predict on
