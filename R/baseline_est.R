@@ -86,11 +86,11 @@ baseline_est <- function(data_train, data_predict, n_sim = 1000, formula, offset
   setnames(new_data, "value", "sim_value")
 
 
-  q05 <- function(x){
-    return(stats::quantile(x, 0.05))
+  q025 <- function(x){
+    return(stats::quantile(x, 0.025))
   }
-  q95 <- function(x){
-    return(stats::quantile(x, 0.95))
+  q925 <- function(x){
+    return(stats::quantile(x, 0.975))
   }
 
   col_names_new <- colnames(new_data)
@@ -100,7 +100,7 @@ baseline_est <- function(data_train, data_predict, n_sim = 1000, formula, offset
                                                   )])
 
   aggregated_sim<- new_data[,unlist(recursive = FALSE,
-                                    lapply(.(median = stats::median, q05 = q05, q95 = q95),
+                                    lapply(.(median = stats::median, q025 = q025, q925 = q925),
                                            function(f) lapply(.SD, f))),
                             by = eval(data.table::key(new_data)),.SDcols = c("sim_value")]
 
@@ -120,6 +120,7 @@ baseline_est <- function(data_train, data_predict, n_sim = 1000, formula, offset
   retval <- vector(mode = "list")
   retval$simulations <- new_data
   retval$aggregated <- aggregated_sim
+  retval$fit <- fit
 return(retval )
 
 }
