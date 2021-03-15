@@ -60,16 +60,18 @@ gen_fake_death_data_county <- function() {
 
   temp_vec <- vector( "list", length = length(skeleton))
 
-  for (i in seq_along(skeleton)){
-
-    skeleton_temp <- expand.grid(
-      date = skeleton[i, date],
-      location_code = skeleton[i, location_code],
-      count = seq(1, skeleton[i, deaths], by = 1),
-      stringsAsFactors = FALSE
-    )
-    setDT(skeleton_temp)
-    temp_vec[[i]] <- as.data.table(skeleton_temp)
+  for (i in seq(1:nrow(skeleton))){
+    #print(i)
+    if (skeleton[i, deaths]>0){
+      skeleton_temp <- expand.grid(
+        date = skeleton[i, date],
+        location_code = skeleton[i, location_code],
+        count = seq(1, skeleton[i, deaths], by = 1),
+        stringsAsFactors = FALSE
+      )
+      setDT(skeleton_temp)
+      temp_vec[[i]] <- as.data.table(skeleton_temp)
+    }
   }
 
   skeleton_death <- rbindlist(temp_vec)

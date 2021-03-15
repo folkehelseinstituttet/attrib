@@ -138,13 +138,14 @@ sim <- function(
   # add together the coefficients for the fixed and random effects
 
   if(PI == TRUE){
-    dispersion<- summary(fit)$dispersion
-    expected <- (stats::rpois(length(expected_fix),exp(expected_fix)))
+    expected <- (stats::rpois(length(expected_fix),exp(expected_fix + expected_ran)))
     dim(expected)<- dim(expected_fix)
     expected <- as.data.table(expected)
+  } else{
+    expected <- as.data.table(exp(expected_fix + expected_ran))
     }
 
-  expected <- as.data.table(exp(expected_fix + expected_ran))
+
 
   expected_t <- data.table::transpose(expected)
   expected_t$id_row <- 1:nrow(data)

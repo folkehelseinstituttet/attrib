@@ -44,7 +44,7 @@
 #' For more details see the help vignette:
 #' \code{vignette("intro", package="attrib")}
 #'
-#' @param data Dataset containing doe (Date of event) and dor (Date of registation). The columns must have these exact names.
+#' @param data Dataset containing doe (Date of event), dor (Date of registation) and location_code. The columns must have these exact names.
 #' @param aggregation_date Date of aggregation
 #' @param n_week Number of weeks to calculate the percentage of the total registraations. Must be larger og equal to 2 amd smaller than the total number of weeks in the dataset.
 #' @param pop_data Population data, must contain a column called pop with the population data and a column with year and possibly week.
@@ -85,11 +85,12 @@ nowcast_aggregate <- function(
 
 
   ##### for developing
-
-  # data <- gen_fake_death_data()
+#
+  # data <- gen_fake_death_data_county()
+  # #data <- gen_fake_death_data()
   # aggregation_date <- as.Date("2020-01-01")
   # n_week <- 15
-  # pop_data <- fhidata::norway_population_by_age_cats(cats = list(c(1:120)))[location_code == "norge"]
+  # pop_data <- fhidata::norway_population_by_age_cats(cats = list(c(1:120)))[location_code %in% unique(fhidata::norway_locations_b2020$county_code)]
 
   ### check of parameters ----
 
@@ -109,7 +110,7 @@ nowcast_aggregate <- function(
 
   ### cleaning ----
   d <- data.table::as.data.table(data)
-  d <- d[, .(doe, dor)]
+  d <- d[, .(doe, dor, location_code)]
   d <- d[dor <= as.Date(cut(aggregation_date, "week"))] # we erase all date for incompleate weeks.
   d <- d[doe <= as.Date(cut(aggregation_date, "week"))]
   d[, cut_doe := as.Date(cut(doe, "week"))]
@@ -120,28 +121,29 @@ nowcast_aggregate <- function(
   d_death <- d[ , .(
     "n_death" = .N
   ), keyby = .(
-    cut_doe
+    cut_doe,
+    location_code
   )]
 
   d[ d_death,
-     on = "cut_doe",
+     on = c("cut_doe","location_code"),
      n_death := n_death]
 
   retval <- vector("list", length = n_week)
-  d_within_week <- d[, .(cut_doe)]
+  d_within_week <- d[, .(cut_doe, location_code)]
 
   for ( i in 1:n_week){
-    temp_d <- d[, .(cut_doe, n_death)]
+    temp_d <- d[, .(cut_doe, n_death, location_code)]
     temp <- d[dor < (as.Date(cut_doe) + i*7), .(
       temp_outcome_n = .N,
       temp_outcome_p = sum(dor < (as.Date(cut_doe) + i*7))/n_death,
       n_death = n_death),
-      keyby = .(cut_doe)]
+      keyby = .(cut_doe, location_code)]
 
     temp_d[,paste0("n0_", (i-1)) := 0]
     temp_d[,paste0("p0_", (i-1)) := 0]
-    temp_d[temp, on= .(cut_doe),  paste0("n0_", (i-1)) := temp_outcome_n]
-    temp_d[temp, on= .(cut_doe),  paste0("p0_", (i-1)) := temp_outcome_p]
+    temp_d[temp, on= .(cut_doe, location_code),  paste0("n0_", (i-1)) := temp_outcome_n]
+    temp_d[temp, on= .(cut_doe, location_code),  paste0("p0_", (i-1)) := temp_outcome_p]
 
 
     retval[[i ]] <- as.data.frame(temp_d)
@@ -164,8 +166,8 @@ nowcast_aggregate <- function(
 
 
   # insert NA where we do not have data
-
-  d_corrected <- d_within_week[, .(cut_doe, n_death, n0_0, p0_0)]
+  date_0 <- d_within_week[nrow(d_within_week), cut_doe]
+  d_corrected <- d_within_week[, .(cut_doe,location_code, n_death, n0_0, p0_0)]
   for ( i in 2:n_week){
 
     week_n <- paste0("n0_",(i-1))
@@ -173,13 +175,20 @@ nowcast_aggregate <- function(
     d_within_week[, new_value := NA]
     d_within_week[, temp_variable_n := get(week_n)]
     d_within_week[, temp_variable_p := get(week_p)]
-    d_within_week[(nrow(d_within_week)-i+2):nrow(d_within_week), temp_variable_n := new_value]
-    d_within_week[(nrow(d_within_week)-i+2):nrow(d_within_week), temp_variable_p := new_value]
+
+
+    d_within_week[cut_doe >= (date_0- (i-2)*7)]#, temp_variable_n := new_value]
+
+
+    d_within_week[cut_doe >= (date_0- (i-2)*7), temp_variable_n := new_value]
+    d_within_week[cut_doe >= (date_0- (i-2)*7), temp_variable_p := new_value]
+
+
     d_corrected[ d_within_week,
-                 on = "cut_doe",
+                 on = c("cut_doe", "location_code"),
                  paste0("n0_",(i-1)) := temp_variable_n]
     d_corrected[ d_within_week,
-                 on = "cut_doe",
+                 on = c("cut_doe", "location_code"),
                  paste0("p0_",(i-1)) := temp_variable_p]
   }
 
@@ -191,9 +200,11 @@ nowcast_aggregate <- function(
   d_corrected[, year := isoyear_n(cut_doe)]
   if(!is.null(pop_data)){
     if ("week" %in% colnames(pop_data)){
-    d_corrected[pop_data, pop := pop, on = c("year", "week")]
+    d_corrected[pop_data, pop := pop, on = c("year", "week", "location_code")]
     }else{
-    d_corrected[pop_data, pop := pop, on = c("year")]
+    d_corrected[pop_data,
+                on = c("year", "location_code"),
+                pop := pop]
     }
   }
 

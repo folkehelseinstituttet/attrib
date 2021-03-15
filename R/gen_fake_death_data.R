@@ -105,9 +105,10 @@ gen_fake_death_data <- function() {
   skeleton[, doe := date]
   skeleton[, reg_lag := stats::rpois(.N, 21)]
   skeleton[, dor := doe + reg_lag]
+  skeleton[, location_code:= "norge"]
 
   # data_fake_nowcasting_raw <- skeleton[,.(doe, dor)]
   # save(data_fake_nowcasting_raw, file = "data/data_fake_nowcasting_raw.rda", compress = "bzip2")
 
-  return(skeleton[,.(doe, dor)])
+  return(skeleton[,.(doe, dor, location_code)])
 }
