@@ -136,16 +136,17 @@ sim <- function(
   }
   # print("loop over")
   # add together the coefficients for the fixed and random effects
+# Remowe this out of the function!!!
+#   if(PI == TRUE){
+#     expected <- (stats::rpois(length(expected_fix),exp(expected_fix + expected_ran)))
+#     dim(expected)<- dim(expected_fix)
+#     expected <- as.data.table(expected)
+#   } else{
+#     expected <- as.data.table(exp(expected_fix + expected_ran))
+#     }
+#
 
-  if(PI == TRUE){
-    expected <- (stats::rpois(length(expected_fix),exp(expected_fix + expected_ran)))
-    dim(expected)<- dim(expected_fix)
-    expected <- as.data.table(expected)
-  } else{
-    expected <- as.data.table(exp(expected_fix + expected_ran))
-    }
-
-
+  expected <- as.data.table(exp(expected_fix + expected_ran))
 
   expected_t <- data.table::transpose(expected)
   expected_t$id_row <- 1:nrow(data)
