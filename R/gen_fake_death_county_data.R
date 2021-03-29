@@ -6,7 +6,7 @@
 #' \item{dor}{Date of registration}
 #' \item{location_code}{Location code}
 #' }
-"data_fake_nowcasting_raw"
+"data_fake_nowcasting_county_raw"
 
 
 # Generates fake data
@@ -81,7 +81,7 @@ gen_fake_death_data_county <- function() {
   skeleton_death[, dor := doe + reg_lag]
 
   # data_fake_nowcasting_county_raw <- skeleton_death[,.(doe, dor, location_code)]
-  # save(data_fake_nowcasting_county_raw, file = "data/data_fake_nowcasting_county_raw.rds", compress = "bzip2")
+  # save(data_fake_nowcasting_county_raw, file = "data/data_fake_nowcasting_county_raw.rda", compress = "bzip2")
 
   return(skeleton_death[,.(doe, dor, location_code)])
 }
