@@ -36,10 +36,8 @@ For more details see the help vignette:
 \code{vignette("nowcast", package="attrib")}
 }
 \examples{
-data_raw <- data.table::as.data.table(data_fake_nowcasting_county_raw)
-pop_data <- fhidata::norway_population_by_age_cats(cats = list(c(1:120)))[location_code \%in\% unique(fhidata::norway_locations_b2020$county_code)]
-data_aggregated <- nowcast_aggregate(data_raw, lubridate::today(), n_week = 13, pop_data = pop_data)
-data_aggregated <- data_aggregated[order(cut_doe, location_code)]
+\dontrun{
+data_aggregated <- data.table::as.data.table(data_fake_nowcasting_county_aggregated)
 n_sim <- 10
 data_train <- data_aggregated[cut_doe< "2019-06-30"]
 data_predict <- data_aggregated
@@ -48,5 +46,5 @@ fixef <- "1 + sin(2 * pi * (week) / 53) + cos(2 * pi * (week ) / 53) + year"
 ranef <- "(1|location_code)"
 offset <- "log(pop)"
 base<- baseline_est_expand(data_train, data_predict, n_sim, response, fixef, ranef, offset)
-
+}
 }

@@ -22,9 +22,9 @@ fit_attrib(
 
 \item{ranef}{The random effects}
 
-\item{offset}{The offsets.}
+\item{dist_family}{Family}
 
-\item{family}{Family}
+\item{offset}{The offsets.}
 }
 \value{
 The model fit of the data with additional attributes offset, response and fit_fix.
