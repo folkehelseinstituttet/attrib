@@ -7,8 +7,8 @@
 #' @param fixef Fixed effekts
 #' @param ranef Random effekts, default is NULL
 #' @param offset Offset, can be NULL
-#' @examples \donotrun{
-
+#' @examples
+#' \dontrun{
 #' data_aggregated <- data.table::as.data.table(data_fake_nowcasting_county_aggregated)
 #' n_sim <- 10
 #' data_train <- data_aggregated[cut_doe< "2019-06-30"]
@@ -29,6 +29,11 @@ baseline_est_expand <- function(data_train, data_predict, n_sim = 1000, response
   . <- NULL
   pop <- NULL
   n_death <- NULL
+  sim_value <- NULL
+  type <- NULL
+  median.sim_value <- NULL
+  response<- NULL
+
 
 
 
@@ -104,8 +109,8 @@ baseline_est_expand <- function(data_train, data_predict, n_sim = 1000, response
 
     sim_data<- sim(fit_neg_bin, data_predict[, .(n_death, week, year,  cut_doe, location_code, pop)], n_sim = 1000)
 
-    shape<- getME(fit_neg_bin, "glmer.nb.theta")
-    sim_data[, sim_value := rnbinom(.N, shape, mu = sim_value)]
+    shape<- lme4::getME(fit_neg_bin, "glmer.nb.theta")
+    sim_data[, sim_value := stats::rnbinom(.N, shape, mu = sim_value)]
     sim_data[, type := "neg_bin"]
 
 
