@@ -4,7 +4,14 @@
 \alias{fit_attrib}
 \title{Data fit}
 \usage{
-fit_attrib(data, response, fixef, ranef, offset = NULL)
+fit_attrib(
+  data,
+  response,
+  fixef,
+  ranef,
+  dist_family = "poisson",
+  offset = NULL
+)
 }
 \arguments{
 \item{data}{The observed data to be fitted.}
@@ -16,6 +23,8 @@ fit_attrib(data, response, fixef, ranef, offset = NULL)
 \item{ranef}{The random effects}
 
 \item{offset}{The offsets.}
+
+\item{family}{Family}
 }
 \value{
 The model fit of the data with additional attributes offset, response and fit_fix.

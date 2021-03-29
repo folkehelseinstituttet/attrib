@@ -8,7 +8,7 @@
 nowcast_aggregate(data, aggregation_date, n_week, pop_data = NULL)
 }
 \arguments{
-\item{data}{Dataset containing doe (Date of event) and dor (Date of registation). The columns must have these exact names.}
+\item{data}{Dataset containing doe (Date of event), dor (Date of registation) and location_code. The columns must have these exact names.}
 
 \item{aggregation_date}{Date of aggregation}
 
