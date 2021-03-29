@@ -23,10 +23,10 @@ Current `fhiverse` packages are:
 
 | Name    	| Info                                                             	|
 |---------	|------------------------------------------------------------------	|
-| [org](https://folkehelseinstituttet.github.io/org)         	| A system to help you organize projects.  |
-| [plnr](https://folkehelseinstituttet.github.io/plnr)    	  | A system to help you plan analyses.  |
-| [attrib](https://folkehelseinstituttet.github.io/attrib)  	| Calculating attributable mortalities and incident risk ratios.  |
-| [spread](https://folkehelseinstituttet.github.io/spread)  	| Different infectious disease spread models.  |
-| [fhidata](https://folkehelseinstituttet.github.io/fhidata) 	| Preformatted structural data for Norway.  |
-| [fhimaps](https://folkehelseinstituttet.github.io/fhimaps) 	| Preformatted maps of Norway that generally don't need geolibraries.  |
-| [fhiplot](https://folkehelseinstituttet.github.io/fhiplot) 	| Helpful functions for creating outputs in the style used by FHI.  |
+| [org](https://folkehelseinstituttet.github.io/org/)         	| A system to help you organize projects.  |
+| [plnr](https://folkehelseinstituttet.github.io/plnr/)    	  | A system to help you plan analyses.  |
+| [attrib](https://folkehelseinstituttet.github.io/attrib/)  	| Calculating attributable mortalities and incident risk ratios.  |
+| [spread](https://folkehelseinstituttet.github.io/spread/)  	| Different infectious disease spread models.  |
+| [fhidata](https://folkehelseinstituttet.github.io/fhidata/) 	| Preformatted structural data for Norway.  |
+| [fhimaps](https://folkehelseinstituttet.github.io/fhimaps/) 	| Preformatted maps of Norway that generally don't need geolibraries.  |
+| [fhiplot](https://folkehelseinstituttet.github.io/fhiplot/) 	| Helpful functions for creating outputs in the style used by FHI.  |

@@ -13,15 +13,15 @@ Maintainer: ‘Richard White <hello@rwhite.no>’
 
 Resubmission
 
-* Please unwrap the examples if they are executable in < 5 sec, or replace
-\dontrun{} with \donttest{}.
+*   Found the following (possibly) invalid URLs:
 
-These examples are now simplified and run quickly. \dontrun{} is removed.
+These URLs are now corrected
 
 * Please always add all authors, contributors and copyright holders in the
-Authors@R field with the appropriate roles.
+Authors@R field with the appropriate roles. e.g.: Antonio Gasparrini, Folkehelseinstituttet
 
-This is done.
+We deleted one file that was not in use, but contained additional authors (i.e. Antonio Gasparrini).
+We added Folkehelseinstituttet as a copyright holder to the DESCRIPTION file.
 
 ## Downstream dependencies
 
