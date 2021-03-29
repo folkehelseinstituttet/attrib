@@ -117,6 +117,8 @@ nowcast_aggregate <- function(
   temp_outcome_n <- NULL
   temp_outcome_p<- NULL
   pop <- NULL
+  location_code<- NULL
+
 
 
   # retur only dataset or graphs as well? ## First only dataset!
@@ -126,19 +128,22 @@ nowcast_aggregate <- function(
   ##### for developing
 #
   # data <- gen_fake_death_data_county()
-  # #data <- gen_fake_death_data()
+  # data <- gen_fake_death_data()
   # aggregation_date <- as.Date("2020-01-01")
   # n_week <- 15
   # pop_data <- fhidata::norway_population_by_age_cats(cats = list(c(1:120)))[location_code %in% unique(fhidata::norway_locations_b2020$county_code)]
-
+  # pop_data <- NULL
   ### check of parameters ----
 
   if (! "doe" %in% colnames(data)){
-    stop("The dataset does not have the correct column names")
+    stop("The dataset does not have the correct column names, doe is missing")
   }
 
   if (! "dor" %in% colnames(data)){
-    stop("The dataset does not have the correct column names")
+    stop("The dataset does not have the correct column names, dor is missing")
+  }
+  if (! "location_code" %in% colnames(data)){
+    stop("The dataset does not have the correct column names, location_Code is missing")
   }
 
   if (! "n_week" > 1){
@@ -244,7 +249,7 @@ nowcast_aggregate <- function(
     d_corrected[pop_data,
                 on = c("year", "location_code"),
                 pop := pop]
-    }
+    } #her er det en feil
   }
 
 #
