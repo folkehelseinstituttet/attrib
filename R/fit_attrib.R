@@ -8,7 +8,7 @@
 #' @param fixef The fixed effects
 #' @param ranef The random effects
 #' @param offset The offsets.
-#' @param family Family of distribution
+#' @param dist_family Family
 #'
 #' @return The model fit of the data with additional attributes offset, response and fit_fix.
 #' Offset and response are the same as in the input and fit_fix is the linear model of the fix effects.
@@ -34,7 +34,7 @@ fit_attrib <- function(
                        response,
                        fixef,
                        ranef,
-                       family = "poisson",
+                       dist_family = "poisson",
                        offset = NULL) {
   is_data_table(data)
 
@@ -53,21 +53,7 @@ fit_attrib <- function(
 
     formula <- paste0(response, "~", fixef, "+", ranef)
     fit_fix <- stats::lm(stats::as.formula(paste0(response, "~", fixef)), data = data)
-  } else if (is.null(ranef)){
-    if (tryCatch(
-      {
-        stats::as.formula(paste0(response, "~", fixef, "+ offset(", offset, ")"))
-      },
-      error = function(e) {
-        "error"
-      }
-    ) == "error") {
-      stop("response, fixef or ranef is not in the correct form")
-    }
-    formula <- paste0(response, "~", fixef, "+ offset(", offset, ")")
-    fit_fix <- stats::lm(stats::as.formula(paste0(response, "~", fixef, "+ offset(", offset, ")")), data = data)
-
-  }else{
+  } else {
     formula <- paste0(response, "~", fixef, "+ offset(", offset, ")+", ranef)
 
     if (tryCatch(
@@ -84,10 +70,10 @@ fit_attrib <- function(
     fit_fix <- stats::lm(stats::as.formula(paste0(response, "~", fixef, "+ offset(", offset, ")")), data = data)
   }
 
-  if(family == "negbin"){
+  if(dist_family == "negbin"){
     fit <- lme4::glmer.nb(stats::as.formula(formula), data = data)
   }else{
-    fit <- lme4::glmer(stats::as.formula(formula), family = "poisson", data = data)
+    fit <- lme4::glmer(stats::as.formula(formula), family = dist_family, data = data)
   }
 
 
