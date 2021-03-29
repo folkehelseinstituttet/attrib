@@ -63,6 +63,7 @@ gen_fake_death_data <- function() {
   dor <- NULL
   reg_lag <- NULL
   . <- NULL
+  location_code <- NULL
 
   start_date <- as.Date("2018-01-01")
   end_date <- as.Date("2020-01-01")
@@ -107,8 +108,8 @@ gen_fake_death_data <- function() {
   skeleton[, dor := doe + reg_lag]
   skeleton[, location_code:= "norge"]
 
-  # data_fake_nowcasting_raw <- skeleton[,.(doe, dor)]
-  # save(data_fake_nowcasting_raw, file = "data/data_fake_nowcasting_raw.rda", compress = "bzip2")
+   # data_fake_nowcasting_raw <- skeleton[,.(doe, dor, location_code)]
+   # save(data_fake_nowcasting_raw, file = "data/data_fake_nowcasting_raw.rda", compress = "bzip2")
 
   return(skeleton[,.(doe, dor, location_code)])
 }

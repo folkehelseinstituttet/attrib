@@ -20,6 +20,14 @@ gen_fake_death_data_county <- function() {
   dor <- NULL
   reg_lag <- NULL
   . <- NULL
+  location_code <- NULL
+  pop_frac <- NULL
+  pop <- NULL
+  mu <- NULL
+  death_exp <- NULL
+  deaths <- NULL
+  death_exp <- NULL
+
 
   start_date <- as.Date("2018-01-01")
   end_date <- as.Date("2020-01-01")
@@ -56,7 +64,7 @@ gen_fake_death_data_county <- function() {
   skeleton[pop_data, on = c("location_code"), pop_frac:= pop_frac]
   skeleton[pop_data, on = c("location_code"), pop:= pop]
   skeleton[, deaths_exp:= round(exp(mu)*pop*1/7)]
-  skeleton[, deaths := rpois(.N, deaths_exp)]
+  skeleton[, deaths := stats::rpois(.N, deaths_exp)]
 
   temp_vec <- vector( "list", length = length(skeleton))
 
