@@ -4,22 +4,26 @@
 #' @param data_train Data to train on.
 #' @param data_predict Data to predict on
 #' @param n_sim number of simulations to preform. Default setting is n_sim = 1000
-#' @param formula Formula to model
-#' @param offsett True or False depending on whetehr there is an offset in the formula or not.
-#' @examples
-#' data <- data.table::as.data.table(data_fake_nowcasting_aggregated)
-#' n_sim <- 1000
-#' formula <- paste0("n_death", "~sin(2 * pi * (week) / 53) + cos(2 * pi * (week ) / 53) + year")
-#' data_train <- data[cut_doe< "2019-06-30"]
-#' data_predict <- data
-#' offsett <-FALSE
-#' base_line <- baseline_est(data_train, data_predict, formula = formula, offsett = offsett)
-#'
-#' @return Residualplots for all ncor_i and some evaluationmetrixs for each of them as well as a plot containing credible intervals using the simulation
-#'
-#'@export
-baseline_est <- function(data_train, data_predict, n_sim = 1000, response, fixef, ranef = NULL, offset, family ){
+#' @param fixef Fixed effekts
+#' @param ranef Random effekts, default is NULL
+#' @param offset Offset, can be NULL
+#' @examples \donotrun{
 
+#' data_aggregated <- data.table::as.data.table(data_fake_nowcasting_county_aggregated)
+#' n_sim <- 10
+#' data_train <- data_aggregated[cut_doe< "2019-06-30"]
+#' data_predict <- data_aggregated
+#' response <- "n_death"
+#' fixef <- "1 + sin(2 * pi * (week) / 53) + cos(2 * pi * (week ) / 53) + year"
+#' ranef <- "(1|location_code)"
+#' offset <- "log(pop)"
+#' base<- baseline_est_expand(data_train, data_predict, n_sim, response, fixef, ranef, offset)
+#'}
+#' @return data
+#'
+#' @export
+
+baseline_est_expand <- function(data_train, data_predict, n_sim = 1000, response, fixef, ranef = NULL, offset){
   cut_doe <- NULL
   location_code <- NULL
   . <- NULL
@@ -30,24 +34,24 @@ baseline_est <- function(data_train, data_predict, n_sim = 1000, response, fixef
 
   #for developping
   #
-  data_raw <- gen_fake_death_data_county()
-  pop_data <- fhidata::norway_population_by_age_cats(cats = list(c(1:120)))[location_code %in%
-                                                                              unique(fhidata::norway_locations_b2020$county_code)]
-
-  data_aggregated <- nowcast_aggregate(data_raw, lubridate::today(), n_week = 13, pop_data = pop_data)
-  data_aggregated<- data_aggregated[order(cut_doe, location_code)]
-
-  n_sim <- 1000
-  data_train <- data_aggregated[cut_doe< "2019-06-30"]
-  data_predict <- data_aggregated
-  response <- "n_death"
-  fixef <- "1 + sin(2 * pi * (week) / 53) + cos(2 * pi * (week ) / 53) + year"
-  ranef <- "(1|location_code)"
-  offset <- "log(pop)"
+  # data_raw <- gen_fake_death_data_county()
+  # pop_data <- fhidata::norway_population_by_age_cats(cats = list(c(1:120)))[location_code %in%
+  #                                                                             unique(fhidata::norway_locations_b2020$county_code)]
+  #
+  # data_aggregated <- nowcast_aggregate(data_raw, lubridate::today(), n_week = 13, pop_data = pop_data)
+  # data_aggregated<- data_aggregated[order(cut_doe, location_code)]
+  #
+  # n_sim <- 1000
+  # data_train <- data_aggregated[cut_doe< "2019-06-30"]
+  # data_predict <- data_aggregated
+  # response <- "n_death"
+  # fixef <- "1 + sin(2 * pi * (week) / 53) + cos(2 * pi * (week ) / 53) + year"
+  # ranef <- "(1|location_code)"
+  # offset <- "log(pop)"
 
   col_names <- colnames(data_train)
 
-  if(family == "quasipoisson"){
+  if(is.null(ranef)){
     col_names <- colnames(data_train)
     formula = paste0(response, "~", fixef, "+", "offset(log(pop))")
     fit <- stats::glm(stats::as.formula(formula), family = "quasipoisson", data = data_train)
@@ -60,7 +64,6 @@ baseline_est <- function(data_train, data_predict, n_sim = 1000, response, fixef
     data_x[, n_death:= NULL]
 
     col_names_sim<-  colnames(sim_models)
-    #col_names_rel <- col_names[which(col_names != "(Intercept)")]
     if (!"(Intercept)" %in% colnames(sim_models) ){
       if (!is.null(offset)){
         expected_fix <- cbind(as.matrix( sim_models),1) %*%  rbind(as.matrix(t(data_x)))
@@ -78,8 +81,6 @@ baseline_est <- function(data_train, data_predict, n_sim = 1000, response, fixef
 
 
     expected <-(stats::rnbinom(length(expected_fix),mu = exp(expected_fix), size = (exp(expected_fix)/(dispersion-1)))) #using a neg bin to draw from a quiasipoison
-    #expected <-(rpois(length(expected_fix),exp(expected_fix)))
-    #expected <-exp(expected_fix)
     dim(expected)<- dim(expected_fix)
     expected <- as.data.table(expected)
 
@@ -90,16 +91,14 @@ baseline_est <- function(data_train, data_predict, n_sim = 1000, response, fixef
 
     sim_data <- merge(data_predict, expected_t, by = "id_row", all = TRUE)
 
-    sim_data <- data.table::melt(new_data, id.vars = c(col_names, "id_row"))
+    sim_data <- data.table::melt(sim_data, id.vars = c(col_names, "id_row"))
 
 
     setnames(sim_data, "variable", "sim_id")
     sim_data$sim_id <- as.numeric(as.factor(sim_data$sim_id))
     setnames(sim_data, "value", "sim_value")
 
-  } else{
-
-    formula = paste0(response, "~", fixef, "+",ranef, "+", "offset(log(pop))")
+  } else if(!is.null(ranef)){
 
     fit_neg_bin <- fit_attrib(data_train, response, fixef, ranef, offset, dist_family = "negbin")
 
@@ -110,13 +109,15 @@ baseline_est <- function(data_train, data_predict, n_sim = 1000, response, fixef
     sim_data[, type := "neg_bin"]
 
 
+  } else{
+    return("Something wrong with model input")
   }
 
 
   q025 <- function(x){
     return(stats::quantile(x, 0.025))
   }
-  q925 <- function(x){
+  q975 <- function(x){
     return(stats::quantile(x, 0.975))
   }
 
@@ -127,20 +128,27 @@ baseline_est <- function(data_train, data_predict, n_sim = 1000, response, fixef
                       )])
 
   aggregated_sim<- sim_data[,unlist(recursive = FALSE,
-                                    lapply(.(median = stats::median, q025 = q025, q925 = q925),
+                                    lapply(.(median = stats::median, q025 = q025, q975 = q975),
                                            function(f) lapply(.SD, f))),
                             by = eval(data.table::key(sim_data)),.SDcols = c("sim_value")]
 
-  #library(ggplot2)
-  # q <- ggplot(aggregated_sim,
+  summary <- aggregated_sim[, .(mean_death = sum(median.sim_value), n_death = sum(n_death)), keyby = .(year, cut_doe)]
+  summary
+
+
+  summary <- aggregated_sim[, .(mean_death = sum(median.sim_value), n_death = sum(n_death)), keyby = .(year)]
+  summary
+
+  # library(ggplot2)
+  # q <- ggplot(aggregated_sim[location_code == "county03" & year == 2019],
   #             aes(x = week,
   #                 y = median.sim_value,
   #                 group = as.factor(year),
   #                 colour = as.factor(year)))
   # q <- q + geom_line()
   # q <-q + geom_line(aes(y = n_death))
-  # q <- q + geom_ribbon(aes(x = week, ymin=q05.sim_value,
-  #                          ymax=q95.sim_value, fill = year),
+  # q <- q + geom_ribbon(aes(x = week, ymin=q025.sim_value,
+  #                          ymax=q975.sim_value, fill = year),
   #                      alpha=0.5)
   #
   # q
@@ -148,6 +156,6 @@ baseline_est <- function(data_train, data_predict, n_sim = 1000, response, fixef
   retval$simulations <- sim_data
   retval$aggregated <- aggregated_sim
   retval$fit <- fit
-  return(retval )
-
+ return(retval)
 }
+
