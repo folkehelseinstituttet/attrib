@@ -25,8 +25,9 @@ gen_fake_death_data_county <- function() {
   pop <- NULL
   mu <- NULL
   death_exp <- NULL
+  deaths_exp <- NULL
   deaths <- NULL
-  death_exp <- NULL
+
 
 
   start_date <- as.Date("2018-01-01")

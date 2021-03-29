@@ -26,8 +26,10 @@ For more details see the help vignette:
 \examples{
 
 data <- attrib::data_fake_nowcasting_raw
+data[doe < as.Date("2019-01-01")]
 aggregation_date <- as.Date("2020-01-01")
-n_week <- 52
+n_week <- 6
 
 data_aggregated <- nowcast_aggregate(data, aggregation_date, n_week)
+
 }

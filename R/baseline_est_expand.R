@@ -4,6 +4,7 @@
 #' @param data_train Data to train on.
 #' @param data_predict Data to predict on
 #' @param n_sim number of simulations to preform. Default setting is n_sim = 1000
+#' @param response Response
 #' @param fixef Fixed effekts
 #' @param ranef Random effekts, default is NULL
 #' @param offset Offset, can be NULL
@@ -32,7 +33,7 @@ baseline_est_expand <- function(data_train, data_predict, n_sim = 1000, response
   sim_value <- NULL
   type <- NULL
   median.sim_value <- NULL
-  response<- NULL
+  response <- NULL
 
 
 

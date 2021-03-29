@@ -90,10 +90,12 @@
 #' @examples
 #'
 #' data <- attrib::data_fake_nowcasting_raw
+#' data[doe < as.Date("2019-01-01")]
 #' aggregation_date <- as.Date("2020-01-01")
-#' n_week <- 52
+#' n_week <- 6
 #'
 #' data_aggregated <- nowcast_aggregate(data, aggregation_date, n_week)
+#'
 #' @return Aggregated dataset with the percentiles of registered events within the last 52 weeks
 #'
 #' @export
@@ -128,9 +130,9 @@ nowcast_aggregate <- function(
   ##### for developing
 #
   # data <- gen_fake_death_data_county()
-  # data <- gen_fake_death_data()
+  # data <- attrib::data_fake_nowcasting_raw
   # aggregation_date <- as.Date("2020-01-01")
-  # n_week <- 15
+  # n_week <- 6
   # pop_data <- fhidata::norway_population_by_age_cats(cats = list(c(1:120)))[location_code %in% unique(fhidata::norway_locations_b2020$county_code)]
   # pop_data <- NULL
   ### check of parameters ----

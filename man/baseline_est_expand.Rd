@@ -22,6 +22,8 @@ baseline_est_expand(
 
 \item{n_sim}{number of simulations to preform. Default setting is n_sim = 1000}
 
+\item{response}{Response}
+
 \item{fixef}{Fixed effekts}
 
 \item{ranef}{Random effekts, default is NULL}
