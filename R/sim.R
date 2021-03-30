@@ -32,9 +32,9 @@ sim <- function(
                 data,
                 n_sim,
                 PI = FALSE) {
-  if (length(which(is.na(data))) != 0) {
-    stop("The dataset has NA values")
-  }
+  # if (length(which(is.na(data))) != 0) {
+  #   stop("The dataset has NA values")
+  # }
 
   if (is.null(attr(fit, "fit_fix"))) {
     stop("Fit is missing attribute fit_fix and possibly not computed by fit_attrib") # Maybe a different message, you decide :)
