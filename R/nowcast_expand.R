@@ -419,11 +419,13 @@ nowcast_exp <- function(
 
   ##### for developing
   # data_aggregated <- as.data.table(data_fake_nowcasting_county_aggregated)
-  #
+  # data_aggregated <- data_aggregated[location_code == "county03"]
   # n_week_training <- 50
   # n_week_adjusting <- 4
   # nowcast_correction_fn<- nowcast_correction_fn_negbin_mm
   # nowcast_correction_sim_fn = nowcast_correction_sim_neg_bin
+  # nowcast_correction_fn<- nowcast_correction_fn_quasipoisson
+  # nowcast_correction_sim_fn = nowcast_correction_sim_quasipoisson
   # offset = "log(pop)"
 
   data <- as.data.table(data_aggregated)
