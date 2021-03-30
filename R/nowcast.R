@@ -64,10 +64,10 @@ nowcast_correction_fn_expanded <- function(data, n_week_adjusting, offset){
 
 
   #for developping
-  data<- as.data.table(data_fake_nowcasting_county_aggregated)
-  data <- data[location_code == "county03"]
-  n_week_adjusting <- 8
-  offset = TRUE
+  # data<- as.data.table(data_fake_nowcasting_county_aggregated)
+  # data <- data[location_code == "county03"]
+  # n_week_adjusting <- 8
+  # offset = TRUE
   for ( i in 0:n_week_adjusting){
 
     week_n <- paste0("n0_",(i))
