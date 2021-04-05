@@ -106,11 +106,11 @@ baseline_est_expand <- function(data_train, data_predict, n_sim = 1000, response
 
   } else if(!is.null(ranef)){
 
-    fit_neg_bin <- fit_attrib(data_train, response, fixef, ranef, offset, dist_family = "negbin")
+    fit <- fit_attrib(data_train, response, fixef, ranef, offset, dist_family = "negbin")
 
-    sim_data<- sim(fit_neg_bin, data_predict[, .(n_death, week, year,  cut_doe, location_code, pop)], n_sim = 1000)
+    sim_data<- sim(fit, data_predict[, .(n_death, week, year,  cut_doe, location_code, pop)], n_sim = 1000)
 
-    shape<- lme4::getME(fit_neg_bin, "glmer.nb.theta")
+    shape<- lme4::getME(fit, "glmer.nb.theta")
     sim_data[, sim_value := stats::rnbinom(.N, shape, mu = sim_value)]
     sim_data[, type := "neg_bin"]
 
