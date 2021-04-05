@@ -130,7 +130,7 @@ nowcast_aggregate <- function(
   ##### for developing
 #
   # data <- gen_fake_death_data_county()
-  # data <- attrib::data_fake_nowcasting_raw
+  # #data <- attrib::data_fake_nowcasting_raw
   # aggregation_date <- as.Date("2020-01-01")
   # n_week <- 6
   # pop_data <- fhidata::norway_population_by_age_cats(cats = list(c(1:120)))[location_code %in% unique(fhidata::norway_locations_b2020$county_code)]
