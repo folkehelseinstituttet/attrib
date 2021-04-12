@@ -5,7 +5,12 @@
 \title{For more details see the help vignette:
 \code{vignette("nowcast", package="attrib")}}
 \usage{
-nowcast_correction_sim_neg_bin(nowcast_correction_object, offset, n_sim = 500)
+nowcast_correction_sim_neg_bin(
+  nowcast_correction_object,
+  offset,
+  n_sim = 500,
+  date_0
+)
 }
 \arguments{
 \item{nowcast_correction_object}{object returned from function nowcast_correction_fn_expanded}
@@ -13,6 +18,8 @@ nowcast_correction_sim_neg_bin(nowcast_correction_object, offset, n_sim = 500)
 \item{offset}{Boolian value which is set to true if offset(log(pop)) is a part of the formula}
 
 \item{n_sim}{Number of simulations}
+
+\item{date_0}{Date of aggregation.}
 }
 \value{
 simulations of the estimate made by the fitted models in nowcast_correction_fn
@@ -22,12 +29,10 @@ For more details see the help vignette:
 \code{vignette("nowcast", package="attrib")}
 }
 \examples{
-data <- attrib::data_fake_nowcasting_aggregated
+data <- data.table::as.data.table(data_fake_nowcasting_county_aggregated)
 n_week_adjusting <- 8
-n_week_train <- 52
-n_week_start <- n_week_adjusting + n_week_train
 date_0 <- data[nrow(data),]$cut_doe #last date in the dataset, assume the dataset is ordered.
 data <- data[cut_doe >= (date_0 - n_week_start*7 + 1), ]
-nowcast_correction_object <- nowcast_correction_fn_expanded(data, n_week_adjusting, offset = TRUE )
-nowcast_sim <- nowcast_correction_sim(nowcast_correction_object, offset = "log(pop)")
+nowcast_correction_object <- nowcast_correction_fn_negbin_mm(data, n_week_adjusting, offset = "log(pop)" , date_0 = date_0)
+nowcast_sim <- nowcast_correction_sim_neg_bin(nowcast_correction_object, offset = "log(pop)", date_0 = date_0)
 }
