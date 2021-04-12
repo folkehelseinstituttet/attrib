@@ -6,19 +6,12 @@
 #' @param n_sim number of simulations to preform. Default setting is n_sim = 1000
 #' @param formula Formula to model
 #' @param offsett True or False depending on whetehr there is an offset in the formula or not.
-#' @examples
-#' data <- data.table::as.data.table(data_fake_nowcasting_aggregated)
-#' n_sim <- 1000
-#' formula <- paste0("n_death", "~sin(2 * pi * (week) / 53) + cos(2 * pi * (week ) / 53) + year")
-#' data_train <- data[cut_doe< "2019-06-30"]
-#' data_predict <- data
-#' offsett <-FALSE
-#' base_line <- baseline_est(data_train, data_predict, formula = formula, offsett = offsett)
+
 #'
 #' @return Residualplots for all ncor_i and some evaluationmetrixs for each of them as well as a plot containing credible intervals using the simulation
 #'
-#'@export
-baseline_est <- function(data_train, data_predict, n_sim = 1000, formula, offsett ){
+
+baseline_est_simple <- function(data_train, data_predict, n_sim = 1000, formula, offsett ){
 
   cut_doe <- NULL
   location_code <- NULL
