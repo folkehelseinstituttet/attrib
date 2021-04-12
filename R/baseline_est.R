@@ -8,9 +8,8 @@
 #' @param fixef Fixed effekts
 #' @param ranef Random effekts, default is NULL
 #' @param offset Offset, can be NULL
-#' @examples
+#' @examples \dontrun{
 #' data <- as.data.table(data_fake_nowcasting_county_aggregated)
-#' data <- data[location_code == "county03"]
 #' n_sim <- 100
 #' fixef <- "sin(2 * pi * (week) / 53) + cos(2 * pi * (week ) / 53) + year"
 #' ranef <- "(1|location_code)"
@@ -19,16 +18,31 @@
 #' data_predict <- data
 #' offset <- "log(pop)"
 #' baseline_est(data_train, data_predict, n_sim = 1000, fixef, ranef, response, offset)
+#' }
+#' @examples
+#' data <- data.table::as.data.table(data_fake_nowcasting_county_aggregated)
+#' data <- data[location_code == "county03"]
+#' n_sim <- 100
+#' fixef <- "sin(2 * pi * (week) / 53) + cos(2 * pi * (week ) / 53) + year"
+#' ranef <- NULL
+#' response <- "n_death"
+#' data_train <- data[cut_doe< "2019-06-30"]
+#' data_predict <- data
+#' offset <- "log(pop)"
+#' baseline_est(data_train, data_predict, n_sim = 1000, fixef, ranef, response, offset)
 #' @return Residualplots for all ncor_i and some evaluationmetrixs for each of them as well as a plot containing credible intervals using the simulation
+#' @export
 #'
-#'
-baseline_est <- function(data_train, data_predict, n_sim = 1000, fixef, ranef, response, offset ){
+baseline_est <- function(data_train, data_predict, n_sim = 1000, fixef, ranef, response, offset){
 
   cut_doe <- NULL
   location_code <- NULL
   . <- NULL
   pop <- NULL
   n_death <- NULL
+  sim_value <- NULL
+  type <- NULL
+
 
 
 
@@ -69,8 +83,12 @@ baseline_est <- function(data_train, data_predict, n_sim = 1000, fixef, ranef, r
       }
     }
 
+    if(dispersion > 1){
+        expected <-(stats::rnbinom(length(expected_fix),mu = exp(expected_fix), size = (exp(expected_fix)/(dispersion-1)))) #using a neg bin to draw from a quiasipoison,
+    } else{
+        expected <- stats::rpois(length(expected_fix),lambda  = exp(expected_fix))
+    }
 
-    expected <-(stats::rnbinom(length(expected_fix),mu = exp(expected_fix), size = (exp(expected_fix)/(dispersion-1)))) #using a neg bin to draw from a quiasipoison
     #expected <-(rpois(length(expected_fix),exp(expected_fix)))
     #expected <-exp(expected_fix)
     dim(expected)<- dim(expected_fix)
@@ -120,7 +138,7 @@ baseline_est <- function(data_train, data_predict, n_sim = 1000, fixef, ranef, r
                       )])
 
   aggregated_sim<- new_data[,unlist(recursive = FALSE,
-                                    lapply(.(median = stats::median, q025 = q025, q925 = q925),
+                                    lapply(.(median = stats::median, q025 = q025, q975 = q925),
                                            function(f) lapply(.SD, f))),
                             by = eval(data.table::key(new_data)),.SDcols = c("sim_value")]
 
