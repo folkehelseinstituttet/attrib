@@ -20,7 +20,7 @@ nowcast(
 
 \item{offset}{offset}
 
-\item{n_week_adjusting}{Number of weeks to correct}
+\item{n_week_adjusting}{Total number of weeks to correct.}
 
 \item{n_week_training}{Number of weeks to train on}
 
