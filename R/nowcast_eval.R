@@ -5,11 +5,15 @@
 #' @param n_week_adjusting Number of weeks to adjust
 #' @examples
 #'
-#'  data_aggregated <- data.table::as.data.table(attrib::data_fake_nowcasting_aggregated)
+#'  data_aggregated <-  data.table::as.data.table(data_fake_nowcasting_county_aggregated)
+#'     [location_code == "county03",]
 #'  n_week_training <- 50
 #'  n_week_adjusting <- 8
-#'  nowcast_object <- nowcast(data_aggregated= data_aggregated,
-#'    n_week_training = 50, n_week_adjusting = 8, offset = TRUE)
+#'  date_0 <- data_aggregated[nrow(data_aggregated),]$cut_doe
+#'  nowcast_object <- nowcast(data_aggregated,offset = "log(pop)",
+#'   n_week_adjusting,n_week_training,date_0,
+#'   nowcast_correction_fn = nowcast_correction_fn_quasipoisson,
+#'   nowcast_correction_sim_fn = nowcast_correction_sim_quasipoisson)
 #'  nowcast_eval_object <- nowcast_eval(nowcast_object, n_week_adjusting)
 #' @return Residualplots for all ncor_i and some evaluationmetrixs for each of them as well as a plot containing credible intervals using the simulations
 #' @export
