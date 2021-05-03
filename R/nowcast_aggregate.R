@@ -157,8 +157,8 @@ nowcast_aggregate <- function(
   ### cleaning ----
   d <- data.table::as.data.table(data)
   d <- d[, .(doe, dor, location_code)]
-  d <- d[dor <= as.Date(cut(aggregation_date, "week"))] # we erase all date for incompleate weeks.
-  d <- d[doe <= as.Date(cut(aggregation_date, "week"))]
+  d <- d[dor < as.Date(cut(aggregation_date, "week"))] # we erase all date for incompleate weeks.
+  d <- d[doe < as.Date(cut(aggregation_date, "week"))]
   d[, cut_doe := as.Date(cut(doe, "week"))]
 
 
