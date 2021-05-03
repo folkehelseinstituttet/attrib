@@ -48,8 +48,8 @@ nowcast_correction_fn_quasipoisson <- function(data, n_week_adjusting, offset, d
 
   ########## fit ----
   #date_0 <- data[order(cut_doe)][nrow(data)]$cut_doe
-  data_train <- data[cut_doe < (date_0 - n_week_adjusting*7 + 7) ]
-  data_predict <- data[cut_doe >= (date_0 - n_week_adjusting*7 + 7) ]
+  data_train <- data[cut_doe < (date_0 - n_week_adjusting*7) ]
+  data_predict <- data[cut_doe >= (date_0 - n_week_adjusting*7) ]
   #cut_doe_vec <- data_cut$cut_doe
 
   fit_vec <- vector(mode = "list", length = (n_week_adjusting+1))
@@ -124,7 +124,9 @@ nowcast_correction_fn_negbin_mm <- function(data, n_week_adjusting, offset, date
   # data<- as.data.table(data_fake_nowcasting_county_aggregated)
   # n_week_adjusting <- 4
   # offset = "log(pop)"
-
+  # date_0 <- data[order(cut_doe)][nrow(data)]$cut_doe +1
+  date_0 <- as.Date(cut(date_0, "week"))
+  data <- data[cut_doe < date_0,]
   for ( i in 0:n_week_adjusting){
 
     week_n <- paste0("n0_",(i))
@@ -135,9 +137,8 @@ nowcast_correction_fn_negbin_mm <- function(data, n_week_adjusting, offset, date
   }
   data <- subset(data, select= -c(temp_variable_n))
 
-  # date_0 <- data[order(cut_doe)][nrow(data)]$cut_doe
-  data_train <- data[cut_doe < (date_0 - n_week_adjusting*7 + 7) ]
-  data_predict <- data[cut_doe >= (date_0 - n_week_adjusting*7 + 7) ]
+  data_train <- data[cut_doe < (date_0 - n_week_adjusting*7) ]
+  data_predict <- data[cut_doe >= (date_0 - n_week_adjusting*7) ]
 
   # last_date <- data[order(cut_doe)][nrow(data)]$cut_doe
   # cut_date <- last_date - 7*(n_week_adjusting+1)
@@ -195,8 +196,7 @@ nowcast_correction_fn_negbin_mm <- function(data, n_week_adjusting, offset, date
 #' @param date_0 Date of aggregation.
 #' @return simulations of the estimate made by the fitted models in nowcast_correction_fn
 #' @examples
-#' data <- data.table::as.data.table(data_fake_nowcasting_county_aggregated)
-#'    [location_code == "county03"]
+#' data <- data.table::as.data.table(data_fake_nowcasting_county_aggregated)[location_code == "county03"]
 #' n_week_adjusting <- 8
 #' n_week_train <- 52
 #' n_week_start <- n_week_adjusting + n_week_train
@@ -228,8 +228,8 @@ nowcast_correction_sim_quasipoisson <- function(nowcast_correction_object, offse
   ##simmuleringer ----
 
   #date_0 <- data[order(cut_doe)][nrow(data)]$cut_doe
-  data_train <- data[cut_doe < (date_0 - n_week_adjusting*7 + 7) ]
-  data_predict <- data[cut_doe >= (date_0 - n_week_adjusting*7 + 7) ]
+  data_train <- data[cut_doe < (date_0 - n_week_adjusting*7) ]
+  data_predict <- data[cut_doe >= (date_0 - n_week_adjusting*7) ]
 
   cut_doe_vec <- data_predict$cut_doe
   cut_doe_vec_unique <- unique(cut_doe_vec)
@@ -318,7 +318,8 @@ nowcast_correction_sim_quasipoisson <- function(nowcast_correction_object, offse
 #' @param offset Boolian value which is set to true if offset(log(pop)) is a part of the formula
 #' @param date_0 Date of aggregation.
 #' @return simulations of the estimate made by the fitted models in nowcast_correction_fn
-#' @examples\dontrun{
+#' @examples
+#' \dontrun{
 #' data <- data.table::as.data.table(data_fake_nowcasting_county_aggregated)
 #' n_week_adjusting <- 8
 #' date_0 <- data[nrow(data),]$cut_doe #last date in the dataset, assume the dataset is ordered.
@@ -343,6 +344,7 @@ nowcast_correction_sim_neg_bin <- function(nowcast_correction_object, offset, n_
   # data<- as.data.table(data_fake_nowcasting_county_aggregated)
   # n_week_adjusting <- 4
   # n_sim <- 100
+  # date_0 <- data[order(cut_doe)][nrow(data)]$cut_doe
   # nowcast_correction_object<- nowcast_correction_fn_negbin_mm(data, n_week_adjusting, offset = "log(pop)", date_0)
   # offset <- "log(pop)"
 
@@ -353,8 +355,8 @@ nowcast_correction_sim_neg_bin <- function(nowcast_correction_object, offset, n_
   ##simmuleringer ----
 
   #date_0 <- data[order(cut_doe)][nrow(data)]$cut_doe
-  data_train <- data[cut_doe < (date_0 - n_week_adjusting*7 + 7) ]
-  data_predict <- data[cut_doe >= (date_0 - n_week_adjusting*7 + 7) ]
+  data_train <- data[cut_doe < (date_0 - n_week_adjusting*7) ]
+  data_predict <- data[cut_doe >= (date_0 - n_week_adjusting*7) ]
 
   cut_doe_vec <- data_predict$cut_doe
   cut_doe_vec_unique <- unique(cut_doe_vec)
@@ -454,8 +456,9 @@ nowcast <- function(
   # date_0 <- data_aggregated[order(cut_doe)][nrow(data_aggregated)]$cut_doe
   # nowcast_correction_fn<- nowcast_correction_fn_negbin_mm
   # nowcast_correction_sim_fn = nowcast_correction_sim_neg_bin
-  # #nowcast_correction_fn<- nowcast_correction_fn_quasipoisson
-  # #nowcast_correction_sim_fn = nowcast_correction_sim_quasipoisson
+  # # data_aggregated <- data_aggregated[location_code == "county03"]
+  # # nowcast_correction_fn<- nowcast_correction_fn_quasipoisson
+  # # nowcast_correction_sim_fn = nowcast_correction_sim_quasipoisson
   # offset = "log(pop)"
 
   data <- as.data.table(data_aggregated)
@@ -463,7 +466,7 @@ nowcast <- function(
   date_0 <- as.Date(cut(date_0, "week"))
   #date_0 <- data[order(cut_doe)][nrow(data)]$cut_doe
 
-  data <- data[cut_doe >= (date_0 - n_week_start*7 +7) ]
+  data <- data[cut_doe >= (date_0 - n_week_start*7) ]
   data <- data[cut_doe < date_0]
   #### corrected n_deaths ----
   if (!is.null(offset)){
