@@ -18,7 +18,8 @@
 #' n_week_start <- n_week_adjusting + n_week_train
 #' date_0 <- data[nrow(data),]$cut_doe #last date in the dataset, assume the dataset is ordered.
 #' data <- data[cut_doe >= (date_0 - n_week_start*7 + 1), ]
-#' nowcast_correction_object <- nowcast_correction_fn_quasipoisson(data, n_week_adjusting, offset = "log(pop)", date_0 )
+#' nowcast_correction_object <- nowcast_correction_fn_quasipoisson(data,
+#'      n_week_adjusting, offset = "log(pop)", date_0 )
 #' @export
 nowcast_correction_fn_quasipoisson <- function(data, n_week_adjusting, offset, date_0){
 
@@ -101,12 +102,15 @@ nowcast_correction_fn_quasipoisson <- function(data, n_week_adjusting, offset, d
 #' @param offset Boolian value which is set to true if offset(log(pop)) is a part of the formula
 #' @param date_0 Date of aggregation.
 #' @return nowcast_correction_object including corrected data for all weeks in n_wwk_adjust and the model fits for all weeks
-#' @examples
+#' @examples \dontrun{
 #' data<- data.table::as.data.table(data_fake_nowcasting_county_aggregated)
 #' n_week_adjusting <- 8
+#' n_week_start <- 52
 #' date_0 <- data[nrow(data),]$cut_doe #last date in the dataset, assume the dataset is ordered.
 #' data <- data[cut_doe >= (date_0 - n_week_start*7 + 1), ]
-#' nowcast_correction_object <- nowcast_correction_fn_negbin_mm(data, n_week_adjusting, offset = "log(pop)" , date_0)
+#' nowcast_correction_object <- nowcast_correction_fn_negbin_mm(data,
+#'                            n_week_adjusting, offset = "log(pop)" , date_0)
+#' }
 #' @export
 nowcast_correction_fn_negbin_mm <- function(data, n_week_adjusting, offset, date_0){
 
@@ -191,14 +195,17 @@ nowcast_correction_fn_negbin_mm <- function(data, n_week_adjusting, offset, date
 #' @param date_0 Date of aggregation.
 #' @return simulations of the estimate made by the fitted models in nowcast_correction_fn
 #' @examples
-#' data <- data.table::as.data.table(data_fake_nowcasting_county_aggregated)[location_code == "county03"]
+#' data <- data.table::as.data.table(data_fake_nowcasting_county_aggregated)
+#'    [location_code == "county03"]
 #' n_week_adjusting <- 8
 #' n_week_train <- 52
 #' n_week_start <- n_week_adjusting + n_week_train
 #' date_0 <- data[nrow(data),]$cut_doe #last date in the dataset, assume the dataset is ordered.
 #' data <- data[cut_doe >= (date_0 - n_week_start*7 + 1), ]
-#' nowcast_correction_object <- nowcast_correction_fn_quasipoisson(data, n_week_adjusting, offset = TRUE, date_0 )
-#' nowcast_sim <- nowcast_correction_sim_quasipoisson(nowcast_correction_object, offset = "log(pop)", date_0= date_0)
+#' nowcast_correction_object <- nowcast_correction_fn_quasipoisson(data,
+#'    n_week_adjusting, offset = TRUE, date_0 )
+#' nowcast_sim <- nowcast_correction_sim_quasipoisson(nowcast_correction_object,
+#'      offset = "log(pop)", date_0= date_0)
 #' @export
 nowcast_correction_sim_quasipoisson <- function(nowcast_correction_object, offset, n_sim = 500, date_0){
   # only corrects n_week_Adjusting weeks! not +1
@@ -311,13 +318,16 @@ nowcast_correction_sim_quasipoisson <- function(nowcast_correction_object, offse
 #' @param offset Boolian value which is set to true if offset(log(pop)) is a part of the formula
 #' @param date_0 Date of aggregation.
 #' @return simulations of the estimate made by the fitted models in nowcast_correction_fn
-#' @examples
+#' @examples\dontrun{
 #' data <- data.table::as.data.table(data_fake_nowcasting_county_aggregated)
 #' n_week_adjusting <- 8
 #' date_0 <- data[nrow(data),]$cut_doe #last date in the dataset, assume the dataset is ordered.
 #' data <- data[cut_doe >= (date_0 - n_week_start*7 + 1), ]
-#' nowcast_correction_object <- nowcast_correction_fn_negbin_mm(data, n_week_adjusting, offset = "log(pop)" , date_0 = date_0)
-#' nowcast_sim <- nowcast_correction_sim_neg_bin(nowcast_correction_object, offset = "log(pop)", date_0 = date_0)
+#' nowcast_correction_object <- nowcast_correction_fn_negbin_mm(data, n_week_adjusting,
+#'    offset = "log(pop)" , date_0 = date_0)
+#' nowcast_sim <- nowcast_correction_sim_neg_bin(nowcast_correction_object,
+#'     offset = "log(pop)", date_0 = date_0)
+#' }
 #' @export
 nowcast_correction_sim_neg_bin <- function(nowcast_correction_object, offset, n_sim = 500, date_0){
 
@@ -390,7 +400,7 @@ nowcast_correction_sim_neg_bin <- function(nowcast_correction_object, offset, n_
 #'
 #' @param data_aggregated Aggregated dataset from the function npowcast_aggregate
 #' @param offset offset
-#' @param n_week_adjusting Number of weeks to correct
+#' @param n_week_adjusting Total number of weeks to correct.
 #' @param n_week_training Number of weeks to train on
 #' @param date_0 Date of aggregation.
 #' @param nowcast_correction_fn Correction function. The deafault is nowcast_correction_fn_expanded. Must return the same as this function.
@@ -402,7 +412,7 @@ nowcast_correction_sim_neg_bin <- function(nowcast_correction_object, offset, n_
 #'n_week_adjusting <- 4
 #'date_0 <- data_aggregated[order(cut_doe)][nrow(data_aggregated)]$cut_doe
 #'offset = "log(pop)"
-#'nowcast_object <- nowcast_exp(data_aggregated,offset,n_week_adjusting,n_week_training,date_0)
+#'nowcast_object <- nowcast(data_aggregated,offset,n_week_adjusting,n_week_training,date_0)
 #'
 #' @examples
 #'
@@ -412,11 +422,13 @@ nowcast_correction_sim_neg_bin <- function(nowcast_correction_object, offset, n_
 #'n_week_adjusting <- 4
 #'date_0 <- data_aggregated[order(cut_doe)][nrow(data_aggregated)]$cut_doe
 #'offset = "log(pop)"
-#'nowcast_object <- nowcast_exp(data_aggregated,offset,n_week_adjusting,n_week_training,date_0, nowcast_correction_fn = nowcast_correction_fn_quasipoisson,nowcast_correction_sim_fn = nowcast_correction_sim_quasipoisson)
+#'nowcast_object <- nowcast(data_aggregated,offset,n_week_adjusting,n_week_training,date_0,
+#' nowcast_correction_fn = nowcast_correction_fn_quasipoisson,
+#' nowcast_correction_sim_fn = nowcast_correction_sim_quasipoisson)
 #' @return Dataset including the corrected values for n_death
 #'
 #' @export
-nowcast_exp <- function(
+nowcast <- function(
   data_aggregated,
   offset,
   n_week_adjusting,
@@ -452,7 +464,7 @@ nowcast_exp <- function(
   #date_0 <- data[order(cut_doe)][nrow(data)]$cut_doe
 
   data <- data[cut_doe >= (date_0 - n_week_start*7 +7) ]
-
+  data <- data[cut_doe < date_0]
   #### corrected n_deaths ----
   if (!is.null(offset)){
     nowcast_correction_object <- nowcast_correction_fn(data, n_week_adjusting, offset = offset, date_0)
