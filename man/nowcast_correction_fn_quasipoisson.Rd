@@ -31,5 +31,6 @@ n_week_train <- 52
 n_week_start <- n_week_adjusting + n_week_train
 date_0 <- data[nrow(data),]$cut_doe #last date in the dataset, assume the dataset is ordered.
 data <- data[cut_doe >= (date_0 - n_week_start*7 + 1), ]
-nowcast_correction_object <- nowcast_correction_fn_quasipoisson(data, n_week_adjusting, offset = "log(pop)", date_0 )
+nowcast_correction_object <- nowcast_correction_fn_quasipoisson(data,
+     n_week_adjusting, offset = "log(pop)", date_0 )
 }
