@@ -27,6 +27,7 @@ gen_fake_death_data_county <- function() {
   death_exp <- NULL
   deaths_exp <- NULL
   deaths <- NULL
+  location_intercept <- NULL
 
 
 
@@ -61,8 +62,13 @@ gen_fake_death_data_county <- function() {
 
   skeleton[, year := isoyear_n(date)]
   skeleton[, week := isoweek(date)]
-  skeleton[, mu:=( 16.733681+ 0.046588*sin(2 * pi * (week) / 53) + 0.078491*cos(2 * pi * (week ) / 53) -0.012650* year) ]
+
+  ranef <- data.table(location_code = location_code,
+             location_intercept = c(-0.18, -0.21, 0.04, 0.13, -0.05, 0.25, 0.10, -0.01, -0.06, -0.4, 0.3))
+
   skeleton[pop_data, on = c("location_code"), pop_frac:= pop_frac]
+  skeleton[ranef, on = c("location_code"), location_intercept := location_intercept]
+  skeleton[, mu:=(  16.4+ 0.0425475*sin(2 * pi * (week) / 53) + 0.0801632*cos(2 * pi * (week ) / 53) -0.0124715* year + location_intercept) ]
   skeleton[pop_data, on = c("location_code"), pop:= pop]
   skeleton[, deaths_exp:= round(exp(mu)*pop*1/7)]
   skeleton[, deaths := stats::rpois(.N, deaths_exp)]
@@ -86,7 +92,7 @@ gen_fake_death_data_county <- function() {
   skeleton_death <- rbindlist(temp_vec)
 
   skeleton_death[, doe := date]
-  skeleton_death[, reg_lag := stats::rpois(.N, 21)]
+  skeleton_death[, reg_lag := stats::rpois(.N, 18)]
   skeleton_death[, dor := doe + reg_lag]
 
   # data_fake_nowcasting_county_raw <- skeleton_death[,.(doe, dor, location_code)]
