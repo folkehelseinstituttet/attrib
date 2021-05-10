@@ -131,10 +131,10 @@ nowcast_aggregate <- function(
 #
   # data <- gen_fake_death_data_county()
   # #data <- attrib::data_fake_nowcasting_raw
-  # aggregation_date <- as.Date("2020-01-01")
+  # aggregation_date <- as.Date("2019-12-31")
   # n_week <- 6
   # pop_data <- fhidata::norway_population_by_age_cats(cats = list(c(1:120)))[location_code %in% unique(fhidata::norway_locations_b2020$county_code)]
-  # pop_data <- NULL
+  # #pop_data <- NULL
   ### check of parameters ----
 
   if (! "doe" %in% colnames(data)){
@@ -160,8 +160,10 @@ nowcast_aggregate <- function(
   d <- d[dor < as.Date(cut(aggregation_date, "week"))] # we erase all date for incompleate weeks.
   d <- d[doe < as.Date(cut(aggregation_date, "week"))]
   d[, cut_doe := as.Date(cut(doe, "week"))]
+  d <- d[order(doe, dor)]
 
-
+  first_date <- d[1,]$doe
+  last_date <- as.Date(cut(aggregation_date -7, "week"))
   # count deaths
 
   d_death <- d[ , .(
@@ -211,9 +213,30 @@ nowcast_aggregate <- function(
   d_within_week <- as.data.table(subset(d_within_week, select = unique(colnames(d_within_week))))
 
 
-  # insert NA where we do not have data
-  date_0 <- d_within_week[nrow(d_within_week), cut_doe]
+  #date_0 <- d_within_week[nrow(d_within_week), cut_doe]
+  date_0 <- as.Date(cut(aggregation_date, "week"))
   d_corrected <- d_within_week[, .(cut_doe,location_code, n_death, n0_0, p0_0)]
+
+
+  # expand so all dates are present
+
+  dates <- seq.Date(
+    from = first_date,
+    to = last_date,
+    by = 7
+  )
+
+  all_dates_locations <- expand.grid(
+    cut_doe = dates,
+    location_code = unique(d_within_week$location_code)
+  )
+
+
+  d_corrected <- merge(d_corrected, all_dates_locations, on = c("cut_doe, location_code"), all = TRUE)
+  d_corrected[is.na(n_death), n0_0 := 0]
+  d_corrected[is.na(n_death), p0_0 := 0]
+  d_corrected[is.na(n_death), n_death := 0]
+  # insert NA where we do not have data
   for ( i in 2:n_week){
 
     week_n <- paste0("n0_",(i-1))
@@ -223,11 +246,11 @@ nowcast_aggregate <- function(
     d_within_week[, temp_variable_p := get(week_p)]
 
 
-    d_within_week[cut_doe >= (date_0- (i-2)*7)]#, temp_variable_n := new_value]
+    d_within_week[cut_doe >= (date_0- (i-1)*7)]#, temp_variable_n := new_value]
 
 
-    d_within_week[cut_doe >= (date_0- (i-2)*7), temp_variable_n := new_value]
-    d_within_week[cut_doe >= (date_0- (i-2)*7), temp_variable_p := new_value]
+    d_within_week[cut_doe >= (date_0- (i-1)*7), temp_variable_n := new_value]
+    d_within_week[cut_doe >= (date_0- (i-1)*7), temp_variable_p := new_value]
 
 
     d_corrected[ d_within_week,
@@ -254,9 +277,9 @@ nowcast_aggregate <- function(
     } #her er det en feil
   }
 
-#
-#     data_fake_nowcasting_county_aggregated <- d_corrected
-#     save(data_fake_nowcasting_county_aggregated, file = "data/data_fake_nowcasting_county_aggregated.rda", compress = "bzip2")
+  d_corrected[location_code == "county03"]
+    # data_fake_nowcasting_county_aggregated <- d_corrected
+    # save(data_fake_nowcasting_county_aggregated, file = "data/data_fake_nowcasting_county_aggregated.rda", compress = "bzip2")
 
 
   retval <- d_corrected
