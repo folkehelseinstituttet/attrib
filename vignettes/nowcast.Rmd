@@ -64,9 +64,11 @@ mortality_data_aggregated <- nowcast_aggregate(mortality_data_raw,
 tail(mortality_data_aggregated[location_code == "county03"])
 ```
 
-As we can see we have now generated a data table containing the number of registered deaths per week, the percentage of registrated deaths and the number of deaths registrated within all weeks up to "n_week". The population is also added to the data.
+As we can see we have now generated a data table containing the number of registered deaths per week where "cut_doe" is the date of the Monday belonging to each week, the percentage of registered deaths and the number of deaths registered within all weeks up to "n_week". The population is also added to the data.
 
-We also note that for the last weeks in the dataset we do not have information about what happens in the future, hence these are set to "NA". 
+It is worth noting that "n0_0" is defined as the number of moralities registered in the last full week before "cut_doe" which is always a Monday. This means that "n0_0" also contains information from a full week. The information contained in "n0_1" are all moralities registered within the last and the second last week. Hence this contains the moralities registered withing 2 weeks from the "cut_doe".
+
+We also note that for the last weeks in the data set we do not have information about what happens in the future, hence these are set to "NA". 
 
 We can now plot the percentages of registrations after $k$ weeks and use this to evaluate how many weeks we need to correct. 
 
@@ -134,7 +136,7 @@ It is also important to make sure that the simulation funciton works together wi
 
 
 ```{r}
-data_aggregated <- data.table::as.data.table(data_fake_nowcasting_county_aggregated)
+data_aggregated <- mortality_data_aggregated
 data_aggregated <- data_aggregated#[location_code == "county03"]
 n_week_training <- 50
 n_week_adjusting <- 4
