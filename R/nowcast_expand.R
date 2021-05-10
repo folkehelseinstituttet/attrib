@@ -13,7 +13,7 @@
 #' @examples
 #' data<- data.table::as.data.table(data_fake_nowcasting_county_aggregated)
 #' data <- data[location_code == "county03"]
-#' n_week_adjusting <- 8
+#' n_week_adjusting <- 5
 #' n_week_train <- 52
 #' n_week_start <- n_week_adjusting + n_week_train
 #' date_0 <- data[nrow(data),]$cut_doe #last date in the dataset, assume the dataset is ordered.
@@ -104,7 +104,7 @@ nowcast_correction_fn_quasipoisson <- function(data, n_week_adjusting, offset, d
 #' @return nowcast_correction_object including corrected data for all weeks in n_wwk_adjust and the model fits for all weeks
 #' @examples \dontrun{
 #' data<- data.table::as.data.table(data_fake_nowcasting_county_aggregated)
-#' n_week_adjusting <- 8
+#' n_week_adjusting <- 5
 #' n_week_start <- 52
 #' date_0 <- data[nrow(data),]$cut_doe #last date in the dataset, assume the dataset is ordered.
 #' data <- data[cut_doe >= (date_0 - n_week_start*7 + 1), ]
@@ -158,6 +158,7 @@ nowcast_correction_fn_negbin_mm <- function(data, n_week_adjusting, offset, date
     # }
 
     ranef <- "(1| location_code)"
+
     response <- "n_death"
     fit <- fit_attrib(data_train, response= response, fixef=fixef, ranef=ranef, offset= offset, dist_family = "negbin")
 
@@ -197,7 +198,7 @@ nowcast_correction_fn_negbin_mm <- function(data, n_week_adjusting, offset, date
 #' @return simulations of the estimate made by the fitted models in nowcast_correction_fn
 #' @examples
 #' data <- data.table::as.data.table(data_fake_nowcasting_county_aggregated)[location_code == "county03"]
-#' n_week_adjusting <- 8
+#' n_week_adjusting <- 5
 #' n_week_train <- 52
 #' n_week_start <- n_week_adjusting + n_week_train
 #' date_0 <- data[nrow(data),]$cut_doe #last date in the dataset, assume the dataset is ordered.

@@ -7,7 +7,7 @@
 #'
 #'  data_aggregated <-  data.table::as.data.table(data_fake_nowcasting_county_aggregated)[location_code == "county03",]
 #'  n_week_training <- 50
-#'  n_week_adjusting <- 8
+#'  n_week_adjusting <- 5
 #'  date_0 <- data_aggregated[nrow(data_aggregated),]$cut_doe
 #'  nowcast_object <- nowcast(data_aggregated,offset = "log(pop)",
 #'   n_week_adjusting,n_week_training,date_0,
