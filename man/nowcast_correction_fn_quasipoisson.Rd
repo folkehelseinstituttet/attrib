@@ -26,7 +26,7 @@ For more details see the help vignette:
 \examples{
 data<- data.table::as.data.table(data_fake_nowcasting_county_aggregated)
 data <- data[location_code == "county03"]
-n_week_adjusting <- 8
+n_week_adjusting <- 5
 n_week_train <- 52
 n_week_start <- n_week_adjusting + n_week_train
 date_0 <- data[nrow(data),]$cut_doe #last date in the dataset, assume the dataset is ordered.
