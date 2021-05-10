@@ -43,9 +43,6 @@ baseline_est <- function(data_train, data_predict, n_sim = 1000, fixef, ranef, r
   sim_value <- NULL
   type <- NULL
 
-
-
-
   #for developping
   #
   # data <- as.data.table(data_fake_nowcasting_aggregated)
@@ -55,12 +52,17 @@ baseline_est <- function(data_train, data_predict, n_sim = 1000, fixef, ranef, r
   # data_predict <- data
   # offsett <- "log(pop)"
 
+
+  # Check if ranef is null to decide to use negative binomial or quasipoisson.
   if(is.null(ranef)){
+    # Quasipoisson
+
     formula <- paste0(response," ~ ", fixef, " + ", offset )
     col_names <- colnames(data_train)
     fit <- stats::glm(stats::as.formula(formula), family = "quasipoisson", data = data_train)
     dispersion<- summary(fit)$dispersion
 
+    ## Simmulations
     x<- arm::sim(fit, n_sim)
     sim_models <- as.data.frame(as.matrix(x@coef))
     data_x <- as.data.table(copy(stats::model.frame(formula, data = data_predict)))
@@ -83,8 +85,10 @@ baseline_est <- function(data_train, data_predict, n_sim = 1000, fixef, ranef, r
       }
     }
 
+    ## Draw random sample
     if(dispersion > 1){
-        expected <-(stats::rnbinom(length(expected_fix),mu = exp(expected_fix), size = (exp(expected_fix)/(dispersion-1)))) #using a neg bin to draw from a quiasipoison,
+      #using a neg bin to draw from a quasipoison, not possible if we have under dispersion
+        expected <-(stats::rnbinom(length(expected_fix),mu = exp(expected_fix), size = (exp(expected_fix)/(dispersion-1))))
     } else{
         expected <- stats::rpois(length(expected_fix),lambda  = exp(expected_fix))
     }
@@ -99,15 +103,17 @@ baseline_est <- function(data_train, data_predict, n_sim = 1000, fixef, ranef, r
     expected_t$id_row <- 1:nrow(data_predict)
     data_predict$id_row <- 1:nrow(data_predict)
 
+    # SImulated data
     new_data <- merge(data_predict, expected_t, by = "id_row", all = TRUE)
-
     new_data <- data.table::melt(new_data, id.vars = c(col_names, "id_row"))
 
 
     setnames(new_data, "variable", "sim_id")
     new_data$sim_id <- as.numeric(as.factor(new_data$sim_id))
+    new_data[, type := "quasi_poisson"]
     setnames(new_data, "value", "sim_value")
   } else if(!is.null(ranef)){
+    #Negative binomial
 
     fit <- fit_attrib(data_train, response, fixef, ranef, offset, dist_family = "negbin")
 
@@ -122,7 +128,7 @@ baseline_est <- function(data_train, data_predict, n_sim = 1000, fixef, ranef, r
     return("Something wrong with model input")
   }
 
-
+  ## Quantile functions
 
   q025 <- function(x){
     return(stats::quantile(x, 0.025))
@@ -131,6 +137,7 @@ baseline_est <- function(data_train, data_predict, n_sim = 1000, fixef, ranef, r
     return(stats::quantile(x, 0.975))
   }
 
+  # Aggregate data
   col_names_new <- colnames(new_data)
   data.table::setkeyv(new_data,
                       col_names_new[!col_names_new %in% c("sim_value",
@@ -142,19 +149,6 @@ baseline_est <- function(data_train, data_predict, n_sim = 1000, fixef, ranef, r
                                            function(f) lapply(.SD, f))),
                             by = eval(data.table::key(new_data)),.SDcols = c("sim_value")]
 
-  #library(ggplot2)
-  # q <- ggplot(aggregated_sim,
-  #             aes(x = week,
-  #                 y = median.sim_value,
-  #                 group = as.factor(year),
-  #                 colour = as.factor(year)))
-  # q <- q + geom_line()
-  # q <-q + geom_line(aes(y = n_death))
-  # q <- q + geom_ribbon(aes(x = week, ymin=q05.sim_value,
-  #                          ymax=q95.sim_value, fill = year),
-  #                      alpha=0.5)
-  #
-  # q
   retval <- vector(mode = "list")
   retval$simulations <- new_data
   retval$aggregated <- aggregated_sim

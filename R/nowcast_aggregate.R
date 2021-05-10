@@ -122,13 +122,8 @@ nowcast_aggregate <- function(
   location_code<- NULL
 
 
-
-  # retur only dataset or graphs as well? ## First only dataset!
-
-
-
   ##### for developing
-#
+
   # data <- gen_fake_death_data_county()
   # #data <- attrib::data_fake_nowcasting_raw
   # aggregation_date <- as.Date("2019-12-31")
@@ -164,8 +159,8 @@ nowcast_aggregate <- function(
 
   first_date <- d[1,]$doe
   last_date <- as.Date(cut(aggregation_date -7, "week"))
-  # count deaths
 
+  # count deaths
   d_death <- d[ , .(
     "n_death" = .N
   ), keyby = .(
@@ -180,6 +175,7 @@ nowcast_aggregate <- function(
   retval <- vector("list", length = n_week)
   d_within_week <- d[, .(cut_doe, location_code)]
 
+  # Count deaths within week
   for ( i in 1:n_week){
     temp_d <- d[, .(cut_doe, n_death, location_code)]
     temp <- d[dor < (as.Date(cut_doe) + i*7), .(
@@ -196,24 +192,13 @@ nowcast_aggregate <- function(
 
     retval[[i ]] <- as.data.frame(temp_d)
 
-
-
-    # setnames(temp, "temp_outcome_p", paste0("p0_", (i-1)))
-    # setnames(temp, "temp_outcome_n", paste0("n0_", (i-1)))
-    #
-    # retval[[i ]] <- as.data.frame(temp)
-    #retval[[i]] <- as.data.frame(subset(temp, select = -c(cut_doe) ))
-
   }
 
   d_within_week <- cbind.data.frame(retval)
   d_within_week <- unique(as.data.table(d_within_week))
-  # nrow(d_within_week)
-  # nrow(unique(d[, .(cut_doe, n_death)]))
   d_within_week <- as.data.table(subset(d_within_week, select = unique(colnames(d_within_week))))
 
 
-  #date_0 <- d_within_week[nrow(d_within_week), cut_doe]
   date_0 <- as.Date(cut(aggregation_date, "week"))
   d_corrected <- d_within_week[, .(cut_doe,location_code, n_death, n0_0, p0_0)]
 
@@ -231,11 +216,14 @@ nowcast_aggregate <- function(
     location_code = unique(d_within_week$location_code)
   )
 
+  # Merge together so all dates are present
 
   d_corrected <- merge(d_corrected, all_dates_locations, on = c("cut_doe, location_code"), all = TRUE)
   d_corrected[is.na(n_death), n0_0 := 0]
   d_corrected[is.na(n_death), p0_0 := 0]
   d_corrected[is.na(n_death), n_death := 0]
+
+
   # insert NA where we do not have data
   for ( i in 2:n_week){
 
@@ -261,10 +249,6 @@ nowcast_aggregate <- function(
                  paste0("p0_",(i-1)) := temp_variable_p]
   }
 
-
-  # pop_data<- fhidata::norway_population_by_age_cats(cats = list(c(1:120)))[location_code == "norge"]
-  #
-
   d_corrected[, week := isoweek(cut_doe)]
   d_corrected[, year := isoyear_n(cut_doe)]
   if(!is.null(pop_data)){
@@ -274,10 +258,10 @@ nowcast_aggregate <- function(
     d_corrected[pop_data,
                 on = c("year", "location_code"),
                 pop := pop]
-    } #her er det en feil
+    }
   }
 
-  d_corrected[location_code == "county03"]
+  ## Save rds
     # data_fake_nowcasting_county_aggregated <- d_corrected
     # save(data_fake_nowcasting_county_aggregated, file = "data/data_fake_nowcasting_county_aggregated.rda", compress = "bzip2")
 

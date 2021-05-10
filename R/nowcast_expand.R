@@ -34,6 +34,7 @@ nowcast_correction_fn_quasipoisson <- function(data, n_week_adjusting, offset, d
   # n_week_adjusting <- 8
   # offset = "log(pop)"
 
+  # Lagg the data
   for ( i in 0:n_week_adjusting){
 
     week_n <- paste0("n0_",(i))
@@ -43,14 +44,12 @@ nowcast_correction_fn_quasipoisson <- function(data, n_week_adjusting, offset, d
     data[, paste0("n0_",(i), "_lag1") := shift(temp_variable_n, 1, fill = 0), by = .(location_code)] #by = (location_code, data)
   }
   data <- subset(data, select= -c(temp_variable_n))
-  # data[, week := isoweek(cut_doe)]
-  # data[, year := year(cut_doe)] #er dettte rett?
+
 
   ########## fit ----
-  #date_0 <- data[order(cut_doe)][nrow(data)]$cut_doe
+  # For each week in n_week_adjusting model a correction
   data_train <- data[cut_doe < (date_0 - n_week_adjusting*7) ]
   data_predict <- data[cut_doe >= (date_0 - n_week_adjusting*7) ]
-  #cut_doe_vec <- data_cut$cut_doe
 
   fit_vec <- vector(mode = "list", length = (n_week_adjusting+1))
   for ( i in 0:n_week_adjusting){
@@ -71,13 +70,11 @@ nowcast_correction_fn_quasipoisson <- function(data, n_week_adjusting, offset, d
     fit <- stats::glm(stats::as.formula(formula), family = "quasipoisson", data = data_train)
 
 
-    n_cor <- round(stats::predict(fit, newdata = data, type = "response")) ###SHOULD THIS BE ROUNDED?
+    n_cor <- round(stats::predict(fit, newdata = data, type = "response"))
     data[, glue::glue("ncor0_{i}"):= n_cor]
 
-    #cut_doe_cur <- cut_doe_vec[n_week_adjusting+1-i]
     fit_vec[[i+1]]$fit<- fit
     fit_vec[[i+1]]$formula<- formula
-    #fit_vec[i+1]$i<- i
 
   }
 
@@ -87,7 +84,6 @@ nowcast_correction_fn_quasipoisson <- function(data, n_week_adjusting, offset, d
   retval$fit <- fit_vec
 
   return(retval)
-  #return(data)
 }
 
 
@@ -120,13 +116,17 @@ nowcast_correction_fn_negbin_mm <- function(data, n_week_adjusting, offset, date
   location_code <- NULL
 
 
-  #for developping
+  ##for developping
+
   # data<- as.data.table(data_fake_nowcasting_county_aggregated)
   # n_week_adjusting <- 4
   # offset = "log(pop)"
   # date_0 <- data[order(cut_doe)][nrow(data)]$cut_doe +1
+
   date_0 <- as.Date(cut(date_0, "week"))
   data <- data[cut_doe < date_0,]
+
+  # Lag the data
   for ( i in 0:n_week_adjusting){
 
     week_n <- paste0("n0_",(i))
@@ -140,38 +140,29 @@ nowcast_correction_fn_negbin_mm <- function(data, n_week_adjusting, offset, date
   data_train <- data[cut_doe < (date_0 - n_week_adjusting*7) ]
   data_predict <- data[cut_doe >= (date_0 - n_week_adjusting*7) ]
 
-  # last_date <- data[order(cut_doe)][nrow(data)]$cut_doe
-  # cut_date <- last_date - 7*(n_week_adjusting+1)
-
   ########## fit ----
-  #cut_doe_vec <- data[cut_doe>cut_date]$cut_doe
 
+  # FIt a model for every correction
   fit_vec <- vector(mode = "list", length = (n_week_adjusting+1))
   for ( i in 0:n_week_adjusting){
     # print(i)
     fixef <- paste0("sin(2 * pi * (week - 1) / 52) + cos(2 * pi * (week - 1) / 52)+ year +",
                         glue::glue("n0_{i}"))
-    # if(i>=1){
-    #   for (j in 0:(i-1)){
-    #     formula <-  paste0(formula, "+",  glue::glue("n0_{j}"))
-    #   }
-    # }
 
     ranef <- "(1| location_code)"
 
     response <- "n_death"
     fit <- fit_attrib(data_train, response= response, fixef=fixef, ranef=ranef, offset= offset, dist_family = "negbin")
 
-    n_cor <- round(stats::predict(fit, newdata = data, type = "response")) ###SHOULD THIS BE ROUNDED?
+    n_cor <- round(stats::predict(fit, newdata = data, type = "response"))
     data[, glue::glue("ncor0_{i}"):= n_cor]
 
-    #cut_doe_cur <- cut_doe_vec[n_week_adjusting+1-i]
     fit_vec[[i+1]]$fit<- fit
     fit_vec[[i+1]]$fixef<- fixef
     fit_vec[[i+1]]$ranef <- ranef
     fit_vec[[i+1]]$response <- response
     fit_vec[[i+1]]$offset <- offset
-    #fit_vec[i+1]$i<- i
+
 
   }
 
@@ -181,7 +172,6 @@ nowcast_correction_fn_negbin_mm <- function(data, n_week_adjusting, offset, date
   retval$fit <- fit_vec
 
   return(retval)
-  #return(data)
 }
 
 
@@ -226,9 +216,8 @@ nowcast_correction_sim_quasipoisson <- function(nowcast_correction_object, offse
   data <- nowcast_correction_object$data
   n_week_adjusting <- nowcast_correction_object$n_week_adjusting[[1]]
 
-  ##simmuleringer ----
+  ##simulations ----
 
-  #date_0 <- data[order(cut_doe)][nrow(data)]$cut_doe
   data_train <- data[cut_doe < (date_0 - n_week_adjusting*7) ]
   data_predict <- data[cut_doe >= (date_0 - n_week_adjusting*7) ]
 
@@ -280,7 +269,6 @@ nowcast_correction_sim_quasipoisson <- function(nowcast_correction_object, offse
     }
 
     dispersion<- summary(fit)$dispersion
-    #print(dispersion)
     if(dispersion > 1){
       expected_sim <-data.table(
         sim_id = 1:n_sim,
@@ -295,14 +283,10 @@ nowcast_correction_sim_quasipoisson <- function(nowcast_correction_object, offse
       )
     }
 
-
-    #print(cut_doe_cur)
-    #expected_sim[, sim_value:= round(as.numeric(sim_value), 2)]
     sim_val_vec[[i +1]]<- expected_sim
 
 
   }
-
 
   sim_data <- rbindlist(sim_val_vec)
   retval<- merge(data, sim_data, by = "cut_doe", all = TRUE)
@@ -353,9 +337,8 @@ nowcast_correction_sim_neg_bin <- function(nowcast_correction_object, offset, n_
   data <- nowcast_correction_object$data
   n_week_adjusting <- nowcast_correction_object$n_week_adjusting[[1]]
 
-  ##simmuleringer ----
+  ##simulations ----
 
-  #date_0 <- data[order(cut_doe)][nrow(data)]$cut_doe
   data_train <- data[cut_doe < (date_0 - n_week_adjusting*7) ]
   data_predict <- data[cut_doe >= (date_0 - n_week_adjusting*7) ]
 
@@ -371,9 +354,6 @@ nowcast_correction_sim_neg_bin <- function(nowcast_correction_object, offset, n_
     cut_doe_cur <- cut_doe_vec_unique[n_week_adjusting-i]
     n_row <- length(which(cut_doe_cur == cut_doe_vec))
 
-
-    #fit_neg_bin <- fit_attrib(data_train, response, fixef, ranef, offset, dist_family = "negbin")
-    #this i
     sim_data<- sim(fit, data_predict[cut_doe== cut_doe_cur], n_sim = n_sim)
 
     shape<- lme4::getME(fit, "glmer.nb.theta")
@@ -381,8 +361,6 @@ nowcast_correction_sim_neg_bin <- function(nowcast_correction_object, offset, n_
 
 
     expected_sim <-sim_data[,.(cut_doe, sim_id, sim_value, location_code)]
-    #print(cut_doe_cur)
-    #expected_sim[, sim_value:= round(as.numeric(sim_value), 2)]
     sim_val_vec[[i +1]]<- expected_sim
 
 
@@ -465,10 +443,11 @@ nowcast <- function(
   data <- as.data.table(data_aggregated)
   n_week_start <- n_week_training + n_week_adjusting
   date_0 <- as.Date(cut(date_0, "week"))
-  #date_0 <- data[order(cut_doe)][nrow(data)]$cut_doe
 
+  # Cleaning
   data <- data[cut_doe >= (date_0 - n_week_start*7) ]
   data <- data[cut_doe < date_0]
+
   #### corrected n_deaths ----
   if (!is.null(offset)){
     nowcast_correction_object <- nowcast_correction_fn(data, n_week_adjusting, offset = offset, date_0)

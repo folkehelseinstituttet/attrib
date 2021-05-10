@@ -38,23 +38,8 @@ nowcast_eval <- function(nowcast_object, n_week_adjusting){
   q975.sim_value <- NULL
 
 
+  ### for developing
 
-
-
-  # data <- read.table("C:/Users/AUHO/Desktop/FHIDOD2_20201229.txt", sep = ";", header = TRUE)
-  # data <- as.data.table(data)
-  #
-  # data[, doe := as.Date(as.character(DODS_DATO), format = "%Y%m%d")]
-  # data[, dor := as.Date(as.character(ENDR_DATO), format = "%Y%m%d")]
-  #
-  # data<- na.omit(data)
-  #
-  # data_aggregated <- nowcast_aggregate(data, lubridate::today(), n_week = 13)
-
-  #data_cast<-nowcast(data_aggregated, n_week_adjusting = 8, n_week_training = 40)
-
-
-  # for developint
   # data_aggregated <- as.data.table(data_fake_nowcasting_county_aggregated)
   # n_week_training <- 50
   # n_week_adjusting <- 4
@@ -71,7 +56,7 @@ nowcast_eval <- function(nowcast_object, n_week_adjusting){
 
   retval <- vector("list" , length = (n_week_adjusting))
 
-
+  # Compute R2, mse, residualplot for every correction
   for (i in 0:(n_week_adjusting-1) ){
     temp <- paste0("ncor0_", i)
     data[, temp_variable := get(temp)]
@@ -113,20 +98,6 @@ nowcast_eval <- function(nowcast_object, n_week_adjusting){
     retval[[i +1]] <- temp_retval
   }
 
-#
-#   q <- ggplot2::ggplot(data_aggregated[location_code == "county30"],
-#                        ggplot2::aes(x = yrwk, y = median.sim_value))
-#   q <- q + ggplot2::geom_errorbar(ggplot2::aes(ymin=q025.sim_value, ymax=q975.sim_value), colour="blue", width=.1)
-#   q <- q + ggplot2::geom_point( size=3)
-#   q <- q + ggplot2::ggtitle("Estimated mortality with 95 percent credible intervals")
-#   q <- q +  ggplot2::scale_y_continuous("N corrected")
-#   q <- q + ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, hjust = 1, vjust = 0.5),
-#                           axis.title.x=ggplot2::element_blank())
-#   #q <- q +  labs(caption = glue::glue(""))
-#   q
-#
-#
-#   retval$CI_plot <- q
    return (retval)
 }
 
