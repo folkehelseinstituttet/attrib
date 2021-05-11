@@ -1,0 +1,7 @@
+^.*\.Rproj$
+^\.Rproj\.user$
+CRAN-RELEASE
+Jenkinsfile
+Makefile
+cran-comments.md
+^LICENSE\.md$

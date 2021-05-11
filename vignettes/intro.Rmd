@@ -1,5 +1,5 @@
 ---
-title: "Introduction to attrib"
+title: "Introduction to Attrib"
 author: "Aurora Hofman"
 date: "2020-07-21"
 output: rmarkdown::html_vignette
@@ -303,11 +303,11 @@ The next thing to do is to aggregate away the simulations. The benefits of havin
 
 ```{r}
 # Quantile functins
-q05 <- function(x){
-  return(quantile(x, 0.05))
+q025 <- function(x){
+  return(quantile(x, 0.025))
 }
-q95 <- function(x){
-  return(quantile(x, 0.95))
+q975 <- function(x){
+  return(quantile(x, 0.975))
 }
 ```
 
@@ -324,7 +324,7 @@ data.table::setkeyv(data_national,
 
 aggregated_sim_seasonal_data_national<- data_national[,
                                    unlist(recursive = FALSE, 
-                                          lapply(.(median = median, q05 = q05, q95 = q95),
+                                          lapply(.(median = median, q025 = q025, q975 = q975),
                                                                     function(f) lapply(.SD, f)
                                    )), 
                                    by = eval(data.table::key(data_national)),
@@ -342,7 +342,7 @@ To be able to compare the two models we make a point range plot using ggplot2.
 ```{r fig.height=4, fig.width=6}
 q <- ggplot(aggregated_sim_seasonal_data_national[attr == "sim_value_pr100_ili_lag_1=0"], 
                        aes(x = season, y = median.exp_attr, group = tag, color = tag)) 
-q <- q + geom_pointrange(aes(x = season, y = median.exp_attr, ymin = q05.exp_attr, ymax = q95.exp_attr), position = position_dodge(width = 0.3))
+q <- q + geom_pointrange(aes(x = season, y = median.exp_attr, ymin = q025.exp_attr, ymax = q975.exp_attr), position = position_dodge(width = 0.3))
 q <- q + ggtitle("Attributable mortality due to ILI in Norway according to 2 models") 
 q <- q +  scale_y_continuous("Estimated attributable mortality") 
 q <- q +  theme(axis.text.x = element_text(angle = 90),axis.title.x=element_blank()) 
@@ -375,7 +375,7 @@ col_names <- colnames(aggregated_county_to_nation)
 data.table::setkeyv(aggregated_county_to_nation, col_names[!col_names %in% c("exp_attr", "exp_irr","sim_id", "exposures", "sim_value_exposures=observed", "value")])
 
 aggregated_county_to_nation_weekly <- aggregated_county_to_nation[,
-              unlist(recursive = FALSE, lapply(.(median = median, q05 = q05, q95 = q95),
+              unlist(recursive = FALSE, lapply(.(median = median, q025 = q025, q975 = q975),
                                                function(f) lapply(.SD, f)
               )), 
               by=eval(data.table::key(aggregated_county_to_nation)),
@@ -386,8 +386,8 @@ We then estimate the cumulative sums of attributable mortality and corresponding
 
 ```{r}
 aggregated_county_to_nation_weekly[, cumsum := cumsum(median.exp_attr), by = .( attr, season)]
-aggregated_county_to_nation_weekly[, cumsum_q05 := cumsum(q05.exp_attr), by = .( attr, season)]
-aggregated_county_to_nation_weekly[, cumsum_q95 := cumsum(q95.exp_attr), by = .( attr, season)]
+aggregated_county_to_nation_weekly[, cumsum_q025 := cumsum(q025.exp_attr), by = .( attr, season)]
+aggregated_county_to_nation_weekly[, cumsum_q975 := cumsum(q975.exp_attr), by = .( attr, season)]
 
 head(aggregated_county_to_nation_weekly, 5)
 ```
@@ -422,8 +422,8 @@ q <- q + geom_ribbon(
     attr == "sim_value_pr100_ili_lag_1=0"
   ],
   aes(
-    ymin = cumsum_q05, 
-    ymax = cumsum_q95
+    ymin = cumsum_q025, 
+    ymax = cumsum_q975
   ), 
   alpha = 0.4, 
   colour = NA
@@ -472,8 +472,8 @@ q <- q + geom_ribbon(
   ],
   aes(
     x = x,
-    ymin = q05.exp_attr,
-    ymax = q95.exp_attr
+    ymin = q025.exp_attr,
+    ymax = q975.exp_attr
   ),
   fill = "blue",
   alpha=0.4
@@ -542,7 +542,7 @@ data.table::setkeyv(
 )
 
 aggregated_county_to_nation_irr <- aggregated_county_to_nation_sim_irr[,
-  unlist(recursive = FALSE, lapply(.(median = median, q05 = q05, q95 = q95), function(f) lapply(.SD, f))),
+  unlist(recursive = FALSE, lapply(.(median = median, q025 = q025, q975 = q975), function(f) lapply(.SD, f))),
   by = eval(data.table::key(aggregated_county_to_nation_sim_irr)),
   .SDcols = c("exp_irr")
 ]
@@ -558,8 +558,8 @@ coef_fit_county <- data.table::as.data.table(coef(fit_county)$season)
 col_names_coef <- c("pr100_ili_lag_1")
 coef_irr_data <- coef_fit_county[, ..col_names_coef]
 coef_irr_data[, irr := exp(pr100_ili_lag_1)]
-coef_irr_data[, q05 := exp(pr100_ili_lag_1 - 1.645 *0.003761)]  # 0.003761 is the standard deviation from coef(fit_county)
-coef_irr_data[, q95 := exp(pr100_ili_lag_1 + 1.645 *0.003761)]
+coef_irr_data[, q025 := exp(pr100_ili_lag_1 - 1.96 *0.003761)]  # 0.003761 is the standard deviation from coef(fit_county)
+coef_irr_data[, q975 := exp(pr100_ili_lag_1 + 1.96 *0.003761)]
 coef_irr_data[, tag := "from_coef"]
 coef_irr_data
 ```
@@ -590,8 +590,8 @@ q <- ggplot(
 q <- q +  geom_pointrange(
   aes(
     y = irr,
-    ymin = q05,
-    ymax = q95
+    ymin = q025,
+    ymax = q975
   ),
   position = position_dodge(width = 0.3)
 )

@@ -8,6 +8,7 @@
 #' @param fixef The fixed effects
 #' @param ranef The random effects
 #' @param offset The offsets.
+#' @param dist_family Family
 #'
 #' @return The model fit of the data with additional attributes offset, response and fit_fix.
 #' Offset and response are the same as in the input and fit_fix is the linear model of the fix effects.
@@ -33,6 +34,7 @@ fit_attrib <- function(
                        response,
                        fixef,
                        ranef,
+                       dist_family = "poisson",
                        offset = NULL) {
   is_data_table(data)
 
@@ -68,8 +70,12 @@ fit_attrib <- function(
     fit_fix <- stats::lm(stats::as.formula(paste0(response, "~", fixef, "+ offset(", offset, ")")), data = data)
   }
 
+  if(dist_family == "negbin"){
+    fit <- lme4::glmer.nb(stats::as.formula(formula), data = data)
+  }else{
+    fit <- lme4::glmer(stats::as.formula(formula), family = dist_family, data = data)
+  }
 
-  fit <- lme4::glmer(stats::as.formula(formula), family = "poisson", data = data)
 
   attr(fit, "fit_fix") <- fit_fix
   attr(fit, "offset") <- offset

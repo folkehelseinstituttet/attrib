@@ -4,7 +4,7 @@
 \alias{sim}
 \title{Generates simulations of expected mortality by simulating the model coefficients.}
 \usage{
-sim(fit, data, n_sim)
+sim(fit, data, n_sim, PI = FALSE)
 }
 \arguments{
 \item{fit}{A model fit created by fit_attrib}
@@ -12,6 +12,8 @@ sim(fit, data, n_sim)
 \item{data}{The data with either observed values or reference values.}
 
 \item{n_sim}{Number of simulations}
+
+\item{PI}{Returns a draw from the quasipoisson distribution with the calculated mean as mean. If false the exponential of the mean is returned.}
 }
 \value{
 A dataset with 500 simulations of the expected response for each row in the original dataset.

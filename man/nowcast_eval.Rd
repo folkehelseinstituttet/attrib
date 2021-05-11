@@ -3,27 +3,31 @@
 \name{nowcast_eval}
 \alias{nowcast_eval}
 \title{For more details see the help vignette:
-\code{vignette("intro", package="attrib")}}
+\code{vignette("nowcast", package="attrib")}}
 \usage{
-nowcast_eval(data, n_week_adjusting)
+nowcast_eval(nowcast_object, n_week_adjusting)
 }
 \arguments{
-\item{data}{Dataset from the function nowcast}
+\item{nowcast_object}{Object from the function nowcast}
 
 \item{n_week_adjusting}{Number of weeks to adjust}
 }
 \value{
-Residualplots for all ncor_i and some evaluationmetrixs for each of them
+Residualplots for all ncor_i and some evaluationmetrixs for each of them as well as a plot containing credible intervals using the simulations
 }
 \description{
 For more details see the help vignette:
-\code{vignette("intro", package="attrib")}
+\code{vignette("nowcast", package="attrib")}
 }
 \examples{
-\dontrun{
 
-data <- attrib::data_fake_nowcasting_aggregated
-n_week_adjusting <- 8
-data_correct <- nowcast_eval(data, n_week_adjusting )
-}
+ data_aggregated <-  data.table::as.data.table(data_fake_nowcasting_county_aggregated)[location_code == "county03",]
+ n_week_training <- 50
+ n_week_adjusting <- 5
+ date_0 <- data_aggregated[nrow(data_aggregated),]$cut_doe
+ nowcast_object <- nowcast(data_aggregated,offset = "log(pop)",
+  n_week_adjusting,n_week_training,date_0,
+  nowcast_correction_fn = nowcast_correction_fn_quasipoisson,
+  nowcast_correction_sim_fn = nowcast_correction_sim_quasipoisson)
+ nowcast_eval_object <- nowcast_eval(nowcast_object, n_week_adjusting)
 }

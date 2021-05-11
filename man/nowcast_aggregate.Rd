@@ -5,29 +5,31 @@
 \title{For more details see the help vignette:
 \code{vignette("intro", package="attrib")}}
 \usage{
-nowcast_aggregate(data, aggregation_date, n_week)
+nowcast_aggregate(data, aggregation_date, n_week, pop_data = NULL)
 }
 \arguments{
-\item{data}{Dataset containing doe (Date of event) and dor (Date of registation). The columns must have these exact names.}
+\item{data}{Dataset containing doe (Date of event), dor (Date of registation) and location_code. The columns must have these exact names.}
 
 \item{aggregation_date}{Date of aggregation}
 
 \item{n_week}{Number of weeks to calculate the percentage of the total registraations. Must be larger og equal to 2 amd smaller than the total number of weeks in the dataset.}
+
+\item{pop_data}{Population data, must contain a column called pop with the population data and a column with year and possibly week.}
 }
 \value{
-Cleaned dataset with the percentiles of registered events within the last 52 weeks
+Aggregated dataset with the percentiles of registered events within the last 52 weeks
 }
 \description{
 For more details see the help vignette:
 \code{vignette("intro", package="attrib")}
 }
 \examples{
-\dontrun{
 
-data <- attrib::data_fake_death
+data <- attrib::data_fake_nowcasting_raw
+data[doe < as.Date("2019-01-01")]
 aggregation_date <- as.Date("2020-01-01")
-n_week <- 52
+n_week <- 6
 
-clean_data <- nowcast_clean(data, aggregation_date, n_week)
-}
+data_aggregated <- nowcast_aggregate(data, aggregation_date, n_week)
+
 }

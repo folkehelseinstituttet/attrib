@@ -1,0 +1,51 @@
+---
+title: "Statistical properties used in Attrib"
+author: "Aurora Hofman"
+date: "2020-07-21"
+output: rmarkdown::html_vignette
+figure_width: 6
+figure_height: 4
+vignette: >
+ %\VignetteIndexEntry{Statistical properties used in Attrib}
+ %\VignetteEncoding{UTF-8}
+ %\VignetteEngine{knitr::rmarkdown}
+editor_options:
+  chunk_output_type: console
+chunk_output_type: console
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+# Attrirbutable mortality
+The package builds on the Baysian framework and a general knowledge of this is assumed.
+
+The goal is to model attributable mortality for which the definition is given below. To do this we model the number of deaths ($n_{death}$) as a function of given exposures represented in the matrix $X$. 
+
+The default version of the `sim` function used i `est_attrib`  calculates attributable mortality in the following way.
+
+We use the fit made by `fit_attrib` using lme4s glmer function to produce a fit to our data assuming the data is poison distributed with mean $\lambda$ and link function $\eta = X \beta = log(\lambda)$. Then we use this to compute the posterior distribution of $\beta$ using the `sim` function from the arm package. This assumes the posterior distribution of  $\beta$ is a normal distribution using the coefficients and correlation from the fit to compute the mean and variance of the posterior distribution. 
+
+This leads us to $n$ simulations from the posterior distribution of $\beta$ and the corresponding $n$ simulations for the expected value of $n_{death_i}$, $E(n_{death_i}) = e^{X \beta_i}$
+
+We now define attributable mortality as: 
+
+Attributable mortality (AM) := expected number of deaths (n_death) with given exposures - expected number of deaths with exposure i set to a reference value and the rest unchanged. 
+
+In mathematical terms 
+
+$$
+AM_{exposure_i} := E(n_{death_i}| X) - E(n_{death_i}| x_i = ref, x_{j \neq i} \text{ unchanged})
+$$
+When these values are aggregated we end up with a credible interval for attributable mortality. 
+
+# Baseline estimation
+
+In the case of the baseline estimation for mortality a glm is fitted to the data assuming it is quasipoisson distributed with mean $\lambda$ and the same link function as above. The `sim` function from the arm package is used to simulate values for $\beta$ from its posterior distribution. We then use these sample from the quasipoison distribution to get samples for $n_{death_i}$. We obtain $n_{sim}$ values for $n_{death_i}$ at each time point with 
+
+$n_{death_i} \sim  quasipoison(X \beta_i)$.
+
+When aggregating over the simulations this leads to a credible interval for $n_{death}$ for every week every year. 

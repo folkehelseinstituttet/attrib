@@ -18,11 +18,11 @@
 #   dor <- NULL
 #   reg_lag <- NULL
 #   . <- NULL
-#   
+#
 #   start_date <- as.Date("2018-01-01")
 #   end_date <- as.Date("2020-01-01")
-#   
-#   
+#
+#
 #   skeleton <- expand.grid(
 #     count = seq(1, 150, by = 1),
 #     date = seq.Date(
@@ -33,7 +33,7 @@
 #     stringsAsFactors = FALSE
 #   )
 #   setDT(skeleton)
-#   
+#
 #   # skeleton <- expand.grid(
 #   #   date = seq.Date(
 #   #     from = start_date,
@@ -43,17 +43,17 @@
 #   #   stringsAsFactors = FALSE
 #   # )
 #   # setDT(skeleton)
-#   # 
+#   #
 #   # skeleton[, n_death := rnorm(.N, mean = 150, sd = 20)]
-#   
-#   
+#
+#
 #   skeleton[, doe := date]
 #   skeleton[, reg_lag := stats::rpois(.N, 28)]
 #   skeleton[, dor := doe + reg_lag]
-#   
+#
 #    # data_fake_death <- skeleton[,.(doe, dor)]
 #    # save(data_fake_death, file = "data/data_fake_death.rda", compress = "bzip2")
-# 
+#
 #   return(skeleton[,.(doe, dor)])
 # }
 
@@ -63,16 +63,23 @@ gen_fake_death_data <- function() {
   dor <- NULL
   reg_lag <- NULL
   . <- NULL
-  
+  location_code <- NULL
+
   start_date <- as.Date("2018-01-01")
   end_date <- as.Date("2020-01-01")
-  
+
   date = seq.Date(
     from = start_date,
     to = end_date,
-    by = 1 
+    by = 1
   )
-  
+  #location_code <- c("county03", "county11", "county15", "county18", "county30", "county34", "county38", "county42", "county46", "county50", "county54")
+
+
+  # x_pop <- data.table(
+  #   location_code = c("county03", "county11", "county15", "county18", "county30", "county34", "county38", "county42", "county46", "county50", "county54"),
+  #   pop = c(693494, 479892, 265238, 241235, 1241165, 371385, 419396, 307231, 636531, 468702, 243311)
+  # )
   temp_vec <- vector( "list", length = length(date))
   n_death <- rep(0, length(date))
   n_death[1] <- round(stats::rnorm(1, mean = 150, sd = 10))
@@ -84,7 +91,7 @@ gen_fake_death_data <- function() {
       }
       n_death[i+ 1] = deaths
     }
-    
+
     skeleton <- expand.grid(
       date = date[i],
       count = seq(1, n_death[i], by = 1),
@@ -93,15 +100,16 @@ gen_fake_death_data <- function() {
     setDT(skeleton)
     temp_vec[[i]] <- as.data.table(skeleton)
   }
-  
+
   skeleton <- rbindlist(temp_vec)
-  
+
   skeleton[, doe := date]
   skeleton[, reg_lag := stats::rpois(.N, 21)]
   skeleton[, dor := doe + reg_lag]
-  
-  # data_fake_nowcasting_raw <- skeleton[,.(doe, dor)]
-  # save(data_fake_nowcasting_raw, file = "data/data_fake_nowcasting_raw.rda", compress = "bzip2")
-  
-  return(skeleton[,.(doe, dor)])
+  skeleton[, location_code:= "norge"]
+
+   # data_fake_nowcasting_raw <- skeleton[,.(doe, dor, location_code)]
+   # save(data_fake_nowcasting_raw, file = "data/data_fake_nowcasting_raw.rda", compress = "bzip2")
+
+  return(skeleton[,.(doe, dor, location_code)])
 }
