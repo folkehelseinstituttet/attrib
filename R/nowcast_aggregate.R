@@ -216,12 +216,20 @@ nowcast_aggregate <- function(
     location_code = unique(d_within_week$location_code)
   )
 
+  test <- merge(d_within_week, all_dates_locations, on = c("cut_doe, location_code"), all = TRUE)
+  for(i in 0:n_week){
+    test[is.na(n_death), paste0("n0_",(i)) := 0]
+  }
+
+  test[is.na(n_death), n_death := 0]
+  d_within_week <- test
+  d_corrected <- d_within_week[, .(cut_doe,location_code, n_death, n0_0, p0_0)]
   # Merge together so all dates are present
 
-  d_corrected <- merge(d_corrected, all_dates_locations, on = c("cut_doe, location_code"), all = TRUE)
-  d_corrected[is.na(n_death), n0_0 := 0]
-  d_corrected[is.na(n_death), p0_0 := 0]
-  d_corrected[is.na(n_death), n_death := 0]
+  # d_corrected <- merge(d_corrected, all_dates_locations, on = c("cut_doe, location_code"), all = TRUE)
+  # d_corrected[is.na(n_death), n0_0 := 0]
+  # d_corrected[is.na(n_death), p0_0 := 0]
+  # d_corrected[is.na(n_death), n_death := 0]
 
 
   # insert NA where we do not have data
@@ -234,11 +242,11 @@ nowcast_aggregate <- function(
     d_within_week[, temp_variable_p := get(week_p)]
 
 
-    d_within_week[cut_doe >= (date_0- (i-1)*7)]#, temp_variable_n := new_value]
+    d_within_week[cut_doe >= (last_date- (i-2)*7)]#, temp_variable_n := new_value]
 
 
-    d_within_week[cut_doe >= (date_0- (i-1)*7), temp_variable_n := new_value]
-    d_within_week[cut_doe >= (date_0- (i-1)*7), temp_variable_p := new_value]
+    d_within_week[cut_doe >= (last_date- (i-2)*7), temp_variable_n := new_value]
+    d_within_week[cut_doe >= (last_date- (i-2)*7), temp_variable_p := new_value]
 
 
     d_corrected[ d_within_week,
