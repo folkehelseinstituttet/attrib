@@ -1,6 +1,6 @@
 ---
 title: "Nowcasting with Attrib"
-author: "Aurora C Hofman"
+author: "Aurora Christine Hofman"
 date: "2021-05-15"
 output: rmarkdown::html_vignette
 figure_width: 6
@@ -53,7 +53,8 @@ As we can see this data set contains date of event "doe", date of registration "
 ```{r, warning=FALSE}
 aggregation_date <- as.Date("2020-01-01")
 n_week <- 6
-pop_data<- fhidata::norway_population_by_age_cats(cats = list(c(1:120)))[location_code %in% unique(fhidata::norway_locations_b2020$county_code)]
+unique_locations <- unique(fhidata::norway_locations_b2020$county_code)
+pop_data<- fhidata::norway_population_by_age_cats(cats = list(c(1:120)))[location_code %in% unique_locations]
 mortality_data_aggregated <-  attrib::nowcast_aggregate(mortality_data_raw,
                                                aggregation_date = aggregation_date, 
                                                n_week = n_week, pop_data = pop_data )
@@ -294,7 +295,12 @@ ranef <- "(1|location_code)"
 offset <- "log(pop)"
 
 
-base_line <-  attrib::baseline_est(data_train, data_predict, fixef = fixef, ranef = ranef, response = response, offset = offset)
+base_line <-  attrib::baseline_est(data_train, 
+                                   data_predict, 
+                                   fixef = fixef, 
+                                   ranef = ranef, 
+                                   response = response, 
+                                   offset = offset)
 ```
 
 
@@ -337,10 +343,14 @@ head(aggregated_nowcast_sim_negbin)
 
 ```{r, warning=FALSE}
 #nowcast_data[, q025.sim_value := ncor]
-nowcast_data_negbin[aggregated_nowcast_sim_negbin, on = .(cut_doe,location_code), q025.sim_value := q025.sim_value]
+nowcast_data_negbin[aggregated_nowcast_sim_negbin, 
+                    on = .(cut_doe,location_code), 
+                    q025.sim_value := q025.sim_value]
 
 #nowcast_data[, q975.sim_value := ncor]
-nowcast_data_negbin[aggregated_nowcast_sim_negbin, on = .(cut_doe,location_code), q975.sim_value := q975.sim_value]
+nowcast_data_negbin[aggregated_nowcast_sim_negbin, 
+                    on = .(cut_doe,location_code), 
+                    q975.sim_value := q975.sim_value]
 
 ```
 
@@ -362,8 +372,8 @@ q <- q + geom_line(data = nowcast_data_negbin[location_code == "county03" & cut_
                    aes(x = week, y = q025.sim_value ,colour = "Credible intervall for n corrected" ))
 q <- q + geom_line(data = nowcast_data_negbin[location_code == "county03" & cut_doe> (date_0- 5*7)],
                    aes(x = week, y = q975.sim_value, colour = "Credible intervall for n corrected" ))
-q <- q + scale_y_continuous(name = "Number of deaths")
-q <- q + guides(fill = FALSE)
+q <- q + scale_y_continuous(name = "Number of deaths")+ theme(legend.position = "bottom", legend.title = element_blank())
+q <- q + guides(fill = FALSE, colour=guide_legend(nrow=2,byrow=TRUE))
 q
 ```
 
@@ -393,6 +403,19 @@ head(aggregated_nowcast_sim_glm)
 
 
 
+ 
+```{r}
+ 
+#nowcast_data[, q025.sim_value := ncor]
+nowcast_data_glm[aggregated_nowcast_sim_glm, 
+                 on = .(cut_doe,location_code), 
+                 q025.sim_value := q025.sim_value]
+#nowcast_data[, q975.sim_value := ncor]
+nowcast_data_glm[aggregated_nowcast_sim_glm,
+                 on = .(cut_doe,location_code), 
+                 q975.sim_value := q975.sim_value]
+```
+
 Again we can plot the baseline and the nowcast estimates together to see if the mortality falls withing the expected values. 
 
 ```{r fig.height=4, fig.width=6, warning=FALSE}
@@ -411,7 +434,8 @@ q <- q + geom_line(data = nowcast_data_glm[location_code == "county03" & cut_doe
                    aes(x = week, y = q025.sim_value ,colour = "Credible intervall for n corrected" ))
 q <- q + geom_line(data = nowcast_data_glm[location_code == "county03" & cut_doe> (date_0- 5*7)],
                    aes(x = week, y = q975.sim_value, colour = "Credible intervall for n corrected" ))
-q <- q + scale_y_continuous(name = "Number of deaths") + theme(legend.position = "bottom", legend.title = element_blank())
+q <- q + scale_y_continuous(name = "Number of deaths") 
+q <- q + theme(legend.position = "bottom", legend.title = element_blank())
 q <- q + guides(fill = FALSE, colour=guide_legend(nrow=2,byrow=TRUE))
 q
 ```
@@ -431,18 +455,25 @@ q <- q + geom_ribbon(data = base_line$aggregated[year== 2019 & location_code == 
                          fill ="Baseline estimate"),
                      alpha=0.5)
 q <- q + geom_line(data = nowcast_data_negbin[year == "2019"& location_code == "county03"],
-                   aes(x = week, y = ncor,  colour = "Number of deaths corrected negbin" ))
+                   aes(x = week, y = ncor,  
+                       colour = "Number of deaths corrected negbin" ))
 q <- q + geom_line(data = nowcast_data_negbin[location_code == "county03" & cut_doe> (date_0- 5*7)],
-                   aes(x = week, y = q025.sim_value ,colour = "Credible intervall for n corrected negbin" ))
+                   aes(x = week, y = q025.sim_value, 
+                       colour = "Credible intervall for n corrected negbin" ))
 q <- q + geom_line(data = nowcast_data_negbin[location_code == "county03" & cut_doe> (date_0- 5*7)],
-                   aes(x = week, y = q975.sim_value, colour = "Credible intervall for n corrected negbin" ))
+                   aes(x = week, y = q975.sim_value, 
+                       colour = "Credible intervall for n corrected negbin" ))
 q <- q + geom_line(data = nowcast_data_glm[year == "2019"& location_code == "county03"],
-                   aes(x = week, y = ncor,  colour = "Number of deaths corrected quasipoisson" ))
+                   aes(x = week, y = ncor, 
+                       colour = "Number of deaths corrected quasipoisson" ))
 q <- q + geom_line(data = nowcast_data_glm[location_code == "county03" & cut_doe> (date_0- 5*7)],
-                   aes(x = week, y = q025.sim_value ,colour = "Credible intervall for n corrected quasipoison" ))
+                   aes(x = week, y = q025.sim_value,
+                       colour = "Credible intervall for n corrected quasipoison" ))
 q <- q + geom_line(data = nowcast_data_glm[location_code == "county03" & cut_doe> (date_0- 5*7)],
-                   aes(x = week, y = q975.sim_value, colour = "Credible intervall for n corrected quasipoison" ))
-q <- q + scale_y_continuous(name = "Number of deaths") + theme(legend.position = "bottom", legend.title = element_blank())
+                   aes(x = week, y = q975.sim_value, 
+                       colour = "Credible intervall for n corrected quasipoison" ))
+q <- q + scale_y_continuous(name = "Number of deaths") 
+q <- q + theme(legend.position = "bottom", legend.title = element_blank())
 q <- q + guides(fill = FALSE, colour=guide_legend(nrow=3,byrow=TRUE))
 
 q

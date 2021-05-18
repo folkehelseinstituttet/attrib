@@ -2,7 +2,8 @@
 % Please edit documentation in R/baseline_est.R
 \name{baseline_est}
 \alias{baseline_est}
-\title{For more details see the help vignette:
+\title{Baseline estimator
+ For more details see the help vignette:
 \code{vignette("nowcast", package="attrib")}}
 \usage{
 baseline_est(
@@ -34,7 +35,8 @@ baseline_est(
 Residualplots for all ncor_i and some evaluationmetrixs for each of them as well as a plot containing credible intervals using the simulation
 }
 \description{
-For more details see the help vignette:
+Baseline estimator
+ For more details see the help vignette:
 \code{vignette("nowcast", package="attrib")}
 }
 \examples{

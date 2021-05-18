@@ -2,7 +2,8 @@
 % Please edit documentation in R/nowcast_expand.R
 \name{nowcast_correction_fn_quasipoisson}
 \alias{nowcast_correction_fn_quasipoisson}
-\title{For more details see the help vignette:
+\title{Nowcast correction function using the quasipoisson distribution
+For more details see the help vignette:
 \code{vignette("nowcast", package="attrib")}}
 \usage{
 nowcast_correction_fn_quasipoisson(data, n_week_adjusting, offset, date_0)
@@ -20,6 +21,7 @@ nowcast_correction_fn_quasipoisson(data, n_week_adjusting, offset, date_0)
 nowcast_correction_object including corrected data for all weeks in n_wwk_adjust and the model fits for all weeks
 }
 \description{
+Nowcast correction function using the quasipoisson distribution
 For more details see the help vignette:
 \code{vignette("nowcast", package="attrib")}
 }

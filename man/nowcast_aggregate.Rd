@@ -2,7 +2,8 @@
 % Please edit documentation in R/nowcast_aggregate.R
 \name{nowcast_aggregate}
 \alias{nowcast_aggregate}
-\title{For more details see the help vignette:
+\title{Aggregation of data for nowcasting
+For more details see the help vignette:
 \code{vignette("intro", package="attrib")}}
 \usage{
 nowcast_aggregate(data, aggregation_date, n_week, pop_data = NULL)
@@ -20,6 +21,7 @@ nowcast_aggregate(data, aggregation_date, n_week, pop_data = NULL)
 Aggregated dataset with the percentiles of registered events within the last 52 weeks
 }
 \description{
+Aggregation of data for nowcasting
 For more details see the help vignette:
 \code{vignette("intro", package="attrib")}
 }

@@ -2,7 +2,8 @@
 % Please edit documentation in R/nowcast_expand.R
 \name{nowcast_correction_sim_quasipoisson}
 \alias{nowcast_correction_sim_quasipoisson}
-\title{For more details see the help vignette:
+\title{Nowcast simmulation function when nowcast_correction_fn_quasipoisson is used for correction
+For more details see the help vignette:
 \code{vignette("nowcast", package="attrib")}}
 \usage{
 nowcast_correction_sim_quasipoisson(
@@ -25,6 +26,7 @@ nowcast_correction_sim_quasipoisson(
 simulations of the estimate made by the fitted models in nowcast_correction_fn
 }
 \description{
+Nowcast simmulation function when nowcast_correction_fn_quasipoisson is used for correction
 For more details see the help vignette:
 \code{vignette("nowcast", package="attrib")}
 }

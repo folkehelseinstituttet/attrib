@@ -2,7 +2,8 @@
 % Please edit documentation in R/nowcast_eval.R
 \name{nowcast_eval}
 \alias{nowcast_eval}
-\title{For more details see the help vignette:
+\title{Evaluation of the nowcast corrections
+For more details see the help vignette:
 \code{vignette("nowcast", package="attrib")}}
 \usage{
 nowcast_eval(nowcast_object, n_week_adjusting)
@@ -16,6 +17,7 @@ nowcast_eval(nowcast_object, n_week_adjusting)
 Residualplots for all ncor_i and some evaluationmetrixs for each of them as well as a plot containing credible intervals using the simulations
 }
 \description{
+Evaluation of the nowcast corrections
 For more details see the help vignette:
 \code{vignette("nowcast", package="attrib")}
 }

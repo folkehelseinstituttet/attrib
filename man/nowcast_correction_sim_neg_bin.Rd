@@ -2,7 +2,8 @@
 % Please edit documentation in R/nowcast_expand.R
 \name{nowcast_correction_sim_neg_bin}
 \alias{nowcast_correction_sim_neg_bin}
-\title{For more details see the help vignette:
+\title{Nowcast simmulation function when nowcast_correction_fn_negbin is used for correction
+For more details see the help vignette:
 \code{vignette("nowcast", package="attrib")}}
 \usage{
 nowcast_correction_sim_neg_bin(
@@ -25,13 +26,14 @@ nowcast_correction_sim_neg_bin(
 simulations of the estimate made by the fitted models in nowcast_correction_fn
 }
 \description{
+Nowcast simmulation function when nowcast_correction_fn_negbin is used for correction
 For more details see the help vignette:
 \code{vignette("nowcast", package="attrib")}
 }
 \examples{
 \dontrun{
 data <- data.table::as.data.table(data_fake_nowcasting_county_aggregated)
-n_week_adjusting <- 8
+n_week_adjusting <- 6
 date_0 <- data[nrow(data),]$cut_doe #last date in the dataset, assume the dataset is ordered.
 data <- data[cut_doe >= (date_0 - n_week_start*7 + 1), ]
 nowcast_correction_object <- nowcast_correction_fn_negbin_mm(data, n_week_adjusting,
