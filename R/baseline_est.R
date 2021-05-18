@@ -1,4 +1,5 @@
-#' For more details see the help vignette:
+#' Baseline estimator
+#'  For more details see the help vignette:
 #' \code{vignette("nowcast", package="attrib")}
 #'
 #' @param data_train Data to train on.

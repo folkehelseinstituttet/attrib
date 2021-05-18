@@ -80,6 +80,7 @@
 #' }
 "data_fake_nowcasting_county_aggregated"
 
+#' Aggregation of data for nowcasting
 #' For more details see the help vignette:
 #' \code{vignette("intro", package="attrib")}
 #'
