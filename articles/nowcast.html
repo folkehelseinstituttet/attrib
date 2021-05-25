@@ -270,12 +270,12 @@
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">nowcast_object_negbin</span><span class="op">$</span><span class="va">data_sim</span><span class="op">)</span>
 <span class="co">#&gt;       yrwk n_death sim_value    cut_doe week year location_code sim_id</span>
-<span class="co">#&gt; 1: 2019-49       1         7 2019-12-02   49 2019      county42      1</span>
+<span class="co">#&gt; 1: 2019-49       1         4 2019-12-02   49 2019      county42      1</span>
 <span class="co">#&gt; 2: 2019-49       1         2 2019-12-02   49 2019      county42      2</span>
-<span class="co">#&gt; 3: 2019-49       1         2 2019-12-02   49 2019      county42      3</span>
-<span class="co">#&gt; 4: 2019-49       1         4 2019-12-02   49 2019      county42      4</span>
-<span class="co">#&gt; 5: 2019-49       1         5 2019-12-02   49 2019      county42      5</span>
-<span class="co">#&gt; 6: 2019-49       1         6 2019-12-02   49 2019      county42      6</span></code></pre></div>
+<span class="co">#&gt; 3: 2019-49       1         1 2019-12-02   49 2019      county42      3</span>
+<span class="co">#&gt; 4: 2019-49       1         6 2019-12-02   49 2019      county42      4</span>
+<span class="co">#&gt; 5: 2019-49       1         2 2019-12-02   49 2019      county42      5</span>
+<span class="co">#&gt; 6: 2019-49       1         5 2019-12-02   49 2019      county42      6</span></code></pre></div>
 </div>
 <div id="evaluating-the-nowcast-negative-binomial-estimates-" class="section level1">
 <h1 class="hasAnchor">
@@ -358,11 +358,11 @@
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">nowcast_object_glm</span><span class="op">$</span><span class="va">data_sim</span><span class="op">)</span>
 <span class="co">#&gt;       yrwk n_death sim_value    cut_doe week year location_code sim_id</span>
-<span class="co">#&gt; 1: 2019-48      14        18 2019-11-25   48 2019      county03      1</span>
-<span class="co">#&gt; 2: 2019-48      14        15 2019-11-25   48 2019      county03      2</span>
-<span class="co">#&gt; 3: 2019-48      14        19 2019-11-25   48 2019      county03      3</span>
-<span class="co">#&gt; 4: 2019-48      14        25 2019-11-25   48 2019      county03      4</span>
-<span class="co">#&gt; 5: 2019-48      14        13 2019-11-25   48 2019      county03      5</span>
+<span class="co">#&gt; 1: 2019-48      14        16 2019-11-25   48 2019      county03      1</span>
+<span class="co">#&gt; 2: 2019-48      14         7 2019-11-25   48 2019      county03      2</span>
+<span class="co">#&gt; 3: 2019-48      14        20 2019-11-25   48 2019      county03      3</span>
+<span class="co">#&gt; 4: 2019-48      14        16 2019-11-25   48 2019      county03      4</span>
+<span class="co">#&gt; 5: 2019-48      14        12 2019-11-25   48 2019      county03      5</span>
 <span class="co">#&gt; 6: 2019-48      14        13 2019-11-25   48 2019      county03      6</span></code></pre></div>
 </div>
 <div id="evaluating-the-nowcast-quasipoisson-estimates-" class="section level1">
@@ -449,18 +449,18 @@
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">aggregated_nowcast_sim_negbin</span><span class="op">)</span>
 <span class="co">#&gt;       yrwk n_death    cut_doe week year location_code median.sim_value</span>
 <span class="co">#&gt; 1: 2019-49       1 2019-12-02   49 2019      county42                4</span>
-<span class="co">#&gt; 2: 2019-49       6 2019-12-02   49 2019      county50                6</span>
+<span class="co">#&gt; 2: 2019-49       6 2019-12-02   49 2019      county50                7</span>
 <span class="co">#&gt; 3: 2019-49       6 2019-12-02   49 2019      county15                6</span>
 <span class="co">#&gt; 4: 2019-49       6 2019-12-02   49 2019      county18                6</span>
-<span class="co">#&gt; 5: 2019-49      11 2019-12-02   49 2019      county46               12</span>
+<span class="co">#&gt; 5: 2019-49      11 2019-12-02   49 2019      county46               11</span>
 <span class="co">#&gt; 6: 2019-49      12 2019-12-02   49 2019      county03               12</span>
 <span class="co">#&gt;    q025.sim_value q975.sim_value</span>
-<span class="co">#&gt; 1:          1.000          8.525</span>
-<span class="co">#&gt; 2:          2.000         13.000</span>
-<span class="co">#&gt; 3:          2.000         11.000</span>
-<span class="co">#&gt; 4:          2.000         12.000</span>
-<span class="co">#&gt; 5:          6.000         18.000</span>
-<span class="co">#&gt; 6:          5.475         20.000</span></code></pre></div>
+<span class="co">#&gt; 1:              1          8.000</span>
+<span class="co">#&gt; 2:              2         12.525</span>
+<span class="co">#&gt; 3:              1         11.000</span>
+<span class="co">#&gt; 4:              2         12.000</span>
+<span class="co">#&gt; 5:              5         19.000</span>
+<span class="co">#&gt; 6:              6         19.000</span></code></pre></div>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">#nowcast_data[, q025.sim_value := ncor]</span>
 <span class="va">nowcast_data_negbin</span><span class="op">[</span><span class="va">aggregated_nowcast_sim_negbin</span>, 
@@ -513,14 +513,14 @@
 <span class="co">#&gt; 1: 2019-48      14 2019-11-25   48 2019      county03               13</span>
 <span class="co">#&gt; 2: 2019-49      12 2019-12-02   49 2019      county03               12</span>
 <span class="co">#&gt; 3: 2019-50      11 2019-12-09   50 2019      county03               14</span>
-<span class="co">#&gt; 4: 2019-51       1 2019-12-16   51 2019      county03               12</span>
-<span class="co">#&gt; 5: 2019-52       0 2019-12-23   52 2019      county03               13</span>
+<span class="co">#&gt; 4: 2019-51       1 2019-12-16   51 2019      county03               13</span>
+<span class="co">#&gt; 5: 2019-52       0 2019-12-23   52 2019      county03               14</span>
 <span class="co">#&gt;    q025.sim_value q975.sim_value</span>
-<span class="co">#&gt; 1:          7.000             22</span>
-<span class="co">#&gt; 2:          5.475             20</span>
-<span class="co">#&gt; 3:          7.000             23</span>
-<span class="co">#&gt; 4:          6.000             21</span>
-<span class="co">#&gt; 5:          7.000             21</span></code></pre></div>
+<span class="co">#&gt; 1:              7         21.000</span>
+<span class="co">#&gt; 2:              6         19.000</span>
+<span class="co">#&gt; 3:              7         22.000</span>
+<span class="co">#&gt; 4:              5         21.000</span>
+<span class="co">#&gt; 5:              7         21.525</span></code></pre></div>
 <div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"> 
 <span class="co">#nowcast_data[, q025.sim_value := ncor]</span>

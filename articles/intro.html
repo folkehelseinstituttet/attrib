@@ -297,11 +297,11 @@
 <span class="co">#&gt; 4:    1 2009/2010 2010 2010-01 24         norge 5367580  1.160403</span>
 <span class="co">#&gt; 5:    1 2009/2010 2010 2010-01 24         norge 5367580  1.160403</span>
 <span class="co">#&gt;    pr100_ili_lag_1 temperature_high deaths id_row sim_id sim_value</span>
-<span class="co">#&gt; 1:        1.100072                0    891      1      1  901.5790</span>
-<span class="co">#&gt; 2:        1.100072                0    891      1      2  901.9241</span>
-<span class="co">#&gt; 3:        1.100072                0    891      1      3  901.4930</span>
-<span class="co">#&gt; 4:        1.100072                0    891      1      4  900.3768</span>
-<span class="co">#&gt; 5:        1.100072                0    891      1      5  902.5225</span></code></pre></div>
+<span class="co">#&gt; 1:        1.100072                0    891      1      1  903.2821</span>
+<span class="co">#&gt; 2:        1.100072                0    891      1      2  894.8408</span>
+<span class="co">#&gt; 3:        1.100072                0    891      1      3  901.7418</span>
+<span class="co">#&gt; 4:        1.100072                0    891      1      4  895.7967</span>
+<span class="co">#&gt; 5:        1.100072                0    891      1      5  901.8444</span></code></pre></div>
 <p>We can see that we now have multiple expected mortalities for the same dataline. This is due to the coefficient simulations.</p>
 </div>
 <div id="estimating-attributable-mortality-using-est_attrib" class="section level1">
@@ -341,17 +341,17 @@
 <span class="co">#&gt; 4:       1.3909804 -6.02035548                0     97  4      1</span>
 <span class="co">#&gt; 5:       1.3942666 -1.72146124                0    114  5      1</span>
 <span class="co">#&gt;    sim_value_exposures=observed sim_value_temperature_high=0</span>
-<span class="co">#&gt; 1:                     114.7941                     114.7941</span>
-<span class="co">#&gt; 2:                     114.7191                     114.7191</span>
-<span class="co">#&gt; 3:                     118.0815                     118.0815</span>
-<span class="co">#&gt; 4:                     117.4309                     117.4309</span>
-<span class="co">#&gt; 5:                     116.5002                     116.5002</span>
+<span class="co">#&gt; 1:                     115.5922                     115.5922</span>
+<span class="co">#&gt; 2:                     115.1977                     115.1977</span>
+<span class="co">#&gt; 3:                     120.3589                     120.3589</span>
+<span class="co">#&gt; 4:                     119.0534                     119.0534</span>
+<span class="co">#&gt; 5:                     117.7343                     117.7343</span>
 <span class="co">#&gt;    sim_value_pr100_ili_lag_1=0</span>
-<span class="co">#&gt; 1:                    113.5401</span>
-<span class="co">#&gt; 2:                    113.5066</span>
-<span class="co">#&gt; 3:                    113.9944</span>
-<span class="co">#&gt; 4:                    114.1268</span>
-<span class="co">#&gt; 5:                    113.7530</span></code></pre></div>
+<span class="co">#&gt; 1:                    113.5710</span>
+<span class="co">#&gt; 2:                    113.0544</span>
+<span class="co">#&gt; 3:                    112.7509</span>
+<span class="co">#&gt; 4:                    113.2192</span>
+<span class="co">#&gt; 5:                    112.4268</span></code></pre></div>
 <p>We can see in the above dataset that the columns <em>id</em>, <em>sim_id</em>, <em>sim_value_exposures=observed</em>, <em>sim_value_temperature_high=0</em>, <em>sim_value_pr100_ili_lag_1=0</em> are added to the previous set of columns. For each row in the original dataset we now have 20 <!-- change this if we change n_sim --> rows, one for each of the simulations done by est_attrib. In each row we see the estimate of the number of deaths given a reference value for <em>sim_value_temperature_high</em> and <em>sim_value_pr100_ili_lag_1</em>.</p>
 <p>To make the data processing easier later we convert the dataset from wide to long form and collapse the estimated mortality</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
@@ -376,11 +376,11 @@
 <span class="co">#&gt; 4:      county03 2012/2013 24    1  4      1     97</span>
 <span class="co">#&gt; 5:      county03 2013/2014 24    1  5      1    114</span>
 <span class="co">#&gt;    sim_value_exposures=observed                         attr    value</span>
-<span class="co">#&gt; 1:                     114.7941 sim_value_temperature_high=0 114.7941</span>
-<span class="co">#&gt; 2:                     114.7191 sim_value_temperature_high=0 114.7191</span>
-<span class="co">#&gt; 3:                     118.0815 sim_value_temperature_high=0 118.0815</span>
-<span class="co">#&gt; 4:                     117.4309 sim_value_temperature_high=0 117.4309</span>
-<span class="co">#&gt; 5:                     116.5002 sim_value_temperature_high=0 116.5002</span></code></pre></div>
+<span class="co">#&gt; 1:                     115.5922 sim_value_temperature_high=0 115.5922</span>
+<span class="co">#&gt; 2:                     115.1977 sim_value_temperature_high=0 115.1977</span>
+<span class="co">#&gt; 3:                     120.3589 sim_value_temperature_high=0 120.3589</span>
+<span class="co">#&gt; 4:                     119.0534 sim_value_temperature_high=0 119.0534</span>
+<span class="co">#&gt; 5:                     117.7343 sim_value_temperature_high=0 117.7343</span></code></pre></div>
 <p>We can see that the columns <em>sim_value_temperature_high=0</em>, <em>sim_value_pr100_ili_lag_1=0</em> are now collapsed into the new column <em>attr</em> and <em>value</em> with <em>attr</em> describing which exposure we have and <em>value</em> giving the corresponding reference value.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">est_attrib_nation_long</span><span class="op">&lt;-</span><span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/melt.data.table.html">melt.data.table</a></span><span class="op">(</span><span class="va">est_attrib_sim_nation</span>, 
@@ -418,17 +418,17 @@
 
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">aggregated_county_to_nation</span>, <span class="fl">5</span><span class="op">)</span>
 <span class="co">#&gt;       season                         attr sim_id sim_value_exposures=observed</span>
-<span class="co">#&gt; 1: 2009/2010 sim_value_temperature_high=0      1                     44186.21</span>
-<span class="co">#&gt; 2: 2009/2010 sim_value_temperature_high=0      2                     44450.02</span>
-<span class="co">#&gt; 3: 2009/2010 sim_value_temperature_high=0      3                     44480.84</span>
-<span class="co">#&gt; 4: 2009/2010 sim_value_temperature_high=0      4                     44606.83</span>
-<span class="co">#&gt; 5: 2009/2010 sim_value_temperature_high=0      5                     44369.98</span>
+<span class="co">#&gt; 1: 2009/2010 sim_value_temperature_high=0      1                     44774.64</span>
+<span class="co">#&gt; 2: 2009/2010 sim_value_temperature_high=0      2                     44050.61</span>
+<span class="co">#&gt; 3: 2009/2010 sim_value_temperature_high=0      3                     44466.27</span>
+<span class="co">#&gt; 4: 2009/2010 sim_value_temperature_high=0      4                     44484.64</span>
+<span class="co">#&gt; 5: 2009/2010 sim_value_temperature_high=0      5                     44258.35</span>
 <span class="co">#&gt;       value deaths exp_attr                    tag</span>
-<span class="co">#&gt; 1: 43790.81  44421 395.3981 aggregated_from_county</span>
-<span class="co">#&gt; 2: 44026.02  44421 424.0005 aggregated_from_county</span>
-<span class="co">#&gt; 3: 44057.47  44421 423.3671 aggregated_from_county</span>
-<span class="co">#&gt; 4: 44158.07  44421 448.7660 aggregated_from_county</span>
-<span class="co">#&gt; 5: 43931.79  44421 438.1821 aggregated_from_county</span></code></pre></div>
+<span class="co">#&gt; 1: 44340.05  44421 434.5885 aggregated_from_county</span>
+<span class="co">#&gt; 2: 43619.98  44421 430.6347 aggregated_from_county</span>
+<span class="co">#&gt; 3: 44067.27  44421 399.0012 aggregated_from_county</span>
+<span class="co">#&gt; 4: 44061.51  44421 423.1305 aggregated_from_county</span>
+<span class="co">#&gt; 5: 43859.70  44421 398.6512 aggregated_from_county</span></code></pre></div>
 </div>
 <div id="aggregating-the-national-model-per-season" class="section level2">
 <h2 class="hasAnchor">
@@ -445,17 +445,17 @@
 <span class="va">aggregated_nation</span><span class="op">[</span>, <span class="va">tag</span><span class="op">:=</span> <span class="st">"nation"</span><span class="op">]</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">aggregated_nation</span>, <span class="fl">5</span><span class="op">)</span>
 <span class="co">#&gt;       season                         attr sim_id sim_value_exposures=observed</span>
-<span class="co">#&gt; 1: 2009/2010 sim_value_temperature_high=0      1                     44577.54</span>
-<span class="co">#&gt; 2: 2009/2010 sim_value_temperature_high=0      2                     44435.13</span>
-<span class="co">#&gt; 3: 2009/2010 sim_value_temperature_high=0      3                     44246.39</span>
-<span class="co">#&gt; 4: 2009/2010 sim_value_temperature_high=0      4                     44362.26</span>
-<span class="co">#&gt; 5: 2009/2010 sim_value_temperature_high=0      5                     44641.52</span>
+<span class="co">#&gt; 1: 2009/2010 sim_value_temperature_high=0      1                     44629.50</span>
+<span class="co">#&gt; 2: 2009/2010 sim_value_temperature_high=0      2                     44308.77</span>
+<span class="co">#&gt; 3: 2009/2010 sim_value_temperature_high=0      3                     44232.38</span>
+<span class="co">#&gt; 4: 2009/2010 sim_value_temperature_high=0      4                     44223.22</span>
+<span class="co">#&gt; 5: 2009/2010 sim_value_temperature_high=0      5                     44260.93</span>
 <span class="co">#&gt;       value deaths exp_attr    tag</span>
-<span class="co">#&gt; 1: 44577.54  44421        0 nation</span>
-<span class="co">#&gt; 2: 44435.13  44421        0 nation</span>
-<span class="co">#&gt; 3: 44246.39  44421        0 nation</span>
-<span class="co">#&gt; 4: 44362.26  44421        0 nation</span>
-<span class="co">#&gt; 5: 44641.52  44421        0 nation</span></code></pre></div>
+<span class="co">#&gt; 1: 44629.50  44421        0 nation</span>
+<span class="co">#&gt; 2: 44308.77  44421        0 nation</span>
+<span class="co">#&gt; 3: 44232.38  44421        0 nation</span>
+<span class="co">#&gt; 4: 44223.22  44421        0 nation</span>
+<span class="co">#&gt; 5: 44260.93  44421        0 nation</span></code></pre></div>
 <p>For simplicity we <code><a href="https://Rdatatable.gitlab.io/data.table/reference/rbindlist.html">data.table::rbindlist</a></code> the two datasets together.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://ggplot2.tidyverse.org">ggplot2</a></span><span class="op">)</span>
@@ -499,11 +499,11 @@
 <span class="co">#&gt; 4: 2009/2010  sim_value_pr100_ili_lag_1=0                 nation</span>
 <span class="co">#&gt; 5: 2010/2011 sim_value_temperature_high=0 aggregated_from_county</span>
 <span class="co">#&gt;    median.exp_attr q025.exp_attr q975.exp_attr</span>
-<span class="co">#&gt; 1:        422.9204      378.7842      443.7386</span>
+<span class="co">#&gt; 1:        418.3604      388.3798      434.3334</span>
 <span class="co">#&gt; 2:          0.0000        0.0000        0.0000</span>
-<span class="co">#&gt; 3:        668.4811      514.3103      902.6593</span>
-<span class="co">#&gt; 4:       1193.6724     1013.4941     1386.2810</span>
-<span class="co">#&gt; 5:        446.6756      401.1095      468.1341</span></code></pre></div>
+<span class="co">#&gt; 3:        702.6688      493.2244      849.6969</span>
+<span class="co">#&gt; 4:       1207.0070      926.1319     1320.7963</span>
+<span class="co">#&gt; 5:        442.1237      410.2837      458.7379</span></code></pre></div>
 <p>We can now see that we have credible intervals and estimates for attributable deaths for all exposures.</p>
 </div>
 <div id="plot-to-compare-the-national-with-the-aggregated-county-to-national-model" class="section level2">
@@ -543,11 +543,11 @@
 <span class="co">#&gt; 4: 2009/2010 1   30 sim_value_temperature_high=0      4</span>
 <span class="co">#&gt; 5: 2009/2010 1   30 sim_value_temperature_high=0      5</span>
 <span class="co">#&gt;    sim_value_exposures=observed    value deaths exp_attr  exp_irr</span>
-<span class="co">#&gt; 1:                     787.2255 751.4582    816 35.76733 1.047597</span>
-<span class="co">#&gt; 2:                     789.6130 751.2769    816 38.33604 1.051028</span>
-<span class="co">#&gt; 3:                     791.0752 752.7914    816 38.28384 1.050856</span>
-<span class="co">#&gt; 4:                     794.0417 753.4859    816 40.55577 1.053824</span>
-<span class="co">#&gt; 5:                     789.8599 750.2521    816 39.60773 1.052793</span></code></pre></div>
+<span class="co">#&gt; 1:                     798.9583 759.6392    816 39.31908 1.051760</span>
+<span class="co">#&gt; 2:                     787.2730 748.3158    816 38.95720 1.052060</span>
+<span class="co">#&gt; 3:                     792.5182 756.4067    816 36.11144 1.047741</span>
+<span class="co">#&gt; 4:                     796.3678 758.0835    816 38.28430 1.050501</span>
+<span class="co">#&gt; 5:                     787.5378 751.4793    816 36.05853 1.047983</span></code></pre></div>
 <p>Again we compute the quantiles.</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
@@ -568,23 +568,23 @@
 
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">aggregated_county_to_nation_weekly</span>, <span class="fl">5</span><span class="op">)</span>
 <span class="co">#&gt;       season x week                         attr deaths median.exp_attr</span>
-<span class="co">#&gt; 1: 2009/2010 1   30 sim_value_temperature_high=0    816    38.263358429</span>
+<span class="co">#&gt; 1: 2009/2010 1   30 sim_value_temperature_high=0    816    37.861218703</span>
 <span class="co">#&gt; 2: 2009/2010 1   30  sim_value_pr100_ili_lag_1=0    816     0.000000000</span>
-<span class="co">#&gt; 3: 2009/2010 2   31 sim_value_temperature_high=0    854    81.834235696</span>
-<span class="co">#&gt; 4: 2009/2010 2   31  sim_value_pr100_ili_lag_1=0    854     0.002140563</span>
-<span class="co">#&gt; 5: 2009/2010 3   32 sim_value_temperature_high=0    777    45.929423671</span>
+<span class="co">#&gt; 3: 2009/2010 2   31 sim_value_temperature_high=0    854    80.988119501</span>
+<span class="co">#&gt; 4: 2009/2010 2   31  sim_value_pr100_ili_lag_1=0    854     0.002249971</span>
+<span class="co">#&gt; 5: 2009/2010 3   32 sim_value_temperature_high=0    777    45.467505945</span>
 <span class="co">#&gt;    median.exp_irr q025.exp_attr q025.exp_irr q975.exp_attr q975.exp_irr</span>
-<span class="co">#&gt; 1:       1.050579  34.275744421     1.045440  40.105451125     1.053334</span>
-<span class="co">#&gt; 2:       1.000000   0.000000000     1.000000   0.000000000     1.000000</span>
-<span class="co">#&gt; 3:       1.108031  73.279782666     1.096965  85.860357075     1.113973</span>
-<span class="co">#&gt; 4:       1.000003   0.001642752     1.000002   0.002900956     1.000003</span>
-<span class="co">#&gt; 5:       1.060485  41.182890636     1.054337  48.195910475     1.063782</span>
+<span class="co">#&gt; 1:       1.050074   35.13610519     1.046573  39.296113311     1.051918</span>
+<span class="co">#&gt; 2:       1.000000    0.00000000     1.000000   0.000000000     1.000000</span>
+<span class="co">#&gt; 3:       1.106943   75.11749754     1.099405  84.083472958     1.110917</span>
+<span class="co">#&gt; 4:       1.000003    0.00158105     1.000002   0.002728454     1.000003</span>
+<span class="co">#&gt; 5:       1.059881   42.20100216     1.055694  47.193477124     1.062087</span>
 <span class="co">#&gt;          cumsum  cumsum_q025  cumsum_q975</span>
-<span class="co">#&gt; 1: 3.826336e+01 3.427574e+01 4.010545e+01</span>
-<span class="co">#&gt; 2: 0.000000e+00 0.000000e+00 0.000000e+00</span>
-<span class="co">#&gt; 3: 1.200976e+02 1.075555e+02 1.259658e+02</span>
-<span class="co">#&gt; 4: 2.140563e-03 1.642752e-03 2.900956e-03</span>
-<span class="co">#&gt; 5: 1.660270e+02 1.487384e+02 1.741617e+02</span></code></pre></div>
+<span class="co">#&gt; 1: 3.786122e+01  35.13610519 3.929611e+01</span>
+<span class="co">#&gt; 2: 0.000000e+00   0.00000000 0.000000e+00</span>
+<span class="co">#&gt; 3: 1.188493e+02 110.25360273 1.233796e+02</span>
+<span class="co">#&gt; 4: 2.249971e-03   0.00158105 2.728454e-03</span>
+<span class="co">#&gt; 5: 1.643168e+02 152.45460489 1.705731e+02</span></code></pre></div>
 <p>We can then plot the estimated cumulative attributable mortality over influenza seasons in Norway</p>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://ggplot2.tidyverse.org">ggplot2</a></span><span class="op">)</span>
@@ -717,11 +717,11 @@
 <span class="co">#&gt; 4:               1 -6.02035548                0     97  4      1</span>
 <span class="co">#&gt; 5:               1 -1.72146124                0    114  5      1</span>
 <span class="co">#&gt;    sim_value_exposures=observed sim_value_pr100_ili_lag_1=0</span>
-<span class="co">#&gt; 1:                     116.4834                    112.0607</span>
-<span class="co">#&gt; 2:                     116.2784                    112.4174</span>
-<span class="co">#&gt; 3:                     116.5958                    112.8562</span>
-<span class="co">#&gt; 4:                     116.5553                    112.5618</span>
-<span class="co">#&gt; 5:                     115.6174                    112.0197</span></code></pre></div>
+<span class="co">#&gt; 1:                     117.3668                    113.6748</span>
+<span class="co">#&gt; 2:                     117.1462                    114.0214</span>
+<span class="co">#&gt; 3:                     115.8435                    112.7169</span>
+<span class="co">#&gt; 4:                     115.8238                    112.4448</span>
+<span class="co">#&gt; 5:                     115.4823                    112.5405</span></code></pre></div>
 <p>We see we have obtained values for the reference of the exposure in the same way as before. The difference is that we changed the dataset before running <em>est_attrib</em>. This means we will now be observing the difference between <code>pr100_ili_lag_1=0</code> and <code>pr100_ili_lag_1=1</code>.</p>
 <p>We now aggregate to the national seasonal level.</p>
 <div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
@@ -736,17 +736,17 @@
 <span class="op">)</span><span class="op">]</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">aggregated_county_to_nation_sim_irr</span>,<span class="fl">5</span><span class="op">)</span>
 <span class="co">#&gt;       season sim_id sim_value_exposures=observed sim_value_pr100_ili_lag_1=0</span>
-<span class="co">#&gt; 1: 2009/2010      1                     44976.85                    43269.14</span>
-<span class="co">#&gt; 2: 2009/2010      2                     45147.30                    43566.13</span>
-<span class="co">#&gt; 3: 2009/2010      3                     44854.09                    43490.78</span>
-<span class="co">#&gt; 4: 2009/2010      4                     45543.12                    43945.15</span>
-<span class="co">#&gt; 5: 2009/2010      5                     44724.90                    43584.43</span>
+<span class="co">#&gt; 1: 2009/2010      1                     45262.32                    43838.48</span>
+<span class="co">#&gt; 2: 2009/2010      2                     45000.42                    43406.41</span>
+<span class="co">#&gt; 3: 2009/2010      3                     44950.15                    43568.03</span>
+<span class="co">#&gt; 4: 2009/2010      4                     44801.30                    43385.96</span>
+<span class="co">#&gt; 5: 2009/2010      5                     45254.50                    43663.00</span>
 <span class="co">#&gt;    deaths  exp_irr</span>
-<span class="co">#&gt; 1:  44421 1.039467</span>
-<span class="co">#&gt; 2:  44421 1.036294</span>
-<span class="co">#&gt; 3:  44421 1.031347</span>
-<span class="co">#&gt; 4:  44421 1.036363</span>
-<span class="co">#&gt; 5:  44421 1.026167</span></code></pre></div>
+<span class="co">#&gt; 1:  44421 1.032479</span>
+<span class="co">#&gt; 2:  44421 1.036723</span>
+<span class="co">#&gt; 3:  44421 1.031723</span>
+<span class="co">#&gt; 4:  44421 1.032622</span>
+<span class="co">#&gt; 5:  44421 1.036450</span></code></pre></div>
 <p>Now we can compute the quantiles:</p>
 <div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
@@ -765,17 +765,17 @@
 
 <span class="va">aggregated_county_to_nation_irr</span>
 <span class="co">#&gt;        season deaths median.exp_irr q025.exp_irr q975.exp_irr        tag</span>
-<span class="co">#&gt;  1: 2009/2010  44421       1.031962     1.024095     1.039676 aggregated</span>
-<span class="co">#&gt;  2: 2010/2011  43062       1.027285     1.019489     1.034660 aggregated</span>
-<span class="co">#&gt;  3: 2011/2012  43431       1.026603     1.018808     1.034045 aggregated</span>
-<span class="co">#&gt;  4: 2012/2013  43228       1.028552     1.021150     1.036202 aggregated</span>
-<span class="co">#&gt;  5: 2013/2014  43328       1.024983     1.016763     1.032225 aggregated</span>
-<span class="co">#&gt;  6: 2014/2015  42951       1.027357     1.019552     1.034909 aggregated</span>
-<span class="co">#&gt;  7: 2015/2016  43736       1.021985     1.014700     1.029187 aggregated</span>
-<span class="co">#&gt;  8: 2016/2017  43821       1.032913     1.024843     1.040098 aggregated</span>
-<span class="co">#&gt;  9: 2017/2018  43716       1.030633     1.023177     1.038221 aggregated</span>
-<span class="co">#&gt; 10: 2018/2019  43326       1.026361     1.018245     1.033654 aggregated</span>
-<span class="co">#&gt; 11: 2019/2020  43572       1.030145     1.022087     1.037342 aggregated</span></code></pre></div>
+<span class="co">#&gt;  1: 2009/2010  44421       1.032245     1.025672     1.040471 aggregated</span>
+<span class="co">#&gt;  2: 2010/2011  43062       1.027395     1.020717     1.036487 aggregated</span>
+<span class="co">#&gt;  3: 2011/2012  43431       1.026615     1.019975     1.035418 aggregated</span>
+<span class="co">#&gt;  4: 2012/2013  43228       1.028582     1.021740     1.037546 aggregated</span>
+<span class="co">#&gt;  5: 2013/2014  43328       1.024978     1.018173     1.033795 aggregated</span>
+<span class="co">#&gt;  6: 2014/2015  42951       1.027371     1.021067     1.036374 aggregated</span>
+<span class="co">#&gt;  7: 2015/2016  43736       1.022070     1.015478     1.030896 aggregated</span>
+<span class="co">#&gt;  8: 2016/2017  43821       1.033017     1.026094     1.041586 aggregated</span>
+<span class="co">#&gt;  9: 2017/2018  43716       1.030933     1.024123     1.039821 aggregated</span>
+<span class="co">#&gt; 10: 2018/2019  43326       1.026659     1.019705     1.035035 aggregated</span>
+<span class="co">#&gt; 11: 2019/2020  43572       1.029871     1.023164     1.038535 aggregated</span></code></pre></div>
 <p>Now we compare the resulting values for IRR with the ones obtained by <code>coef(fit_county)$season</code> and the 90 percent credible interval computed manually using the standard deviation given by summary(fit_county) for <em>pr100_ili_lag_1</em>.</p>
 <div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">coef_fit_county</span> <span class="op">&lt;-</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/as.data.table.html">as.data.table</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/coef.html">coef</a></span><span class="op">(</span><span class="va">fit_county</span><span class="op">)</span><span class="op">$</span><span class="va">season</span><span class="op">)</span>
@@ -831,17 +831,17 @@
 <span class="co">#&gt;  9: 2017/2018 1.031165 1.023592 1.038795  from_coef</span>
 <span class="co">#&gt; 10: 2018/2019 1.026588 1.019048 1.034183  from_coef</span>
 <span class="co">#&gt; 11: 2019/2020 1.030317 1.022750 1.037940  from_coef</span>
-<span class="co">#&gt; 12: 2009/2010 1.031962 1.024095 1.039676 aggregated</span>
-<span class="co">#&gt; 13: 2010/2011 1.027285 1.019489 1.034660 aggregated</span>
-<span class="co">#&gt; 14: 2011/2012 1.026603 1.018808 1.034045 aggregated</span>
-<span class="co">#&gt; 15: 2012/2013 1.028552 1.021150 1.036202 aggregated</span>
-<span class="co">#&gt; 16: 2013/2014 1.024983 1.016763 1.032225 aggregated</span>
-<span class="co">#&gt; 17: 2014/2015 1.027357 1.019552 1.034909 aggregated</span>
-<span class="co">#&gt; 18: 2015/2016 1.021985 1.014700 1.029187 aggregated</span>
-<span class="co">#&gt; 19: 2016/2017 1.032913 1.024843 1.040098 aggregated</span>
-<span class="co">#&gt; 20: 2017/2018 1.030633 1.023177 1.038221 aggregated</span>
-<span class="co">#&gt; 21: 2018/2019 1.026361 1.018245 1.033654 aggregated</span>
-<span class="co">#&gt; 22: 2019/2020 1.030145 1.022087 1.037342 aggregated</span>
+<span class="co">#&gt; 12: 2009/2010 1.032245 1.025672 1.040471 aggregated</span>
+<span class="co">#&gt; 13: 2010/2011 1.027395 1.020717 1.036487 aggregated</span>
+<span class="co">#&gt; 14: 2011/2012 1.026615 1.019975 1.035418 aggregated</span>
+<span class="co">#&gt; 15: 2012/2013 1.028582 1.021740 1.037546 aggregated</span>
+<span class="co">#&gt; 16: 2013/2014 1.024978 1.018173 1.033795 aggregated</span>
+<span class="co">#&gt; 17: 2014/2015 1.027371 1.021067 1.036374 aggregated</span>
+<span class="co">#&gt; 18: 2015/2016 1.022070 1.015478 1.030896 aggregated</span>
+<span class="co">#&gt; 19: 2016/2017 1.033017 1.026094 1.041586 aggregated</span>
+<span class="co">#&gt; 20: 2017/2018 1.030933 1.024123 1.039821 aggregated</span>
+<span class="co">#&gt; 21: 2018/2019 1.026659 1.019705 1.035035 aggregated</span>
+<span class="co">#&gt; 22: 2019/2020 1.029871 1.023164 1.038535 aggregated</span>
 <span class="co">#&gt;        season      irr     q025     q975        tag</span></code></pre></div>
 <div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">q</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span>
