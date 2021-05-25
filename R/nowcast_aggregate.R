@@ -81,7 +81,11 @@
 "data_fake_nowcasting_county_aggregated"
 
 #' Aggregation of data for nowcasting
+#'
+#' Aggregates mortality data to a weekly basis.
+#' Where the percentiles and number of mortalities obtained after every week up to n_week is also given.
 #' For more details see the help vignette:
+#'
 #' \code{vignette("intro", package="attrib")}
 #'
 #' @param data Dataset containing doe (Date of event), dor (Date of registation) and location_code. The columns must have these exact names.

@@ -2,9 +2,7 @@
 % Please edit documentation in R/nowcast_expand.R
 \name{nowcast_correction_sim_neg_bin}
 \alias{nowcast_correction_sim_neg_bin}
-\title{Nowcast simmulation function when nowcast_correction_fn_negbin is used for correction
-For more details see the help vignette:
-\code{vignette("nowcast", package="attrib")}}
+\title{Nowcast simmulation function when nowcast_correction_fn_negbin is used for correction.}
 \usage{
 nowcast_correction_sim_neg_bin(
   nowcast_correction_object,
@@ -26,8 +24,7 @@ nowcast_correction_sim_neg_bin(
 simulations of the estimate made by the fitted models in nowcast_correction_fn
 }
 \description{
-Nowcast simmulation function when nowcast_correction_fn_negbin is used for correction
-For more details see the help vignette:
+For more details see the help vignette.:
 \code{vignette("nowcast", package="attrib")}
 }
 \examples{

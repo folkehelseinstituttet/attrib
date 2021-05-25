@@ -2,9 +2,7 @@
 % Please edit documentation in R/nowcast_expand.R
 \name{nowcast}
 \alias{nowcast}
-\title{Nowcast, corrigation of data
-For more details see the help vignette:
-\code{vignette("nowcast", package="attrib")}}
+\title{Nowcast, corrigation of data}
 \usage{
 nowcast(
   data_aggregated,
@@ -35,7 +33,10 @@ nowcast(
 Dataset including the corrected values for n_death
 }
 \description{
-Nowcast, corrigation of data
+When there is a lag in the reception of data nowcast can be used to correct for this lag,
+ and predict the true underlying values.
+}
+\details{
 For more details see the help vignette:
 \code{vignette("nowcast", package="attrib")}
 }

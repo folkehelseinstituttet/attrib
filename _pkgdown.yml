@@ -4,10 +4,6 @@ development:
   mode: auto
 
 reference:
-- title: Recommended functions and datasets
-  desc: >
-    These functions and datasets have been modernized
-    and updated. They should be used.
 - subtitle: Fake datasets
   desc: >
     These functions access datasets.
@@ -17,22 +13,24 @@ reference:
   - data_fake_nowcasting_aggregated
   - data_fake_nowcasting_county_aggregated
   - data_fake_nowcasting_county_raw
+
 - subtitle: Nowcasting
   desc: >
-    Nowcasting functions
+    Nowcasting, baseline and evaluation functions
 - contents:
-  - baseline_est()
-  - nowcast()
-  - nowcast_aggregate()
-  - nowcast_correction_fn_negbin_mm()
-  - nowcast_correction_fn_quasipoisson()
-  - nowcast_correction_sim_neg_bin()
-  - nowcast_correction_sim_quasipoisson()
-  - nowcast_eval()
+  - baseline_est
+  - nowcast
+  - nowcast_aggregate
+  - nowcast_correction_fn_negbin_mm
+  - nowcast_correction_fn_quasipoisson
+  - nowcast_correction_sim_neg_bin
+  - nowcast_correction_sim_quasipoisson
+  - nowcast_eval
+
 - subtitle: Attributable mortality
   desc: >
-    attrib
+    Functions for estimating attributable mortality
 - contents:
-  - est_attrib()
-  - fit_attrib()
-  - sim()
+  - est_attrib
+  - fit_attrib
+  - sim

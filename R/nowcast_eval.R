@@ -1,4 +1,5 @@
 #' Evaluation of the nowcast corrections
+
 #' For more details see the help vignette:
 #' \code{vignette("nowcast", package="attrib")}
 #'

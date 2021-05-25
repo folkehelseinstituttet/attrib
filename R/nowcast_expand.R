@@ -2,7 +2,8 @@
 
 ### nowcast_correction_fn_quasipoisson ----
 
-#' Nowcast correction function using the quasipoisson distribution
+#' Nowcast correction function using the quasipoisson distribution.
+#'
 #' For more details see the help vignette:
 #' \code{vignette("nowcast", package="attrib")}
 #'
@@ -91,7 +92,8 @@ nowcast_correction_fn_quasipoisson <- function(data, n_week_adjusting, offset, d
 
 ### nowcast_correction_fn_negbin ----
 
-#' Nowcast correction function using the negative binomial distribution
+#' Nowcast correction function using the negative binomial distribution.
+#'
 #' For more details see the help vignette:
 #' \code{vignette("nowcast", package="attrib")}
 #'
@@ -180,7 +182,8 @@ nowcast_correction_fn_negbin_mm <- function(data, n_week_adjusting, offset, date
 
 ### nowcast_correction_sim ----
 
-#' Nowcast simmulation function when nowcast_correction_fn_quasipoisson is used for correction
+#' Nowcast simmulation function when nowcast_correction_fn_quasipoisson is used for correction.
+#'
 #' For more details see the help vignette:
 #' \code{vignette("nowcast", package="attrib")}
 #'
@@ -299,8 +302,9 @@ nowcast_correction_sim_quasipoisson <- function(nowcast_correction_object, offse
 ### nowcast_correction_sim ----
 
 
-#' Nowcast simmulation function when nowcast_correction_fn_negbin is used for correction
-#' For more details see the help vignette:
+#' Nowcast simmulation function when nowcast_correction_fn_negbin is used for correction.
+#'
+#' For more details see the help vignette.:
 #' \code{vignette("nowcast", package="attrib")}
 #'
 #' @param nowcast_correction_object object returned from function nowcast_correction_fn_expanded
@@ -382,6 +386,10 @@ nowcast_correction_sim_neg_bin <- function(nowcast_correction_object, offset, n_
 
 
 #' Nowcast, corrigation of data
+#'
+#' When there is a lag in the reception of data nowcast can be used to correct for this lag,
+#'  and predict the true underlying values.
+#'
 #' For more details see the help vignette:
 #' \code{vignette("nowcast", package="attrib")}
 #'
