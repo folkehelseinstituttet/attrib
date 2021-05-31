@@ -1,3 +1,8 @@
+
+#' Evaluation of the nowcast performance.
+#'
+#' Evaluates the performance of the nowcast function on historic data.
+#'
 #' For more details see the help vignette:
 #' \code{vignette("nowcast", package="attrib")}
 #'

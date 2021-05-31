@@ -2,6 +2,8 @@
 
 ### nowcast_correction_fn_quasipoisson ----
 
+#' Nowcast correction function using the quasipoisson distribution.
+#'
 #' For more details see the help vignette:
 #' \code{vignette("nowcast", package="attrib")}
 #'
@@ -31,11 +33,11 @@ nowcast_correction_fn_quasipoisson <- function(data, n_week_adjusting, offset, d
   # for developping
   # data<- data.table::as.data.table(data_fake_nowcasting_county_aggregated)
   # data <- data[location_code == "county03"]
-  # n_week_adjusting <- 8
+  # n_week_adjusting <- 6
   # offset = "log(pop)"
 
   # Lagg the data
-  for ( i in 0:n_week_adjusting){
+  for ( i in 0:(n_week_adjusting-1)){
 
     week_n <- paste0("n0_",(i))
     data[, temp_variable_n := get(week_n)]
@@ -48,11 +50,11 @@ nowcast_correction_fn_quasipoisson <- function(data, n_week_adjusting, offset, d
 
   ########## fit ----
   # For each week in n_week_adjusting model a correction
-  data_train <- data[cut_doe < (date_0 - n_week_adjusting*7) ]
-  data_predict <- data[cut_doe >= (date_0 - n_week_adjusting*7) ]
+  data_train <- data[cut_doe <= (date_0 - n_week_adjusting*7) ]
+  data_predict <- data[cut_doe > (date_0 - n_week_adjusting*7) ]
 
-  fit_vec <- vector(mode = "list", length = (n_week_adjusting+1))
-  for ( i in 0:n_week_adjusting){
+  fit_vec <- vector(mode = "list", length = (n_week_adjusting))
+  for ( i in 0:(n_week_adjusting-1)){
     # print(i)
     formula <- paste0("n_death", "~sin(2 * pi * (week - 1) / 52) + cos(2 * pi * (week - 1) / 52)+ year +",
                       glue::glue("n0_{i}_lag1"), "+",  glue::glue("n0_{i}"))
@@ -90,6 +92,8 @@ nowcast_correction_fn_quasipoisson <- function(data, n_week_adjusting, offset, d
 
 ### nowcast_correction_fn_negbin ----
 
+#' Nowcast correction function using the negative binomial distribution.
+#'
 #' For more details see the help vignette:
 #' \code{vignette("nowcast", package="attrib")}
 #'
@@ -102,7 +106,7 @@ nowcast_correction_fn_quasipoisson <- function(data, n_week_adjusting, offset, d
 #' data<- data.table::as.data.table(data_fake_nowcasting_county_aggregated)
 #' n_week_adjusting <- 5
 #' n_week_start <- 52
-#' date_0 <- data[nrow(data),]$cut_doe #last date in the dataset, assume the dataset is ordered.
+#' date_0 <- data[nrow(data),]$cut_doe + 1 #first date not in the dataset, assume the dataset is ordered.
 #' data <- data[cut_doe >= (date_0 - n_week_start*7 + 1), ]
 #' nowcast_correction_object <- nowcast_correction_fn_negbin_mm(data,
 #'                            n_week_adjusting, offset = "log(pop)" , date_0)
@@ -124,10 +128,10 @@ nowcast_correction_fn_negbin_mm <- function(data, n_week_adjusting, offset, date
   # date_0 <- data[order(cut_doe)][nrow(data)]$cut_doe +1
 
   date_0 <- as.Date(cut(date_0, "week"))
-  data <- data[cut_doe < date_0,]
+  data <- data[cut_doe <= date_0,]
 
   # Lag the data
-  for ( i in 0:n_week_adjusting){
+  for ( i in 0:(n_week_adjusting-1)){
 
     week_n <- paste0("n0_",(i))
     data[, temp_variable_n := get(week_n)]
@@ -137,14 +141,14 @@ nowcast_correction_fn_negbin_mm <- function(data, n_week_adjusting, offset, date
   }
   data <- subset(data, select= -c(temp_variable_n))
 
-  data_train <- data[cut_doe < (date_0 - n_week_adjusting*7) ]
-  data_predict <- data[cut_doe >= (date_0 - n_week_adjusting*7) ]
+  data_train <- data[cut_doe <= (date_0 - n_week_adjusting*7) ]
+  data_predict <- data[cut_doe > (date_0 - n_week_adjusting*7) ]
 
   ########## fit ----
 
   # FIt a model for every correction
-  fit_vec <- vector(mode = "list", length = (n_week_adjusting+1))
-  for ( i in 0:n_week_adjusting){
+  fit_vec <- vector(mode = "list", length = (n_week_adjusting))
+  for ( i in 0:(n_week_adjusting-1)){
     # print(i)
     fixef <- paste0("sin(2 * pi * (week - 1) / 52) + cos(2 * pi * (week - 1) / 52)+ year +",
                         glue::glue("n0_{i}"))
@@ -178,6 +182,8 @@ nowcast_correction_fn_negbin_mm <- function(data, n_week_adjusting, offset, date
 
 ### nowcast_correction_sim ----
 
+#' Nowcast simmulation function when nowcast_correction_fn_quasipoisson is used for correction.
+#'
 #' For more details see the help vignette:
 #' \code{vignette("nowcast", package="attrib")}
 #'
@@ -295,7 +301,10 @@ nowcast_correction_sim_quasipoisson <- function(nowcast_correction_object, offse
 
 ### nowcast_correction_sim ----
 
-#' For more details see the help vignette:
+
+#' Nowcast simmulation function when nowcast_correction_fn_negbin is used for correction.
+#'
+#' For more details see the help vignette.:
 #' \code{vignette("nowcast", package="attrib")}
 #'
 #' @param nowcast_correction_object object returned from function nowcast_correction_fn_expanded
@@ -306,7 +315,7 @@ nowcast_correction_sim_quasipoisson <- function(nowcast_correction_object, offse
 #' @examples
 #' \dontrun{
 #' data <- data.table::as.data.table(data_fake_nowcasting_county_aggregated)
-#' n_week_adjusting <- 8
+#' n_week_adjusting <- 6
 #' date_0 <- data[nrow(data),]$cut_doe #last date in the dataset, assume the dataset is ordered.
 #' data <- data[cut_doe >= (date_0 - n_week_start*7 + 1), ]
 #' nowcast_correction_object <- nowcast_correction_fn_negbin_mm(data, n_week_adjusting,
@@ -339,7 +348,7 @@ nowcast_correction_sim_neg_bin <- function(nowcast_correction_object, offset, n_
 
   ##simulations ----
 
-  data_train <- data[cut_doe < (date_0 - n_week_adjusting*7) ]
+  data_train <- data[cut_doe <= (date_0 - n_week_adjusting*7) ]
   data_predict <- data[cut_doe >= (date_0 - n_week_adjusting*7) ]
 
   cut_doe_vec <- data_predict$cut_doe
@@ -376,6 +385,11 @@ nowcast_correction_sim_neg_bin <- function(nowcast_correction_object, offset, n_
 
 
 
+#' Nowcast, corrigation of data
+#'
+#' When there is a lag in the reception of data nowcast can be used to correct for this lag,
+#'  and predict the true underlying values.
+#'
 #' For more details see the help vignette:
 #' \code{vignette("nowcast", package="attrib")}
 #'
@@ -391,7 +405,7 @@ nowcast_correction_sim_neg_bin <- function(nowcast_correction_object, offset, n_
 #'data_aggregated <- data.table::as.data.table(data_fake_nowcasting_county_aggregated)
 #'n_week_training <- 50
 #'n_week_adjusting <- 4
-#'date_0 <- data_aggregated[order(cut_doe)][nrow(data_aggregated)]$cut_doe
+#'date_0 <- data_aggregated[order(cut_doe)][nrow(data_aggregated)]$cut_doe + 1
 #'offset = "log(pop)"
 #'nowcast_object <- nowcast(data_aggregated,offset,n_week_adjusting,n_week_training,date_0)
 #'
@@ -401,7 +415,7 @@ nowcast_correction_sim_neg_bin <- function(nowcast_correction_object, offset, n_
 #'data_aggregated <- data_aggregated[location_code == "county03"]
 #'n_week_training <- 50
 #'n_week_adjusting <- 4
-#'date_0 <- data_aggregated[order(cut_doe)][nrow(data_aggregated)]$cut_doe
+#'date_0 <- data_aggregated[order(cut_doe)][nrow(data_aggregated)]$cut_doe + 1
 #'offset = "log(pop)"
 #'nowcast_object <- nowcast(data_aggregated,offset,n_week_adjusting,n_week_training,date_0,
 #' nowcast_correction_fn = nowcast_correction_fn_quasipoisson,
@@ -432,7 +446,7 @@ nowcast <- function(
   # data_aggregated <- data_aggregated#[location_code == "county03"]
   # n_week_training <- 50
   # n_week_adjusting <- 4
-  # date_0 <- data_aggregated[order(cut_doe)][nrow(data_aggregated)]$cut_doe
+  # date_0 <- data_aggregated[order(cut_doe)][nrow(data_aggregated)]$cut_doe + 1
   # nowcast_correction_fn<- nowcast_correction_fn_negbin_mm
   # nowcast_correction_sim_fn = nowcast_correction_sim_neg_bin
   # # data_aggregated <- data_aggregated[location_code == "county03"]

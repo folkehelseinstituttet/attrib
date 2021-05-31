@@ -2,8 +2,7 @@
 % Please edit documentation in R/nowcast_expand.R
 \name{nowcast}
 \alias{nowcast}
-\title{For more details see the help vignette:
-\code{vignette("nowcast", package="attrib")}}
+\title{Nowcast, corrigation of data}
 \usage{
 nowcast(
   data_aggregated,
@@ -34,6 +33,10 @@ nowcast(
 Dataset including the corrected values for n_death
 }
 \description{
+When there is a lag in the reception of data nowcast can be used to correct for this lag,
+ and predict the true underlying values.
+}
+\details{
 For more details see the help vignette:
 \code{vignette("nowcast", package="attrib")}
 }
@@ -42,7 +45,7 @@ For more details see the help vignette:
 data_aggregated <- data.table::as.data.table(data_fake_nowcasting_county_aggregated)
 n_week_training <- 50
 n_week_adjusting <- 4
-date_0 <- data_aggregated[order(cut_doe)][nrow(data_aggregated)]$cut_doe
+date_0 <- data_aggregated[order(cut_doe)][nrow(data_aggregated)]$cut_doe + 1
 offset = "log(pop)"
 nowcast_object <- nowcast(data_aggregated,offset,n_week_adjusting,n_week_training,date_0)
 
@@ -51,7 +54,7 @@ data_aggregated <- data.table::as.data.table(data_fake_nowcasting_county_aggrega
 data_aggregated <- data_aggregated[location_code == "county03"]
 n_week_training <- 50
 n_week_adjusting <- 4
-date_0 <- data_aggregated[order(cut_doe)][nrow(data_aggregated)]$cut_doe
+date_0 <- data_aggregated[order(cut_doe)][nrow(data_aggregated)]$cut_doe + 1
 offset = "log(pop)"
 nowcast_object <- nowcast(data_aggregated,offset,n_week_adjusting,n_week_training,date_0,
 nowcast_correction_fn = nowcast_correction_fn_quasipoisson,

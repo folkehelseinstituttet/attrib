@@ -1,6 +1,6 @@
 ---
 title: "Statistical properties used in Attrib"
-author: "Aurora Hofman"
+author: "Aurora Christine Hofman"
 date: "2020-07-21"
 output: rmarkdown::html_vignette
 figure_width: 6
@@ -44,7 +44,7 @@ When these values are aggregated we end up with a credible interval for attribut
 
 # Baseline estimation
 
-In the case of the baseline estimation for mortality a glm is fitted to the data assuming it is quasipoisson distributed with mean $\lambda$ and the same link function as above. The `sim` function from the arm package is used to simulate values for $\beta$ from its posterior distribution. We then use these sample from the quasipoison distribution to get samples for $n_{death_i}$. We obtain $n_{sim}$ values for $n_{death_i}$ at each time point with 
+In the case of the baseline estimation for mortality a model is fitted to the data assuming it is quasipoisson distributed with mean $\lambda$ and the same link function as above. The `sim` function from the arm package is used to simulate values for $\beta$ from its posterior distribution. We then use these sample from the quasipoison distribution to get samples for $n_{death_i}$. We obtain $n_{sim}$ values for $n_{death_i}$ at each time point with 
 
 $n_{death_i} \sim  quasipoison(X \beta_i)$.
 

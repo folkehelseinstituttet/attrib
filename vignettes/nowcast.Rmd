@@ -1,7 +1,7 @@
 ---
 title: "Nowcasting with Attrib"
-author: "Aurora Hofman"
-date: "2020-07-21"
+author: "Aurora Christine Hofman"
+date: "2021-05-15"
 output: rmarkdown::html_vignette
 figure_width: 6
 figure_height: 4
@@ -38,29 +38,30 @@ We will show two examples of how to use `nowcast` one using a linear mixed model
 
 Before we start it is important to note that all nowcasting functions only work with full weeks where the weeks start on mondays. The function `cut` is used to ensure this. 
 
-# Aggregateing registration data using `nowcast_aggregate`. 
+# Aggregating registration data using `nowcast_aggregate`. 
 
 For this example some fake mortality data has been generated. 
 
-```{r}
+```{r, warning=FALSE}
 mortality_data_raw <- attrib::data_fake_nowcasting_county_raw
 head(mortality_data_raw)
 tail(mortality_data_raw)
 ```
 
-As we can see this data set contains date of registration "doe", date of registration "dor" and "location_code". To use `nowcast_aggregate` these columns must exist to be used as the first argument of `nowcast_aggregate`. The function also takes in the aggregation date, "aggregation_date", the first date after the dataset has ended. We recall that even if the aggregation date is set to a Tuesday nowcast will convert this into a monday ensuring all weeks are compleate.  In addition the number of weeks, "n_week", for which we want to calculate the percentage of total registrations and the total number of registered events obtained for each week is an argument. The final argument is the population data, "pop_data", a data set containing the population for each location code in the original data. This variable can be set to NULL. 
+As we can see this data set contains date of event "doe", date of registration "dor" and "location_code". To use `nowcast_aggregate` these columns must exist to be used as the first argument of `nowcast_aggregate`. The function also takes in the aggregation date, "aggregation_date", the first date after the dataset has ended. We recall that even if the aggregation date is set to a Tuesday nowcast will convert this into a monday ensuring all weeks are compleate.  In addition the number of weeks, "n_week", for which we want to calculate the percentage of total registrations and the total number of registered events obtained for each week is an argument. The final argument is the population data, "pop_data", a data set containing the population for each location code in the original data. This variable can be set to NULL. 
 
-```{r}
+```{r, warning=FALSE}
 aggregation_date <- as.Date("2020-01-01")
 n_week <- 6
-pop_data<- fhidata::norway_population_by_age_cats(cats = list(c(1:120)))[location_code %in% unique(fhidata::norway_locations_b2020$county_code)]
-mortality_data_aggregated <- nowcast_aggregate(mortality_data_raw,
+unique_locations <- unique(fhidata::norway_locations_b2020$county_code)
+pop_data<- fhidata::norway_population_by_age_cats(cats = list(c(1:120)))[location_code %in% unique_locations]
+mortality_data_aggregated <-  attrib::nowcast_aggregate(mortality_data_raw,
                                                aggregation_date = aggregation_date, 
                                                n_week = n_week, pop_data = pop_data )
 ``` 
 
 
-```{r}
+```{r, warning=FALSE}
 tail(mortality_data_aggregated[location_code == "county03"])
 ```
 
@@ -75,24 +76,23 @@ We can now plot the percentages of registrations after $k$ weeks and use this to
 ```{r fig.height=4, fig.width=6, warning = FALSE}
 q <- ggplot(data = mortality_data_aggregated[location_code == "county03"], aes(x = cut_doe, y = p0_2))
 q <- q + geom_point() 
-q <- q + scale_y_continuous("Percentage of deaths registered within 2 weeks", limits = c(0,1))
+q <- q + scale_y_continuous("Percentage of deaths registered\n within 2 weeks", limits = c(0,1))
 q <- q + theme(axis.title.x=element_blank(), axis.text.x = element_text(angle=90))
-
 q
 ```
 
 ```{r fig.height=4, fig.width=6, warning = FALSE}
 q <- ggplot(data = mortality_data_aggregated[location_code == "county03"], aes(x = cut_doe, y = p0_3))
 q <- q + geom_point()
-q <- q + scale_y_continuous("Percentage of deaths registered within 2 weeks", limits = c(0.5,1))
+q <- q + scale_y_continuous("Percentage of deaths registered\n  within 3 weeks", limits = c(0.5,1))
 q <- q + theme(axis.title.x=element_blank(), axis.text.x = element_text(angle=90))
 q
 ```
 
 ```{r fig.height=4, fig.width=6, warning = FALSE}
-q <- ggplot(data = mortality_data_aggregated[location_code == "county03"], aes(x = cut_doe, y = p0_5))
+q <- ggplot(data = mortality_data_aggregated[location_code == "county03"], aes(x = cut_doe, y = p0_4))
 q <- q + geom_point()
-q <- q + scale_y_continuous("Percentage of deaths registered within 2 weeks", limits = c(0.8,1))
+q <- q + scale_y_continuous("Percentage of deaths registered\n  within 4 weeks", limits = c(0.8,1))
 q <- q + theme(axis.title.x=element_blank(), axis.text.x = element_text(angle=90))
 q
 ```
@@ -102,52 +102,68 @@ We can see that for this fake dataset we have around $80 \%$ of the registration
 
 # Using `nowcast` to correct n_deaths assuming data to be negative binomial. 
 
-When we have a data frame either generated by `nowcast_aggregate`, or on the same form as shown above, we can use `nowcast` to correct for the delay in registration. We set how many week we want to adjust. If "n_week_adjust" = 5 then the current week up to week 4 are corrected. Meaning 5 weeks in total.  We also set how many weeks we want to train the model on. Note that we assume all the weeks before the weeks we state to be adjusted to be the true data. In other words we assume 100 % of the deaths to be present. If in doubt set "n_week_adjust" a bit higher. 
+When we have a data frame either generated by `nowcast_aggregate`, or on the same form as shown above, we can use `nowcast` to correct for the delay in registration. We set how many week we want to adjust. If "n_week_adjust" = 5 then the current week and the prior 4 weeks are corrected. Meaning 5 weeks in total.  We also set how many weeks we want to train the model on. Note that we assume all the weeks before the weeks we state to be adjusted to be the true data. In other words we assume 100 % of the deaths to be present. If in doubt set "n_week_adjust" a bit higher. 
 
 In our case as seen from the plots after 5 weeks almost 100 % of the data are registered and we therefor chose to correct only 5 weeks. 
 
 We use the default functions for "nowcast_correction_fn" and `nowcast_correction_fn_negbin_mm`, however these can be manually set as long as they full fill certain conditions. The function must have the following arguments: 
+
   - data, a dataset generated by `nowcast_aggregate` or on the same form
+
   - n_week_adjusting, the number of weeks to be adjustd
+
   - offset 
+
   - date_0, the last date in the dataset. 
+
 The function must return a vector containing the following:
+
   - data, the corrected data set containing the columns ncor, ncor0_1 up to ncor0_n_week_adjusting
+
   - n_week_adjusting number of weeks that where adjusted
+
   - fit <- a vector containgin a fit for each correction, (one per week in n_week_adjusting).
   
 We also use the default simulation function `nowcast_correction_sim_neg_bin`. This can also be set manually but must contain the following arguments:
+ 
   - nowcast_correction_object made by "nowcast_correction_fn"
+ 
   - offset, 
+ 
   - n_sim, number of simulations
+ 
   - date_0, the last date in the data set.
   
 It must return the following a dataset containing the following rows:
+ 
   - yrwk, yearweek
+ 
   - n_death, number of observed deaths
+ 
   - sim_value, predicted number of deaths from one simulation
+ 
   - cut_doe, first date of every week
+ 
   - week 
+ 
   - year
+ 
   - location_code
+ 
   - sim_id, simmulation id
   
-It is also important to make sure that the simulation funciton works together with the chosen correction function. 
+It is also important to make sure that the simulation function works together with the chosen correction function. 
 
 
-```{r}
+```{r, warning=FALSE}
 data_aggregated <- mortality_data_aggregated
-data_aggregated <- data_aggregated#[location_code == "county03"]
 n_week_training <- 50
 n_week_adjusting <- 4
-date_0 <- data_aggregated[order(cut_doe)][nrow(data_aggregated)]$cut_doe
+date_0 <- aggregation_date
 nowcast_correction_fn<- nowcast_correction_fn_negbin_mm
 nowcast_correction_sim_fn = nowcast_correction_sim_neg_bin
-  # data_aggregated <- data_aggregated[location_code == "county03"]
-  # nowcast_correction_fn<- nowcast_correction_fn_quasipoisson
-  # nowcast_correction_sim_fn = nowcast_correction_sim_quasipoisson
 offset = "log(pop)"
-nowcast_object_negbin <- nowcast(data_aggregated,
+nowcast_object_negbin <-  attrib::nowcast(data_aggregated,
   offset,
   n_week_adjusting,
   n_week_training,
@@ -156,27 +172,14 @@ nowcast_object_negbin <- nowcast(data_aggregated,
   nowcast_correction_sim_fn = nowcast_correction_sim_neg_bin)
 ```
 
+
+`nowcast` returns two datasets. One being the original dataset with the median of the corrected data added and the other containing simulations for the predicted value of ncor so one can make credible intervals. 
+
 ```{r, warning=FALSE}
-# n_week_adjusting <- 4
-# n_week_training <- 50
-# offset <- "log(pop)"
-# date_0 <- as.Date("2019-12-16")
-# nowcast_object_negbin <- nowcast(mortality_data_aggregated,
-#   offset,
-#   n_week_adjusting,
-#   n_week_training,
-#   date_0,
-#   nowcast_correction_fn = nowcast_correction_fn_negbin_mm,
-#   nowcast_correction_sim_fn = nowcast_correction_sim_neg_bin)
+tail(nowcast_object_negbin$data[location_code == "county03"])
 ```
 
-`nowcast` returns two datasets. One beeing the original dataset with the corrected data added and the other containing simulations for the predicted value of ncor so one can make credible intervals. 
-
-```{r}
-tail(nowcast_object_negbin$data)
-```
-
-```{r}
+```{r, warning=FALSE}
 head(nowcast_object_negbin$data_sim)
 ```
 
@@ -185,8 +188,8 @@ head(nowcast_object_negbin$data_sim)
 
 To evaluate the estimates made by `nowcast` an evaluation function is made. 
 The function takes a "nowcast_object" and the number of weeks to adjust "n_week_adjusting" as arguments. 
-```{r}
-nowcast_eval_object_negbin <- nowcast_eval(nowcast_object_negbin, n_week_adjusting)
+```{r, warning=FALSE}
+nowcast_eval_object_negbin <-  attrib::nowcast_eval(nowcast_object_negbin, n_week_adjusting)
 ```
 
 We can evaluate all the residual plots to make sure there is no bias. Here we see the residualplot for n corrected in week 2. 
@@ -195,19 +198,16 @@ nowcast_eval_object_negbin[[2]]$std_residualplot
 ```
 
 If the resuduals do not show any bias we look at the accuratcy of the predictions using the absolute error ("abs_error"), $R^2$ ("R_squared"), mean square error ("MSE"), and the root mean square error ("RMSE"). 
-```{r}
+```{r, warning=FALSE}
 model_data_negbin <- data.table::data.table(
   ncor = 0:(n_week_adjusting-1)
 )
-
-
 
 for (i in 0:(n_week_adjusting-1)){
   model_data_negbin[i+1, abs_error := nowcast_eval_object_negbin[[i+1]]$abs_error]
   model_data_negbin[i+1, R_squared := nowcast_eval_object_negbin[[i+1]]$R_squared]
   model_data_negbin[i+1, MSE := nowcast_eval_object_negbin[[i+1]]$MSE]
   model_data_negbin[i+1, RMSE := nowcast_eval_object_negbin[[i+1]]$RMSE]
-
 }
 
 model_data_negbin
@@ -222,12 +222,12 @@ Instead of modeling all locations at once we can model them one by one using `no
 We will show this only for one location. However this could be done for all locations. If the resulting datasets are merged the results can be compared to the above example. 
 
 
-```{r}
+```{r, warning=FALSE}
 n_week_adjusting <- 5
 n_week_training <- 52
 offset <- "log(pop)"
-date_0 <- as.Date("2019-12-16")
-nowcast_object_glm <- nowcast(mortality_data_aggregated[location_code == "county03"],
+date_0 <- aggregation_date
+nowcast_object_glm <-  attrib::nowcast(mortality_data_aggregated[location_code == "county03"],
   offset,
   n_week_adjusting,
   n_week_training,
@@ -238,11 +238,11 @@ nowcast_object_glm <- nowcast(mortality_data_aggregated[location_code == "county
 
 As shown above the same two datasets are returned
 
-```{r}
+```{r, warning=FALSE}
 tail(nowcast_object_glm$data)
 ```
 
-```{r}
+```{r, warning=FALSE}
 head(nowcast_object_glm$data_sim)
 ```
 
@@ -250,8 +250,8 @@ head(nowcast_object_glm$data_sim)
 # Evaluating the `nowcast` quasipoisson estimates. 
 
 We also follow the same evaluation presidure as above. 
-```{r}
-nowcast_eval_object_glm <- nowcast_eval(nowcast_object_glm, n_week_adjusting)
+```{r, warning=FALSE}
+nowcast_eval_object_glm <-  attrib::nowcast_eval(nowcast_object_glm, n_week_adjusting)
 ```
 
 We can evaluate all the residual plots to make sure there is no bias. Here we see the residualplot for n corrected in week 2. 
@@ -260,23 +260,20 @@ nowcast_eval_object_glm[[2]]$std_residualplot
 ```
 
 If the resuduals do not show any bias we look at the accuratcy of the predictions using the absolute error ("abs_error"), $R^2$ ("R_squared"), mean square error ("MSE"), and the root mean square error ("RMSE"). 
-```{r}
+```{r, warning=FALSE}
 model_data_glm <- data.table::data.table(
   ncor = 0:(n_week_adjusting-1)
 )
-
-
 
 for (i in 0:(n_week_adjusting-1)){
   model_data_glm[i+1, abs_error := nowcast_eval_object_glm[[i+1]]$abs_error]
   model_data_glm[i+1, R_squared := nowcast_eval_object_glm[[i+1]]$R_squared]
   model_data_glm[i+1, MSE := nowcast_eval_object_glm[[i+1]]$MSE]
   model_data_glm[i+1, RMSE := nowcast_eval_object_glm[[i+1]]$RMSE]
-
 }
 
 model_data_glm
-
+model_data_glm
 ```
 
 
@@ -298,18 +295,23 @@ ranef <- "(1|location_code)"
 offset <- "log(pop)"
 
 
-base_line <- baseline_est(data_train, data_predict, fixef = fixef, ranef = ranef, response = response, offset = offset)
+base_line <-  attrib::baseline_est(data_train, 
+                                   data_predict, 
+                                   fixef = fixef, 
+                                   ranef = ranef, 
+                                   response = response, 
+                                   offset = offset)
 ```
 
 
 We then use both data tables generated from the `nowcast` function and compare the results to the baseline estimate. 
-```{r}
- nowcast_data_negbin <- data.table::as.data.table(nowcast_object_negbin$data)
- nowcast_sim_negbin <- data.table::as.data.table(nowcast_object_negbin$data_sim)
+```{r, warning=FALSE}
+nowcast_data_negbin <- data.table::as.data.table(nowcast_object_negbin$data)
+nowcast_sim_negbin <- data.table::as.data.table(nowcast_object_negbin$data_sim)
 ```
 
 
-```{r}
+```{r, warning=FALSE}
 # Quantile functions
 q025 <- function(x){
   return(quantile(x, 0.025))
@@ -321,7 +323,7 @@ q975 <- function(x){
 
 
 We need to aggregate the simulated data from `nowcast`. We first use the negative binomial estimates. 
-```{r}
+```{r, warning=FALSE}
 col_names <- colnames(nowcast_sim_negbin)
 data.table::setkeyv(nowcast_sim_negbin,
                     col_names[!col_names %in% c("sim_value", "sim_id")])
@@ -339,18 +341,22 @@ head(aggregated_nowcast_sim_negbin)
 
 
 
-```{r}
+```{r, warning=FALSE}
 #nowcast_data[, q025.sim_value := ncor]
-nowcast_data_negbin[aggregated_nowcast_sim_negbin, on = .(cut_doe,location_code), q025.sim_value := q025.sim_value]
+nowcast_data_negbin[aggregated_nowcast_sim_negbin, 
+                    on = .(cut_doe,location_code), 
+                    q025.sim_value := q025.sim_value]
 
 #nowcast_data[, q975.sim_value := ncor]
-nowcast_data_negbin[aggregated_nowcast_sim_negbin, on = .(cut_doe,location_code), q975.sim_value := q975.sim_value]
+nowcast_data_negbin[aggregated_nowcast_sim_negbin, 
+                    on = .(cut_doe,location_code), 
+                    q975.sim_value := q975.sim_value]
 
 ```
 
 Finally we can plot the baseline estimate together with the nowcast predictions to see if the mortality falls withing the expected values. 
 
-```{r fig.height=4, fig.width=6}
+```{r fig.height=4, fig.width=6, warning=FALSE}
 q <- ggplot(base_line$aggregated[year == "2019" & location_code == "county03"],
             aes(x = week,
                 y = median.sim_value))
@@ -363,25 +369,23 @@ q <- q + geom_ribbon(data = base_line$aggregated[year== 2019 & location_code == 
 q <- q + geom_line(data = nowcast_data_negbin[year == "2019"& location_code == "county03"],
                    aes(x = week, y = ncor,  colour = "Number of deaths corrected" ))
 q <- q + geom_line(data = nowcast_data_negbin[location_code == "county03" & cut_doe> (date_0- 5*7)],
-                   aes(x = week, y = q025.sim_value ,colour = "Credible intervall for n corrected" ),
-                   linetype = "dashed")
+                   aes(x = week, y = q025.sim_value ,colour = "Credible intervall for n corrected" ))
 q <- q + geom_line(data = nowcast_data_negbin[location_code == "county03" & cut_doe> (date_0- 5*7)],
-                   aes(x = week, y = q975.sim_value, colour = "Credible intervall for n corrected" ),
-                   linetype = "dashed")
-q <- q + scale_y_continuous(name = "Number of deaths")
-q <- q + guides(fill = FALSE)
+                   aes(x = week, y = q975.sim_value, colour = "Credible intervall for n corrected" ))
+q <- q + scale_y_continuous(name = "Number of deaths")+ theme(legend.position = "bottom", legend.title = element_blank())
+q <- q + guides(fill = FALSE, colour=guide_legend(nrow=2,byrow=TRUE))
 q
 ```
 
 We now look at the quasipoisson estimates and follow the same procedure. 
 
-```{r}
- nowcast_data_glm <- data.table::as.data.table(nowcast_object_glm$data)
- nowcast_sim_glm <- data.table::as.data.table(nowcast_object_glm$data_sim)
+```{r, warning=FALSE}
+nowcast_data_glm <- data.table::as.data.table(nowcast_object_glm$data)
+nowcast_sim_glm <- data.table::as.data.table(nowcast_object_glm$data_sim)
 ```
 
 
-```{r}
+```{r, warning=FALSE}
 col_names <- colnames(nowcast_sim_glm)
 data.table::setkeyv(nowcast_sim_glm,
                     col_names[!col_names %in% c("sim_value", "sim_id")])
@@ -399,18 +403,22 @@ head(aggregated_nowcast_sim_glm)
 
 
 
+ 
 ```{r}
+ 
 #nowcast_data[, q025.sim_value := ncor]
-nowcast_data_glm[aggregated_nowcast_sim_glm, on = .(cut_doe,location_code), q025.sim_value := q025.sim_value]
-
+nowcast_data_glm[aggregated_nowcast_sim_glm, 
+                 on = .(cut_doe,location_code), 
+                 q025.sim_value := q025.sim_value]
 #nowcast_data[, q975.sim_value := ncor]
-nowcast_data_glm[aggregated_nowcast_sim_glm, on = .(cut_doe,location_code), q975.sim_value := q975.sim_value]
-
+nowcast_data_glm[aggregated_nowcast_sim_glm,
+                 on = .(cut_doe,location_code), 
+                 q975.sim_value := q975.sim_value]
 ```
 
 Again we can plot the baseline and the nowcast estimates together to see if the mortality falls withing the expected values. 
 
-```{r fig.height=4, fig.width=6}
+```{r fig.height=4, fig.width=6, warning=FALSE}
 q <- ggplot(base_line$aggregated[year == "2019" & location_code == "county03"],
             aes(x = week,
                 y = median.sim_value))
@@ -423,13 +431,12 @@ q <- q + geom_ribbon(data = base_line$aggregated[year== 2019 & location_code == 
 q <- q + geom_line(data = nowcast_data_glm[year == "2019"& location_code == "county03"],
                    aes(x = week, y = ncor,  colour = "Number of deaths corrected" ))
 q <- q + geom_line(data = nowcast_data_glm[location_code == "county03" & cut_doe> (date_0- 5*7)],
-                   aes(x = week, y = q025.sim_value ,colour = "Credible intervall for n corrected" ),
-                   linetype = "dashed")
+                   aes(x = week, y = q025.sim_value ,colour = "Credible intervall for n corrected" ))
 q <- q + geom_line(data = nowcast_data_glm[location_code == "county03" & cut_doe> (date_0- 5*7)],
-                   aes(x = week, y = q975.sim_value, colour = "Credible intervall for n corrected" ),
-                   linetype = "dashed")
-q <- q + scale_y_continuous(name = "Number of deaths")
-q <- q + guides(fill = FALSE)
+                   aes(x = week, y = q975.sim_value, colour = "Credible intervall for n corrected" ))
+q <- q + scale_y_continuous(name = "Number of deaths") 
+q <- q + theme(legend.position = "bottom", legend.title = element_blank())
+q <- q + guides(fill = FALSE, colour=guide_legend(nrow=2,byrow=TRUE))
 q
 ```
 
@@ -437,7 +444,7 @@ q
 Finaly we can also compare the two models.
 
 
-```{r fig.height=4, fig.width=6}
+```{r fig.height=4, fig.width=6, warning=FALSE}
 q <- ggplot(base_line$aggregated[year == "2019" & location_code == "county03"],
             aes(x = week,
                 y = median.sim_value))
@@ -448,25 +455,27 @@ q <- q + geom_ribbon(data = base_line$aggregated[year== 2019 & location_code == 
                          fill ="Baseline estimate"),
                      alpha=0.5)
 q <- q + geom_line(data = nowcast_data_negbin[year == "2019"& location_code == "county03"],
-                   aes(x = week, y = ncor,  colour = "Number of deaths corrected negbin" ))
+                   aes(x = week, y = ncor,  
+                       colour = "Number of deaths corrected negbin" ))
 q <- q + geom_line(data = nowcast_data_negbin[location_code == "county03" & cut_doe> (date_0- 5*7)],
-                   aes(x = week, y = q025.sim_value ,colour = "Credible intervall for n corrected negbin" ),
-                   linetype = "dashed")
+                   aes(x = week, y = q025.sim_value, 
+                       colour = "Credible intervall for n corrected negbin" ))
 q <- q + geom_line(data = nowcast_data_negbin[location_code == "county03" & cut_doe> (date_0- 5*7)],
-                   aes(x = week, y = q975.sim_value, colour = "Credible intervall for n corrected negbin" ),
-                   linetype = "dashed")
-
-
+                   aes(x = week, y = q975.sim_value, 
+                       colour = "Credible intervall for n corrected negbin" ))
 q <- q + geom_line(data = nowcast_data_glm[year == "2019"& location_code == "county03"],
-                   aes(x = week, y = ncor,  colour = "Number of deaths corrected quasipoisson" ))
+                   aes(x = week, y = ncor, 
+                       colour = "Number of deaths corrected quasipoisson" ))
 q <- q + geom_line(data = nowcast_data_glm[location_code == "county03" & cut_doe> (date_0- 5*7)],
-                   aes(x = week, y = q025.sim_value ,colour = "Credible intervall for n corrected quasipoison" ),
-                   linetype = "dashed")
+                   aes(x = week, y = q025.sim_value,
+                       colour = "Credible intervall for n corrected quasipoison" ))
 q <- q + geom_line(data = nowcast_data_glm[location_code == "county03" & cut_doe> (date_0- 5*7)],
-                   aes(x = week, y = q975.sim_value, colour = "Credible intervall for n corrected quasipoison" ),
-                   linetype = "dashed")
-q <- q + scale_y_continuous(name = "Number of deaths")
-q <- q + guides(fill = FALSE)
+                   aes(x = week, y = q975.sim_value, 
+                       colour = "Credible intervall for n corrected quasipoison" ))
+q <- q + scale_y_continuous(name = "Number of deaths") 
+q <- q + theme(legend.position = "bottom", legend.title = element_blank())
+q <- q + guides(fill = FALSE, colour=guide_legend(nrow=3,byrow=TRUE))
+
 q
 
 

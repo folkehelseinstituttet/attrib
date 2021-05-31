@@ -2,8 +2,7 @@
 % Please edit documentation in R/nowcast_eval.R
 \name{nowcast_eval}
 \alias{nowcast_eval}
-\title{For more details see the help vignette:
-\code{vignette("nowcast", package="attrib")}}
+\title{Evaluation of the nowcast performance.}
 \usage{
 nowcast_eval(nowcast_object, n_week_adjusting)
 }
@@ -16,6 +15,9 @@ nowcast_eval(nowcast_object, n_week_adjusting)
 Residualplots for all ncor_i and some evaluationmetrixs for each of them as well as a plot containing credible intervals using the simulations
 }
 \description{
+Evaluates the performance of the nowcast function on historic data.
+}
+\details{
 For more details see the help vignette:
 \code{vignette("nowcast", package="attrib")}
 }

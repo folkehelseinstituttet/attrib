@@ -1,0 +1,36 @@
+url: https://folkehelseinstituttet.github.io/attrib/
+
+development:
+  mode: auto
+
+reference:
+- subtitle: Fake datasets
+  desc: >
+    These functions access datasets.
+- contents:
+  - data_fake_county
+  - data_fake_nation
+  - data_fake_nowcasting_aggregated
+  - data_fake_nowcasting_county_aggregated
+  - data_fake_nowcasting_county_raw
+
+- subtitle: Nowcasting
+  desc: >
+    Nowcasting, baseline and evaluation functions
+- contents:
+  - baseline_est
+  - nowcast
+  - nowcast_aggregate
+  - nowcast_correction_fn_negbin_mm
+  - nowcast_correction_fn_quasipoisson
+  - nowcast_correction_sim_neg_bin
+  - nowcast_correction_sim_quasipoisson
+  - nowcast_eval
+
+- subtitle: Attributable mortality
+  desc: >
+    Functions for estimating attributable mortality
+- contents:
+  - est_attrib
+  - fit_attrib
+  - sim

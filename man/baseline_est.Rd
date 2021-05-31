@@ -2,8 +2,7 @@
 % Please edit documentation in R/baseline_est.R
 \name{baseline_est}
 \alias{baseline_est}
-\title{For more details see the help vignette:
-\code{vignette("nowcast", package="attrib")}}
+\title{Baseline estimator.}
 \usage{
 baseline_est(
   data_train,
@@ -34,6 +33,11 @@ baseline_est(
 Residualplots for all ncor_i and some evaluationmetrixs for each of them as well as a plot containing credible intervals using the simulation
 }
 \description{
+Baseline estimator for mortality. If a random effect is present the negative binomial distribution is used.
+Otherwise a quisipoisson is fitted to the data.
+We use simmulations to generate n_sim responses for each row in the dataset to create a baseline.
+}
+\details{
 For more details see the help vignette:
 \code{vignette("nowcast", package="attrib")}
 }

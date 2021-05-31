@@ -2,8 +2,7 @@
 % Please edit documentation in R/nowcast_expand.R
 \name{nowcast_correction_fn_negbin_mm}
 \alias{nowcast_correction_fn_negbin_mm}
-\title{For more details see the help vignette:
-\code{vignette("nowcast", package="attrib")}}
+\title{Nowcast correction function using the negative binomial distribution.}
 \usage{
 nowcast_correction_fn_negbin_mm(data, n_week_adjusting, offset, date_0)
 }
@@ -28,7 +27,7 @@ For more details see the help vignette:
 data<- data.table::as.data.table(data_fake_nowcasting_county_aggregated)
 n_week_adjusting <- 5
 n_week_start <- 52
-date_0 <- data[nrow(data),]$cut_doe #last date in the dataset, assume the dataset is ordered.
+date_0 <- data[nrow(data),]$cut_doe + 1 #first date not in the dataset, assume the dataset is ordered.
 data <- data[cut_doe >= (date_0 - n_week_start*7 + 1), ]
 nowcast_correction_object <- nowcast_correction_fn_negbin_mm(data,
                            n_week_adjusting, offset = "log(pop)" , date_0)

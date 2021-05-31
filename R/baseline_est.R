@@ -1,3 +1,9 @@
+#' Baseline estimator.
+#'
+#'Baseline estimator for mortality. If a random effect is present the negative binomial distribution is used.
+#'Otherwise a quisipoisson is fitted to the data.
+#'We use simmulations to generate n_sim responses for each row in the dataset to create a baseline.
+#'
 #' For more details see the help vignette:
 #' \code{vignette("nowcast", package="attrib")}
 #'

@@ -2,8 +2,7 @@
 % Please edit documentation in R/nowcast_aggregate.R
 \name{nowcast_aggregate}
 \alias{nowcast_aggregate}
-\title{For more details see the help vignette:
-\code{vignette("intro", package="attrib")}}
+\title{Aggregation of data for nowcasting}
 \usage{
 nowcast_aggregate(data, aggregation_date, n_week, pop_data = NULL)
 }
@@ -20,7 +19,11 @@ nowcast_aggregate(data, aggregation_date, n_week, pop_data = NULL)
 Aggregated dataset with the percentiles of registered events within the last 52 weeks
 }
 \description{
+Aggregates mortality data to a weekly basis.
+Where the percentiles and number of mortalities obtained after every week up to n_week is also given.
 For more details see the help vignette:
+}
+\details{
 \code{vignette("intro", package="attrib")}
 }
 \examples{

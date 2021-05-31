@@ -1,6 +1,6 @@
 ---
 title: "Introduction to Attrib"
-author: "Aurora Hofman"
+author: "Aurora Christine Hofman"
 date: "2020-07-21"
 output: rmarkdown::html_vignette
 figure_width: 6

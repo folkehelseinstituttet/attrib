@@ -80,7 +80,12 @@
 #' }
 "data_fake_nowcasting_county_aggregated"
 
+#' Aggregation of data for nowcasting
+#'
+#' Aggregates mortality data to a weekly basis.
+#' Where the percentiles and number of mortalities obtained after every week up to n_week is also given.
 #' For more details see the help vignette:
+#'
 #' \code{vignette("intro", package="attrib")}
 #'
 #' @param data Dataset containing doe (Date of event), dor (Date of registation) and location_code. The columns must have these exact names.
@@ -123,13 +128,13 @@ nowcast_aggregate <- function(
 
 
   ##### for developing
-
-  # data <- gen_fake_death_data_county()
-  # #data <- attrib::data_fake_nowcasting_raw
-  # aggregation_date <- as.Date("2019-12-31")
-  # n_week <- 6
-  # pop_data <- fhidata::norway_population_by_age_cats(cats = list(c(1:120)))[location_code %in% unique(fhidata::norway_locations_b2020$county_code)]
-  # #pop_data <- NULL
+#
+# data <- gen_fake_death_data_county()
+# #data <- attrib::data_fake_nowcasting_raw
+# aggregation_date <- as.Date("2019-12-31")
+# n_week <- 6
+# pop_data <- fhidata::norway_population_by_age_cats(cats = list(c(1:120)))[location_code %in% unique(fhidata::norway_locations_b2020$county_code)]
+# #pop_data <- NULL
   ### check of parameters ----
 
   if (! "doe" %in% colnames(data)){
@@ -157,7 +162,7 @@ nowcast_aggregate <- function(
   d[, cut_doe := as.Date(cut(doe, "week"))]
   d <- d[order(doe, dor)]
 
-  first_date <- d[1,]$doe
+  first_date <- as.Date(cut(d[1,]$doe, "week"))
   last_date <- as.Date(cut(aggregation_date -7, "week"))
 
   # count deaths
@@ -210,18 +215,28 @@ nowcast_aggregate <- function(
     to = last_date,
     by = 7
   )
+  # THIS COULD CAUSE SOME TROUBLE IF THE TIME PERIOD IS VERY LONG.
 
+  dates <- as.Date(cut(dates, "week"))
   all_dates_locations <- expand.grid(
     cut_doe = dates,
     location_code = unique(d_within_week$location_code)
   )
 
+  test <- merge(d_within_week, all_dates_locations, on = c("cut_doe, location_code"), all = TRUE)
+  for(i in 0:n_week){
+    test[is.na(n_death), paste0("n0_",(i)) := 0]
+  }
+
+  test[is.na(n_death), n_death := 0]
+  d_within_week <- test
+  d_corrected <- d_within_week[, .(cut_doe,location_code, n_death, n0_0, p0_0)]
   # Merge together so all dates are present
 
-  d_corrected <- merge(d_corrected, all_dates_locations, on = c("cut_doe, location_code"), all = TRUE)
-  d_corrected[is.na(n_death), n0_0 := 0]
-  d_corrected[is.na(n_death), p0_0 := 0]
-  d_corrected[is.na(n_death), n_death := 0]
+  # d_corrected <- merge(d_corrected, all_dates_locations, on = c("cut_doe, location_code"), all = TRUE)
+  # d_corrected[is.na(n_death), n0_0 := 0]
+  # d_corrected[is.na(n_death), p0_0 := 0]
+  # d_corrected[is.na(n_death), n_death := 0]
 
 
   # insert NA where we do not have data
@@ -234,11 +249,11 @@ nowcast_aggregate <- function(
     d_within_week[, temp_variable_p := get(week_p)]
 
 
-    d_within_week[cut_doe >= (date_0- (i-1)*7)]#, temp_variable_n := new_value]
+    d_within_week[cut_doe >= (last_date- (i-2)*7)]#, temp_variable_n := new_value]
 
 
-    d_within_week[cut_doe >= (date_0- (i-1)*7), temp_variable_n := new_value]
-    d_within_week[cut_doe >= (date_0- (i-1)*7), temp_variable_p := new_value]
+    d_within_week[cut_doe >= (last_date- (i-2)*7), temp_variable_n := new_value]
+    d_within_week[cut_doe >= (last_date- (i-2)*7), temp_variable_p := new_value]
 
 
     d_corrected[ d_within_week,
