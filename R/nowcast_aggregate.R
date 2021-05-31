@@ -128,13 +128,13 @@ nowcast_aggregate <- function(
 
 
   ##### for developing
-
-  # data <- gen_fake_death_data_county()
-  # #data <- attrib::data_fake_nowcasting_raw
-  # aggregation_date <- as.Date("2019-12-31")
-  # n_week <- 6
-  # pop_data <- fhidata::norway_population_by_age_cats(cats = list(c(1:120)))[location_code %in% unique(fhidata::norway_locations_b2020$county_code)]
-  # #pop_data <- NULL
+#
+# data <- gen_fake_death_data_county()
+# #data <- attrib::data_fake_nowcasting_raw
+# aggregation_date <- as.Date("2019-12-31")
+# n_week <- 6
+# pop_data <- fhidata::norway_population_by_age_cats(cats = list(c(1:120)))[location_code %in% unique(fhidata::norway_locations_b2020$county_code)]
+# #pop_data <- NULL
   ### check of parameters ----
 
   if (! "doe" %in% colnames(data)){
@@ -162,7 +162,7 @@ nowcast_aggregate <- function(
   d[, cut_doe := as.Date(cut(doe, "week"))]
   d <- d[order(doe, dor)]
 
-  first_date <- d[1,]$doe
+  first_date <- as.Date(cut(d[1,]$doe, "week"))
   last_date <- as.Date(cut(aggregation_date -7, "week"))
 
   # count deaths
@@ -216,6 +216,7 @@ nowcast_aggregate <- function(
     by = 7
   )
 
+  dates <- as.Date(cut(dates, "week"))
   all_dates_locations <- expand.grid(
     cut_doe = dates,
     location_code = unique(d_within_week$location_code)
