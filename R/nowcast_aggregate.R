@@ -215,7 +215,7 @@ nowcast_aggregate <- function(
     to = last_date,
     by = 7
   )
-  # THIS COULD CAUSE SOME TROUBLE IS THE TIME PERIOD IS VERY LONG.
+  # THIS COULD CAUSE SOME TROUBLE IF THE TIME PERIOD IS VERY LONG.
 
   dates <- as.Date(cut(dates, "week"))
   all_dates_locations <- expand.grid(
