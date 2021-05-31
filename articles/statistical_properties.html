@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">attrib</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2021.1.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2021.5.31</span>
       </span>
     </div>
 
@@ -39,7 +39,7 @@
       <ul class="nav navbar-nav">
 <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -71,7 +71,7 @@
 <ul class="nav navbar-nav navbar-right">
 <li>
   <a href="https://github.com/folkehelseinstituttet/attrib/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -89,7 +89,7 @@
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Statistical properties used in Attrib</h1>
-                        <h4 class="author">Aurora Hofman</h4>
+                        <h4 class="author">Aurora Christine Hofman</h4>
             
             <h4 class="date">2020-07-21</h4>
       
@@ -118,7 +118,7 @@ AM_{exposure_i} := E(n_{death_i}| X) - E(n_{death_i}| x_i = ref, x_{j \neq i} \t
 <div id="baseline-estimation" class="section level1">
 <h1 class="hasAnchor">
 <a href="#baseline-estimation" class="anchor"></a>Baseline estimation</h1>
-<p>In the case of the baseline estimation for mortality a glm is fitted to the data assuming it is quasipoisson distributed with mean <span class="math inline">\(\lambda\)</span> and the same link function as above. The <code>sim</code> function from the arm package is used to simulate values for <span class="math inline">\(\beta\)</span> from its posterior distribution. We then use these sample from the quasipoison distribution to get samples for <span class="math inline">\(n_{death_i}\)</span>. We obtain <span class="math inline">\(n_{sim}\)</span> values for <span class="math inline">\(n_{death_i}\)</span> at each time point with</p>
+<p>In the case of the baseline estimation for mortality a model is fitted to the data assuming it is quasipoisson distributed with mean <span class="math inline">\(\lambda\)</span> and the same link function as above. The <code>sim</code> function from the arm package is used to simulate values for <span class="math inline">\(\beta\)</span> from its posterior distribution. We then use these sample from the quasipoison distribution to get samples for <span class="math inline">\(n_{death_i}\)</span>. We obtain <span class="math inline">\(n_{sim}\)</span> values for <span class="math inline">\(n_{death_i}\)</span> at each time point with</p>
 <p><span class="math inline">\(n_{death_i} \sim quasipoison(X \beta_i)\)</span>.</p>
 <p>When aggregating over the simulations this leads to a credible interval for <span class="math inline">\(n_{death}\)</span> for every week every year.</p>
 </div>
